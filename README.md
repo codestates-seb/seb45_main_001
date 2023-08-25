@@ -9,7 +9,7 @@
 # 프로젝트 그룹원들
 |김희목(FE)|서강의(FE)|정진용(FE)|
 |------|---|---|
-|as01050993729@gmail.com|colruck32@gmail.com|jjyim1015@gmail.com|
+|as01050993729@gmail.com|colruck32@gmail.com|[@jinyong1015](https://github.com/jinyong1015)|
 
 |박찬우(BE)|김동주(BE)|장정규(BE)|
 |------|---|---|
