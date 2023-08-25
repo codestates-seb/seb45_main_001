@@ -20,6 +20,10 @@
     },
     "rules": {
       "react/react-in-jsx-scope": 0,
-      "react/jsx-uses-react": 0
+      "react/jsx-uses-react": 0,
+      "no-unused-vars": "off",
+      "tsx-a11y/no-static-element-interactions": "off",
+      "tsx-a11y/click-events-have-key-events": "off" ,
+      "react/prop-types": "off"
     }
   }
