@@ -1,9 +1,15 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+
+# .env
+# .env 파일은 중요한 secret이나 token이 작성되어 있어 git에서 제외합니다.
+.env
+
 # dependencies
 /node_modules
 /.pnp
 .pnp.js
+node_modules
 
 # testing
 /coverage
