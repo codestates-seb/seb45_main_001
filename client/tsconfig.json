@@ -20,7 +20,17 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": [
-    "src"
-  ]
+
+  "paths": {
+    "@hooks/*": ["hooks/*"],
+    "@components/*": ["components/*"],
+    "@pages/*": ["pages/*"],
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  }
 }
