@@ -1,4 +1,3 @@
-// .eslintrc.json
 {
     "env": {
         "browser": true,
@@ -6,24 +5,19 @@
     },
     "extends": [
         "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:import/recommended",
-        "plugin:jsx-a11y/recommended",
-        "plugin:prettier/recommended"
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react/recommended"
     ],
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
-      "ecmaFeatures": {
-        "jsx": true
-      },
-      "ecmaVersion": "latest",
-      "sourceType": "module"
+        "ecmaVersion": "latest",
+        "sourceType": "module"
     },
+    "plugins": [
+        "@typescript-eslint",
+        "react"
+    ],
     "rules": {
-      "react/react-in-jsx-scope": 0,
-      "react/jsx-uses-react": 0,
-      "no-unused-vars": "off",
-      "tsx-a11y/no-static-element-interactions": "off",
-      "tsx-a11y/click-events-have-key-events": "off" ,
-      "react/prop-types": "off"
+        "react/react-in-jsx-scope": "off"
     }
-  }
+}
