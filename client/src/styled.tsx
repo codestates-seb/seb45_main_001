@@ -9,4 +9,4 @@ export const GlobalStyle = createGlobalStyle`
         font-family:'';
     }
 
-`
+`;
