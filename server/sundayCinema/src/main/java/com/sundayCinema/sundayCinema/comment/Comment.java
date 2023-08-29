@@ -24,6 +24,8 @@ public class Comment extends Auditable {
     @Column(nullable = false)
     private int Rank;
 
+
+    //adsfdasf
     // movieId 연관관계 설정 필요
 
 }
