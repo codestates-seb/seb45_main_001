@@ -1,6 +1,7 @@
 import { styled, css } from 'styled-components';
 import { useState } from 'react';
-import LoginPage from '../pages/LoginPage';
+import LoginPage from './LoginPage';
+import SignupPage from './Signup';
 
 const HeaderStyle = styled.header`
     width: 100%;
@@ -11,7 +12,7 @@ const HeaderStyle = styled.header`
     background-color: #1d1d1d;
     /* background-color: transparent; */
     /* 백그라운드는 나중에 투명으로 바꿀 것 */
-    /* position: fixed; */
+    position: fixed;
 `;
 
 const Headerwrap = styled.div`
@@ -25,24 +26,48 @@ const Headerwrap = styled.div`
 
 function Header() {
     const [isMagnifierClicked, setisMagnifierClicked] = useState<boolean>(false);
+    const [isLogin, setIsLogin] = useState<boolean>(sessionStorage.getItem('isLogin') === 'true');
 
     function handleMagnifierClick() {
         setisMagnifierClicked(!isMagnifierClicked);
         if (!isMagnifierClicked) {
-            console.log("검색바 열림!")
+            console.log('검색바 열림!');
         } else {
-            console.log("검색바 닫힘!")
+            console.log('검색바 닫힘!');
         }
     }
 
     const [isLoginModal, setLoginModal] = useState<boolean>(false);
+    const [isSignupModal, setSignupModal] = useState<boolean>(false);
 
     function onClickToggleModal() {
         setLoginModal(!isLoginModal);
         if (!isLoginModal) {
-            console.log("모달 열림!")
+            console.log('로그인 모달 열림!');
         } else {
-            console.log("모달 닫힘!")
+            console.log('로그인 모달 닫힘!');
+        }
+    }
+
+    function onClickToggleSignupModal() {
+        setSignupModal(!isSignupModal);
+        if (!isSignupModal) {
+            console.log('회원가입 모달 열림!');
+        } else {
+            console.log('회원가입 모달 닫힘!');
+        }
+    }
+
+    function onClickLogout() {
+        setIsLogin(false);
+        try {
+        sessionStorage.removeItem('isLogin');
+        localStorage.removeItem('memberid');
+        localStorage.removeItem('jwt');
+        console.log('로그아웃 성공');
+        }
+        catch (error) {
+            console.log('로그아웃 실패', error);
         }
         
     }
@@ -67,14 +92,35 @@ function Header() {
                         </Relative>
                     </SearchbarStyle>
                     <LogSignStyle>
-                        <LoginbuttonStyle onClick={onClickToggleModal}>로그인</LoginbuttonStyle>
-                        <SignupbuttonStyle>회원가입</SignupbuttonStyle>
+                        {!isLogin && (
+                            <>
+                                <LoginbuttonStyle onClick={onClickToggleModal}>로그인</LoginbuttonStyle>
+                                <SignupbuttonStyle onClick={onClickToggleSignupModal} >회원가입</SignupbuttonStyle>
+                            </>
+                        )}
+                        {isLogin && (
+                            <>
+                                <LoginbuttonStyle onClick={onClickLogout}>로그아웃</LoginbuttonStyle>
+                            </>
+                        )}
                     </LogSignStyle>
                 </Headerwrap>
             </HeaderStyle>
             {isLoginModal && (
-                <LoginPage onClickToggleModal={onClickToggleModal} >
-                </LoginPage>
+                <LoginPage
+                    isLogin={isLogin}
+                    setIsLogin={setIsLogin}
+                    onClickToggleModal={onClickToggleModal}
+                    onClickToggleSignupModal={onClickToggleSignupModal}
+                ></LoginPage>
+            )}
+            {isSignupModal && (
+                <SignupPage
+                    isLogin={isLogin}
+                    setIsLogin={setIsLogin}
+                    onClickToggleModal={onClickToggleModal}
+                    onClickToggleSignupModal={onClickToggleSignupModal}
+                ></SignupPage>
             )}
         </>
     );

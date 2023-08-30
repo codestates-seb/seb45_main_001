@@ -1,12 +1,16 @@
 import { styled, css } from 'styled-components';
 import { useState } from 'react';
+import { apiCall } from '../api/authapi';
 
 interface LoginPageProps {
     onClickToggleModal?: () => void;
+    onClickToggleSignupModal?: () => void;
+    isLogin: boolean;
+    setIsLogin: React.Dispatch<React.SetStateAction<boolean>>;
     children?: React.ReactNode;
 }
 
-function LoginPage({ onClickToggleModal }: LoginPageProps) {
+function LoginPage({ onClickToggleModal, onClickToggleSignupModal , isLogin, setIsLogin }: LoginPageProps) {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [passwordError, setPasswordError] = useState<string>('');
@@ -45,16 +49,48 @@ function LoginPage({ onClickToggleModal }: LoginPageProps) {
             }
         }
 
-        console.log("타자",e.target.value);
+        // console.log('타자', e.target.value);
     };
+
+    const handlelogintosignup = () => {
+        try {
+            onClickToggleModal?.();
+            onClickToggleSignupModal?.();
+        }
+        catch (error) {
+            console.log('썸띵 롱', error);
+        }
+    }
 
     const handleSubmit = () => {
         const myId = {
             email,
             password,
         };
-        console.log("로그인 data 슛",myId);
-        // dispatch(postData({ method: "post", path: '', data: myId }));
+        console.log('로그인 data 슛', myId);
+        apiCall({
+            method: 'POST',
+            url: 'login',
+            data: myId,
+        })
+            .then((response) => {
+                localStorage.setItem('jwt', response.data.accessToken);
+                localStorage.setItem("memberid",response.data.user.id)
+                setIsLogin(true);
+                sessionStorage.setItem('isLogin', 'true');
+                onClickToggleModal?.();
+                console.log('로그인 성공', response);
+            })
+            .catch((error) => {
+                if (error.response && error.response.status === 400) {
+                    console.error('로그인 실패 비밀번호 혹은 아이디');
+                    alert("로그인 할 수 없습니다. 비밀번호나 이메일을 확인해주세요.");
+                } else if ( error.message && error.message.includes("Network Error") ) {
+                    console.error('서버 안열림')
+                } else {
+                    console.error('로그인 에러', error);
+                }
+            });
     };
 
     return (
@@ -81,7 +117,7 @@ function LoginPage({ onClickToggleModal }: LoginPageProps) {
                             {passwordError && <LoginModalerror>{passwordError}</LoginModalerror>}
                         </LoginModalerrorwrap>
                         <LoginModalbuttonin onClick={handleSubmit}>로그인</LoginModalbuttonin>
-                        <LoginModalbuttonup>회원가입</LoginModalbuttonup>
+                        <LoginModalbuttonup onClick={handlelogintosignup}>회원가입</LoginModalbuttonup>
                         <LoginModalorwrap>
                             <LoginModalor>OR</LoginModalor>
                             <LoginModalline></LoginModalline>
@@ -204,7 +240,7 @@ const LoginModalbuttonup = styled.button`
     font-weight: 500;
     color: white;
     margin-top: 4px;
-    margin-bottom: 36px;
+    margin-bottom: 48px;
     border: 0px solid black;
     border-radius: 20px;
     background-color: #04d218;

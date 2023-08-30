@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { GlobalStyle } from './styled';
@@ -10,8 +9,6 @@ root.render(
         <GlobalStyle />
         <BrowserRouter>
             <App />
-         </BrowserRouter>
-
-
+        </BrowserRouter>
     </>,
 );
