@@ -48,7 +48,8 @@ export const ContainerStyle = styled.div`
     position: relative;
     width: 100%;
     display: flex;
-    height: 1048px;
+    height: 100vh;
     margin: 0 auto;
-    border: 1px solid orange;
+    flex-direction: column;
+    background-color: white;
 `;
