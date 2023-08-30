@@ -7,26 +7,54 @@ interface LoginPageProps {
 }
 
 function LoginPage({ onClickToggleModal }: LoginPageProps) {
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [passwordError, setPasswordError] = useState<string>('');
+    const [emailError, setEmailError] = useState<string>('');
 
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
+    function isEmailValid(email: string): boolean {
+        const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        return regex.test(email);
+    }
+
+    function isPasswordValid(pw: string): boolean {
+        const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,16}$/;
+        return regex.test(pw);
+    }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        if (name === "email") {
+
+        if (name === 'email') {
             setEmail(value);
-        } else if (name === "password") {
+            if (value === '') {
+                setEmailError('');
+            } else if (!isEmailValid(value)) {
+                setEmailError('유효한 이메일 주소를 입력해주세요.');
+            } else {
+                setEmailError('');
+            }
+        } else if (name === 'password') {
             setPassword(value);
+            if (value === '') {
+                setPasswordError('');
+            } else if (!isPasswordValid(value)) {
+                setPasswordError('8~16글자의 알파벳,숫자,특수문자를 최소1개이상 포함한 비밀번호여야 합니다.');
+            } else {
+                setPasswordError('');
+            }
         }
+
         console.log(e.target.value);
     };
 
     const handleSubmit = () => {
-        const myId = { 
+        const myId = {
             email,
-            password
+            password,
         };
-        console.log(myId)
+        console.log(myId);
+        // dispatch(postData({ method: "post", path: '', data: myId }));
     };
 
     return (
@@ -36,8 +64,22 @@ function LoginPage({ onClickToggleModal }: LoginPageProps) {
                     <LoginModalmain_low>
                         <LoginModallogo>일요시네마</LoginModallogo>
                         <LoginModallogin>로그인</LoginModallogin>
-                        <LoginModalinput placeholder="이메일" name="email" value={email} onChange={handleInputChange} ></LoginModalinput>
-                        <LoginModalinput placeholder="비밀번호" name="password" value={password} onChange={handleInputChange}></LoginModalinput>
+                        <LoginModalinput
+                            placeholder="이메일"
+                            name="email"
+                            value={email}
+                            onChange={handleInputChange}
+                        ></LoginModalinput>
+                        <LoginModalinput
+                            placeholder="비밀번호"
+                            name="password"
+                            value={password}
+                            onChange={handleInputChange}
+                        ></LoginModalinput>
+                        <LoginModalerrorwrap>
+                            {emailError && <LoginModalerror>{emailError}</LoginModalerror>}
+                            {passwordError && <LoginModalerror>{passwordError}</LoginModalerror>}
+                        </LoginModalerrorwrap>
                         <LoginModalbuttonin onClick={handleSubmit}>로그인</LoginModalbuttonin>
                         <LoginModalbuttonup>회원가입</LoginModalbuttonup>
                         <LoginModalorwrap>
@@ -123,6 +165,20 @@ const LoginModalinput = styled.input`
     padding: 6px;
     padding-left: 12px;
     ${LoginModalwidth}
+`;
+
+const LoginModalerrorwrap = styled.div`
+    position: relative;
+    height: 12px;
+    justify-content: center;
+    align-items: center;
+`;
+
+const LoginModalerror = styled.div`
+    position: relative;
+    font-size: 8px;
+    color: #797979;
+    text-align: center;
 `;
 
 const LoginModalbuttonin = styled.button`
