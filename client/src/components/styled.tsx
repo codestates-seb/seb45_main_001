@@ -1,6 +1,7 @@
 import { styled } from 'styled-components';
 
 export const FooterStyle = styled.footer`
+
     display: block;
     height: 200px;
     /* position: fixed; */
@@ -35,6 +36,7 @@ export const Footerol = styled.ol`
     position: relative;
     width: 240px;
     list-style-type: none;
+
 `;
 
 export const Footerli = styled.li`
@@ -48,7 +50,8 @@ export const ContainerStyle = styled.div`
     position: relative;
     width: 100%;
     display: flex;
-    height: 1048px;
+    height: 100vh;
     margin: 0 auto;
-    border: 1px solid orange;
+    flex-direction: column;
+    background-color: white;
 `;
