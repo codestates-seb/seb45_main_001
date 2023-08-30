@@ -2,6 +2,26 @@ import { styled, css } from 'styled-components';
 import { useState } from 'react';
 import LoginPage from '../pages/LoginPage';
 
+const HeaderStyle = styled.header`
+    width: 100%;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    z-index: 1001;
+    background-color: #1d1d1d;
+    /* 백그라운드는 나중에 투명으로 바꿀 것 */
+    /* position: fixed; */
+`;
+
+const Headerwrap = styled.div`
+    width: 53%;
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+    margin: 0 auto;
+    align-items: center;
+`;
+
 function Header() {
     const [isMagnifierClicked, setisMagnifierClicked] = useState<boolean>(false);
 
@@ -58,26 +78,6 @@ function Header() {
         </>
     );
 }
-
-const HeaderStyle = styled.header`
-    width: 100%;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    z-index: 1001;
-    background-color: #1d1d1d;
-    /* 백그라운드는 나중에 투명으로 바꿀 것 */
-    /* position: fixed; */
-`;
-
-const Headerwrap = styled.div`
-    width: 96%;
-    max-width: 100%;
-    height: 100%;
-    display: flex;
-    margin: 0 auto;
-    align-items: center;
-`;
 
 const FlexCenter = styled.div`
     align-items: center;

@@ -45,7 +45,7 @@ function LoginPage({ onClickToggleModal }: LoginPageProps) {
             }
         }
 
-        console.log(e.target.value);
+        console.log("타자",e.target.value);
     };
 
     const handleSubmit = () => {
@@ -53,7 +53,7 @@ function LoginPage({ onClickToggleModal }: LoginPageProps) {
             email,
             password,
         };
-        console.log(myId);
+        console.log("로그인 data 슛",myId);
         // dispatch(postData({ method: "post", path: '', data: myId }));
     };
 
