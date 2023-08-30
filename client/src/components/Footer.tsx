@@ -2,6 +2,7 @@ import React from 'react';
 import { FooterStyle, Footerrow, Footercontent, Footerol, Footerli } from './styled';
 
 const Footer = () => {
+
     return (
         <FooterStyle>
             <Footerrow>
@@ -17,6 +18,5 @@ const Footer = () => {
             </Footerrow>
         </FooterStyle>
     );
-};
 
 export default Footer;
