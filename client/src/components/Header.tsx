@@ -1,25 +1,83 @@
 import { styled, css } from 'styled-components';
 import { useState } from 'react';
+import LoginPage from '../pages/LoginPage';
 
 const HeaderStyle = styled.header`
     width: 100%;
     height: 56px;
     display: flex;
     align-items: center;
-    z-index: 9999;
+    z-index: 1001;
     background-color: #1d1d1d;
     /* 백그라운드는 나중에 투명으로 바꿀 것 */
     /* position: fixed; */
 `;
 
 const Headerwrap = styled.div`
-    width: 90%;
+    width: 53%;
     max-width: 100%;
     height: 100%;
     display: flex;
     margin: 0 auto;
     align-items: center;
 `;
+
+function Header() {
+    const [isMagnifierClicked, setisMagnifierClicked] = useState<boolean>(false);
+
+    function handleMagnifierClick() {
+        setisMagnifierClicked(!isMagnifierClicked);
+        if (!isMagnifierClicked) {
+            console.log("검색바 열림!")
+        } else {
+            console.log("검색바 닫힘!")
+        }
+    }
+
+    const [isLoginModal, setLoginModal] = useState<boolean>(false);
+
+    function onClickToggleModal() {
+        setLoginModal(!isLoginModal);
+        if (!isLoginModal) {
+            console.log("모달 열림!")
+        } else {
+            console.log("모달 닫힘!")
+        }
+        
+    }
+
+    return (
+        <>
+            <HeaderStyle>
+                <Headerwrap>
+                    <LogoStyle>
+                        <div>일요시네마</div>
+                    </LogoStyle>
+                    <CountryStyle>
+                        <DomesticStyle>국내</DomesticStyle>
+                        <OverseasStyle>해외</OverseasStyle>
+                    </CountryStyle>
+                    <MagnifierStyle onClick={handleMagnifierClick}>
+                        <img src="/Magnifier_white.png" alt="" style={{ width: '100%', height: '100%' }} />
+                    </MagnifierStyle>
+                    <SearchbarStyle $isOpen={isMagnifierClicked}>
+                        <Relative>
+                            <SearchinputStyle aria-label="" placeholder="검색..."></SearchinputStyle>
+                        </Relative>
+                    </SearchbarStyle>
+                    <LogSignStyle>
+                        <LoginbuttonStyle onClick={onClickToggleModal}>로그인</LoginbuttonStyle>
+                        <SignupbuttonStyle>회원가입</SignupbuttonStyle>
+                    </LogSignStyle>
+                </Headerwrap>
+            </HeaderStyle>
+            {isLoginModal && (
+                <LoginPage onClickToggleModal={onClickToggleModal} >
+                </LoginPage>
+            )}
+        </>
+    );
+}
 
 const FlexCenter = styled.div`
     align-items: center;
@@ -35,9 +93,10 @@ const FlexCentercss = css`
 
 const LogoStyle = styled(FlexCenter)`
     height: 100%;
-    padding-left: 12px;
+    padding-left: 0px;
     padding-right: 6px;
     color: #d6a701;
+    font-weight: 600;
 `;
 
 const CountryStyle = styled(FlexCenter)`
@@ -54,8 +113,18 @@ const OverseasStyle = styled(FlexCenter)`
     color: white;
 `;
 
-const GeneralStyle = styled(FlexCenter)`
+// const GeneralStyle = styled(FlexCenter)`
+//     color: white;
+// `;
+
+const LoginbuttonStyle = styled.div`
     color: white;
+    cursor: pointer;
+`;
+
+const SignupbuttonStyle = styled.div`
+    color: white;
+    cursor: pointer;
 `;
 
 // const SearchStyle = styled(FlexCenter)``;
@@ -64,7 +133,7 @@ const SearchinputStyle = styled.input`
     border: 1px solid gray;
     background-color: white;
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
     border-radius: 3px;
     padding: 3px;
     padding-left: 6px;
@@ -96,39 +165,4 @@ const Relative = styled.div`
     flex-grow: 1;
 `;
 
-function Header() {
-    const [magnifierClick, setMagnifierClick] = useState(false);
-
-    function handleMagnifierClick() {
-        setMagnifierClick(!magnifierClick);
-    }
-
-    return (
-        <>
-            <HeaderStyle>
-                <Headerwrap>
-                    <LogoStyle>
-                        <div>일요시네마</div>
-                    </LogoStyle>
-                    <CountryStyle>
-                        <DomesticStyle>국내</DomesticStyle>
-                        <OverseasStyle>해외</OverseasStyle>
-                    </CountryStyle>
-                    <MagnifierStyle onClick={handleMagnifierClick}>
-                        <img src="/Magnifier_white.png" alt="" style={{ width: '100%', height: '100%' }} />
-                    </MagnifierStyle>
-                    <SearchbarStyle $isOpen={magnifierClick}>
-                        <Relative>
-                            <SearchinputStyle aria-label="" placeholder="검색..."></SearchinputStyle>
-                        </Relative>
-                    </SearchbarStyle>
-                    <LogSignStyle>
-                        <GeneralStyle>로그인</GeneralStyle>
-                        <GeneralStyle>회원가입</GeneralStyle>
-                    </LogSignStyle>
-                </Headerwrap>
-            </HeaderStyle>
-        </>
-    );
-}
 export default Header;
