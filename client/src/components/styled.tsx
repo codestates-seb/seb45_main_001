@@ -1,9 +1,10 @@
 import { styled } from 'styled-components';
 
 export const FooterStyle = styled.footer`
+
     display: block;
     height: 200px;
-    position: fixed;
+    /* position: fixed; */
     bottom: 0;
     width: 100%;
     display: flex;
@@ -35,6 +36,7 @@ export const Footerol = styled.ol`
     position: relative;
     width: 240px;
     list-style-type: none;
+
 `;
 
 export const Footerli = styled.li`
