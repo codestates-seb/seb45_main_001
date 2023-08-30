@@ -18,5 +18,5 @@ const Footer = () => {
             </Footerrow>
         </FooterStyle>
     );
-
+}
 export default Footer;
