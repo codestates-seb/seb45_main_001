@@ -10,16 +10,16 @@ const SubcontainerStyle = styled.div`
     height: 100vh;
     margin: 0 auto;
     flex-direction: column;
-    background-color: #1D1D1D;
+    background-color: #1d1d1d;
 `;
-
 
 const PosterStyle = styled.div`
     display: flex;
     height: 550px;
     background-image: url(${logo});
-    background-size : cover;
+    background-size: cover;
     background-position: center 18%;
+
 `
 const MainStyle = styled.div`
     display: flex;
@@ -136,6 +136,7 @@ const Line3tap = styled.div`
     margin-top: 10px;
     width: 780px;
 `
+
 
 const Submain = () => {
     return (
