@@ -1,7 +1,12 @@
 import { styled, css } from 'styled-components';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LoginPage from './LoginPage';
 import SignupPage from './Signup';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUserById } from '../slice/authslice';
+import { RootState } from '../store/authstore';
+import type { AppDispatch } from '../store/authstore';
+import { Link } from 'react-router-dom';
 
 const HeaderStyle = styled.header`
     width: 100%;
@@ -24,7 +29,25 @@ const Headerwrap = styled.div`
     align-items: center;
 `;
 
+// const [서버세션확인데이터위치, set서버세션확인데이터위치] = useState(false);
+// const [유저, set유저] = useState(null);
+
+// useEffect(() => {
+//     axios
+//         .get('세션로그인유지엔드포인트')
+//         .then((response) => {
+//             if (response.data.서버세션확인데이터위치) {
+//                 setIsAuthenticated(true);
+//                 setUser(response.data.유저);
+//             }
+//         })
+//         .catch((error) => {
+//             console.error('로그인 상태 확인 중 오류 발생:', error);
+//         });
+// }, []); 세션용 로그인 유지
+
 function Header() {
+    const dispatch: AppDispatch = useDispatch();
     const [isMagnifierClicked, setisMagnifierClicked] = useState<boolean>(false);
 
     const isTokenExpired = (token: string): boolean => {
@@ -37,26 +60,14 @@ function Header() {
         }
     };
 
-    const token = localStorage.getItem('jwt');
-    const initialLoginState = token ? !isTokenExpired(token) : false;
-    const [isLogin, setIsLogin] = useState<boolean>(initialLoginState);
+    const users = useSelector((state: RootState) => state.data.users);
+    const memberId = localStorage.getItem('memberid');
+    const user = memberId ? users?.[memberId] : undefined;
 
-    // const [서버세션확인데이터위치, set서버세션확인데이터위치] = useState(false);
-    // const [유저, set유저] = useState(null);
-
-    // useEffect(() => {
-    //     axios
-    //         .get('세션로그인유지엔드포인트') 
-    //         .then((response) => {
-    //             if (response.data.서버세션확인데이터위치) {
-    //                 setIsAuthenticated(true);
-    //                 setUser(response.data.유저);
-    //             }
-    //         })
-    //         .catch((error) => {
-    //             console.error('로그인 상태 확인 중 오류 발생:', error);
-    //         });
-    // }, []); 세션용 로그인 유지
+    const [isLogin, setIsLogin] = useState<boolean>(() => {
+        const token = localStorage.getItem('jwt');
+        return token ? !isTokenExpired(token) : false;
+    });
 
     function handleMagnifierClick() {
         setisMagnifierClicked(!isMagnifierClicked);
@@ -99,16 +110,30 @@ function Header() {
         }
     }
 
+    console.log('Member ID:', memberId);
+    console.log('User Data:', user);
+
+    useEffect(() => {
+        if (memberId && !user) {
+            dispatch(fetchUserById(memberId));
+        }
+    }, [memberId, user, dispatch]);
+
     return (
         <>
             <HeaderStyle>
                 <Headerwrap>
                     <LogoStyle>
-                        <div>일요시네마</div>
+                        <Link to="/">
+                            <div>일요시네마</div>
+                        </Link>
                     </LogoStyle>
                     <CountryStyle>
                         <DomesticStyle>국내</DomesticStyle>
                         <OverseasStyle>해외</OverseasStyle>
+                        <DomesticStyle>
+                            <Link to="/submain">임시toSub</Link>
+                        </DomesticStyle>
                     </CountryStyle>
                     <MagnifierStyle onClick={handleMagnifierClick}>
                         <img src="/Magnifier_white.png" alt="" style={{ width: '100%', height: '100%' }} />
@@ -127,7 +152,7 @@ function Header() {
                         )}
                         {isLogin && (
                             <>
-                                <GeneralStyle>${}</GeneralStyle>
+                                <GeneralStyle>Hello, {user?.name}!</GeneralStyle>
                                 <LoginbuttonStyle onClick={onClickLogout}>로그아웃</LoginbuttonStyle>
                             </>
                         )}
@@ -225,6 +250,7 @@ const SearchbarStyle = styled.form<{ $isOpen: boolean }>`
     ${FlexCentercss}
     flex-grow: 1;
     margin-left: 10px;
+    margin-right: 10px;
     display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
 `;
 
