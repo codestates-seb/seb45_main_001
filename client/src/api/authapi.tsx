@@ -19,29 +19,6 @@ type ApiConfig<D> = {
     data?: D;
 };
 
-// T와 D의 any는 아직 data가 확정되지 않았기 때문에 나중에 구체적인 type으로 바꿀 것
-
-// export function apiCall<T = any, D = any>(config: ApiConfig<D>): Promise<T> {
-//     const fullUrl = `${jsonUrl}/${config.url}`;
-//     console.log('api:', fullUrl);
-
-//     return axios({
-//         method: config.method,
-//         url: fullUrl,
-//         data: config.data,
-//         headers,
-//     })
-//         .then((response: AxiosResponse<T>) => {
-//             console.log('Response Data:', response.data);
-//             console.log('Response received:', response);
-//             return response.data;
-//         })
-//         .catch((error: AxiosError) => {
-//             console.log('Error occurred:', error);
-//             throw error;
-//         });
-// }
-
 export function apiCall<T = any, D = any>(config: ApiConfig<D>): Promise<AxiosResponse<T>> {
     const fullUrl = `${jsonUrl}/${config.url}`;
     console.log('api:', fullUrl);

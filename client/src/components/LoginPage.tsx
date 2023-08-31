@@ -77,7 +77,6 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal , isLogin, set
                 localStorage.setItem('jwt', response.data.accessToken);
                 localStorage.setItem("memberid",response.data.user.id)
                 setIsLogin(true);
-                sessionStorage.setItem('isLogin', 'true');
                 onClickToggleModal?.();
                 console.log('로그인 성공', response);
             })
