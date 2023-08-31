@@ -1,1 +1,117 @@
-export {};
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { apiCall } from '../api/authapi';
+
+// any는 나중에 api의 data 들어오는 거 보고 바꿀 것
+
+interface DataState {
+    items: any[];
+    question: any | null;
+    users: { [key: string]: any };
+    answers: any[];
+    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+}
+
+interface FetchPayload {
+    path: string;
+    data?: any; // post, patch 등에서 사용될 데이터
+}
+
+export const fetchData = createAsyncThunk<any, FetchPayload>('data/fetchData', async (payload) => {
+    return await apiCall({
+        method: 'GET',
+        url: payload.path,
+    });
+});
+
+export const postData = createAsyncThunk<any, FetchPayload>('data/postData', async (payload) => {
+    return await apiCall({
+        method: 'POST',
+        url: payload.path,
+        data: payload.data,
+    });
+});
+
+export const deleteData = createAsyncThunk<any, FetchPayload>('data/deleteData', async (payload) => {
+    return await apiCall({
+        method: 'DELETE',
+        url: payload.path,
+        data: payload.data,
+    });
+});
+
+export const patchData = createAsyncThunk<any, FetchPayload>('data/patchData', async (payload) => {
+    return await apiCall({
+        method: 'POST',
+        url: payload.path,
+        data: payload.data,
+    });
+});
+
+export const fetchUserById = createAsyncThunk('data/fetchUserById', async (memberId: string) => {
+    const response = await apiCall({
+        method: 'GET',
+        url: `users/${memberId}`,
+    });
+    return { memberId, user: response.data };
+});
+
+export const fetchAnswersByQuestionId = createAsyncThunk('data/fetchAnswersByQuestionId', async (questionId: string) => {
+    const response = await apiCall({
+        method: 'GET',
+        url: `questions/${questionId}/answers`,
+    });
+    return response;
+});
+
+const initialState: DataState = {
+    items: [],
+    question: null,
+    users: {},
+    answers: [],
+    status: 'idle',
+};
+
+export const dataSlice = createSlice({
+    name: 'data',
+    initialState: initialState,
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchUserById.fulfilled, (state, action: PayloadAction<any>) => {
+                const { memberId, user } = action.payload;
+                state.users[memberId] = user; // 사용자 ID를 키로 사용하여 사용자 정보 저장
+            })
+            .addCase(fetchData.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchData.fulfilled, (state, action: PayloadAction<any>) => {
+                state.status = 'succeeded';
+                if (Array.isArray(action.payload)) {
+                    state.items = action.payload; // 배열 응답을 items에 저장
+                } else {
+                    state.question = action.payload; // 객체 응답을 question에 저장
+                }
+            })
+            .addCase(fetchAnswersByQuestionId.fulfilled, (state, action: PayloadAction<any>) => {
+                state.answers = action.payload;
+            })
+            .addCase(patchData.fulfilled, (state, action: PayloadAction<any>) => {
+                const updatedPoint = action.payload.point;
+                state.question.point = updatedPoint;
+            })
+            .addCase(fetchData.rejected, (state) => {
+                state.status = 'failed';
+            })
+            .addCase(deleteData.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(deleteData.fulfilled, (state, action: PayloadAction<any>) => {
+                state.status = 'succeeded';
+            })
+            .addCase(deleteData.rejected, (state, action: PayloadAction<any>) => {
+                state.status = 'failed';
+            });
+    },
+});
+
+export default dataSlice.reducer;

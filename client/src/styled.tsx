@@ -9,4 +9,9 @@ export const GlobalStyle = createGlobalStyle`
         font-family:'';
     }
 
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
 `;
