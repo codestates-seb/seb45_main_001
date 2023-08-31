@@ -1,6 +1,6 @@
 import { styled } from 'styled-components';
 import logo from '../assets/port.jpg';
-import Header from './Header'
+// import Header from './Header'
 
 const SubcontainerStyle = styled.div`
     position: relative;
@@ -9,27 +9,22 @@ const SubcontainerStyle = styled.div`
     height: 100vh;
     margin: 0 auto;
     flex-direction: column;
-    background-color: #1D1D1D;
+    background-color: #1d1d1d;
 `;
-
 
 const PosterStyle = styled.div`
     display: flex;
     height: 550px;
     background-image: url(${logo});
-    background-size : cover;
+    background-size: cover;
     background-position: center 18%;
-`
-
+`;
 
 const Submain = () => {
     return (
         <>
             <SubcontainerStyle>
-            <PosterStyle>
-                <Header />
-          
-                </PosterStyle>
+                <PosterStyle>{/* <Header /> */}</PosterStyle>
             </SubcontainerStyle>
         </>
     );
