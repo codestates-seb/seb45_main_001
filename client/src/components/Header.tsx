@@ -8,8 +8,8 @@ const HeaderStyle = styled.header`
     display: flex;
     align-items: center;
     z-index: 1001;
-    background-color: #1d1d1d;
-    /* background-color: transparent; */
+    /* background-color: #1d1d1d; */
+    background-color: transparent;
     /* 백그라운드는 나중에 투명으로 바꿀 것 */
     /* position: fixed; */
 `;
