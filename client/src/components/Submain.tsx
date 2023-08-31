@@ -4,7 +4,6 @@ import logo2 from '../assets/오펜포스터.jpg';
 import Header from './Header'
 
 const SubcontainerStyle = styled.div`
-    position: relative;
     width: 100%;
     display: flex;
     height: 100vh;
@@ -27,6 +26,10 @@ const MainStyle = styled.div`
     padding: 70px 30px 60px 0;
     align-items: center;
     justify-content: center;
+    @media (max-width: 780px) {
+        position: relative;
+        left: 25%;
+    }
 `
 const Moivetextform = styled.div`
     display: flex;
@@ -41,6 +44,9 @@ const Movidetail = styled.div`
     display: flex;
     flex-direction: column;
     padding: 8px 60px ;
+    @media (max-width: 780px) {
+        padding: 8px 30px;
+}
 `
 
 const TextForm = styled.div`
@@ -50,11 +56,13 @@ const TextForm = styled.div`
 const Texth3 = styled.span`
     font-size: 30px;
     color: white;
+    @media (max-width: 780px) {
+        font-size: 20px;
+}
 `
 const Buttondiv = styled.span`
     background-color: red;
     display: inline-block;
-    min-width: 30px;
     height: 26px;
     padding: 0px 10px;
     margin: 5px 0 0 8px;
@@ -81,17 +89,20 @@ const TextForm2 = styled.div`
 const Textdetail1 = styled.div`
     display: flex;
     flex-direction: column;
-    max-width: 60%;
     margin: 15px 60px 0 0px;
 `
 const Text5 = styled.p`
     font-size: 14px;
+    width: 150px;
     color: white;
     margin-bottom: 10px;
 `
+const Ulform = styled.div`
+    display: flex;
+    flex-direction: column;
+`
 
 const Ultap = styled.ul`
-    width: 1100px;
     margin: 0 auto;
     list-style: none;
     margin-block-start: 1em;
@@ -103,7 +114,7 @@ const Ultap = styled.ul`
 const Litap = styled.li`
     list-style: none;
     margin: 0px 75px;
-    font-size: 25px;
+    font-size: 20px;
     width: 150px;
     height: 50px;
     text-align: center;
@@ -129,12 +140,18 @@ const Litap = styled.li`
         border-radius: 30px;
         color: black;
     }
+    @media (max-width: 780px) {
+        width : 100px;
+        font-size: 15px;
+    }   
 `;
 
 const Line3tap = styled.div`
     border-bottom: 1px solid white;
     margin-top: 10px;
     width: 780px;
+    position: relative;
+    left: 60px;
 `
 
 
@@ -170,12 +187,14 @@ const Submain = () => {
                     </TextForm2>
                     </Movidetail>
                 </Moivetextform>
+                <Ulform>
                 <Ultap>
                     <Litap>주요 정보</Litap>
                     <Litap>영상/포토</Litap>
                     <Litap>댓글/평점</Litap>
                 </Ultap>
                 <Line3tap />
+                </Ulform>
                 </MainStyle>
             </SubcontainerStyle>
         </>
