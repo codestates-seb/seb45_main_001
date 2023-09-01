@@ -33,5 +33,4 @@ public class BoxOfficeMovie {
     private String audiAcc; // "누적 관객수"
 
 
-
 }

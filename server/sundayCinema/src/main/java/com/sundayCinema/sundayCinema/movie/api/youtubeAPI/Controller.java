@@ -1,4 +1,4 @@
-package com.sundayCinema.sundayCinema;
+package com.sundayCinema.sundayCinema.movie.api.youtubeAPI;
 
 import com.sundayCinema.sundayCinema.movie.api.youtubeAPI.YoutubeService;
 import org.springframework.beans.factory.annotation.Autowired;
