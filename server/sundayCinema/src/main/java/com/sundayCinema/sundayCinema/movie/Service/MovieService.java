@@ -1,6 +1,6 @@
 package com.sundayCinema.sundayCinema.movie.Service;
 
-import com.sundayCinema.sundayCinema.movie.openAPI.OpenApiService;
+import com.sundayCinema.sundayCinema.movie.api.KOBIS.OpenApiService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 

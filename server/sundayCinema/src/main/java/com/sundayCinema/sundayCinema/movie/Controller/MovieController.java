@@ -1,7 +1,6 @@
 package com.sundayCinema.sundayCinema.movie.Controller;
 
-import com.sundayCinema.sundayCinema.movie.openAPI.OpenApiService;
-import org.aspectj.apache.bcel.classfile.Module;
+import com.sundayCinema.sundayCinema.movie.api.KOBIS.OpenApiService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
