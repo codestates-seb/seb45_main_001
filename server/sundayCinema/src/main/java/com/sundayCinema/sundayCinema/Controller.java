@@ -1,6 +1,6 @@
 package com.sundayCinema.sundayCinema;
 
-import com.sundayCinema.sundayCinema.youtubeAPI.YoutubeService;
+import com.sundayCinema.sundayCinema.movie.api.youtubeAPI.YoutubeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
