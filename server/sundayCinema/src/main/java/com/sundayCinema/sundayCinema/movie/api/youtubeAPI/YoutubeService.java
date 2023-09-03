@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class YoutubeService {
     private String youtubeApiKey;
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
-    public String getMovieReview(String movieName) throws GeneralSecurityException, IOException {
+    public List<String> getMovieReview(String movieName) throws GeneralSecurityException, IOException {
         YouTube youtubeService = getService();
 
         YouTube.Search.List searchRequest = youtubeService.search().list(Collections.singletonList("id"));
@@ -37,11 +38,18 @@ public class YoutubeService {
         SearchListResponse response = searchRequest.execute();
         List<SearchResult> searchResults = response.getItems();
 
+        List<String> videoIds = new ArrayList<>();
+
         if (searchResults != null && !searchResults.isEmpty()) {
-            return searchResults.get(0).getId().getVideoId();
+            int maxResults = Math.min(3, searchResults.size()); // 최대 3개 영상 가져오도록 설정
+
+            for (int i = 0; i < maxResults; i++) {
+                String videoId = searchResults.get(i).getId().getVideoId();
+                videoIds.add(videoId);
+            }
         }
 
-        return null;
+        return videoIds;
     }
 
     private YouTube getService() throws GeneralSecurityException, IOException {

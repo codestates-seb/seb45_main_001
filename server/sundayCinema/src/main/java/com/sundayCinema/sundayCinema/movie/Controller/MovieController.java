@@ -1,6 +1,7 @@
 package com.sundayCinema.sundayCinema.movie.Controller;
 
-import com.sundayCinema.sundayCinema.movie.api.KOBIS.OpenApiService;
+import com.sundayCinema.sundayCinema.movie.api.KMDB.KdmbService;
+import com.sundayCinema.sundayCinema.movie.api.KOBIS.KobisService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,24 +10,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping
 public class MovieController {
 
-    private final OpenApiService openApiService;
+    private final KobisService openApiService;
+    private final KdmbService kdmbService;
 
-    public MovieController(OpenApiService openApiService) {
+    public MovieController(KobisService openApiService, KdmbService kdmbService) {
         this.openApiService = openApiService;
+        this.kdmbService = kdmbService;
     }
 
-    /*
-             1.GET 홈화면(메인페이지)에서 Top 10 박스오피스 출력
-                  "id" : 1,
-                    "movieNm" : "오펜하이머",
-                     "poster_image_url" : "~~~~~",
-                      "trailer_url" : "~~~~~~",
-                         "rank" : "1",
-                         "region" : "해외"
-
-         */
-    @GetMapping("/")
-    public void test(){
+    @GetMapping("/test")
+    public void test() throws Exception {
         openApiService.dailyBoxOffice();
+    }
+    @GetMapping("/test2")
+    public void test2() throws Exception {
+        kdmbService.generateKdmb("오펜하이머");
     }
 }
