@@ -1,5 +1,6 @@
 package com.sundayCinema.sundayCinema.movie.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sundayCinema.sundayCinema.comment.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,12 +16,13 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BoxOfficeMovie {
     @Id
     private long boxOfficeId;
     /*박스오피스 조회 일자*/
     @Column
-    private String showRange;
+    private String openDt;
     /*해당일자의 박스오피스 순위*/
     @Column
     private String rank;
@@ -31,6 +33,5 @@ public class BoxOfficeMovie {
     private String movieNm;// "영화명(국문)"
     @Column(nullable = false)
     private String audiAcc; // "누적 관객수"
-
 
 }
