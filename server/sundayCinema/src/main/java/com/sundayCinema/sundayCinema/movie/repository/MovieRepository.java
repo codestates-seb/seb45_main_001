@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     Movie findByMovieNm(String movieNm);
+    Movie findByMovieCd(String movieCd);
 }
