@@ -3,10 +3,10 @@ import { styled } from 'styled-components';
 export const FooterStyle = styled.footer`
 
     display: block;
-    height: 200px;
     /* position: fixed; */
     bottom: 0;
     width: 100%;
+    height: 200px;
     display: flex;
     justify-content: center;
     align-items: center;
