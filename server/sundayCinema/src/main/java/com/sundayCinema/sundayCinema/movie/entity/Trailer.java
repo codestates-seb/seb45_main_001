@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -14,7 +12,12 @@ import javax.persistence.Id;
 @NoArgsConstructor
 public class Trailer {
     @Id
-    private String trailerId;
+    private long trailerId;
+    @Column
+    private String vodClass;
     @Column
     private String trailer_url;
+    @ManyToOne   //
+    @JoinColumn(name = "MOVIE_ID")
+    private Movie movie;
 }

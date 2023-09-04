@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class MovieAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long AuditId;
+    private long auditId;
     @Column
     private String auditNo;
     @Column
