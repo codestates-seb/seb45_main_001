@@ -206,9 +206,12 @@ const Banner = () => {
           </BannerTitle>
 
           <BannerButtonBox>
+            { movie.videos && movie.videos.results.length > 0 ? (
             <button onClick={() => setIsClicked(true)}>
               Play
             </button>
+          )  : null
+          }
           </BannerButtonBox>
 
           <BannerDescription>
