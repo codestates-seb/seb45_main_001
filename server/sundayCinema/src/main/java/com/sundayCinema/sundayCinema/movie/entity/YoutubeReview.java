@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -14,7 +12,15 @@ import javax.persistence.Id;
 @NoArgsConstructor
 public class YoutubeReview {
     @Id
-    private String reviewId;
+    private long reviewId;
+    @Column
+    private String youtubeChannel;
     @Column
     private String youtubeReview_url;
+    @Column
+    private String thumbnail;
+
+    @ManyToOne   //
+    @JoinColumn(name = "MOVIE_ID")
+    private Movie movie;
 }

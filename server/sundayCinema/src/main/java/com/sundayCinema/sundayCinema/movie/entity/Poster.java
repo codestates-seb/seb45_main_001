@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -14,8 +12,10 @@ import javax.persistence.Id;
 @NoArgsConstructor
 public class Poster {
     @Id
-    private String posterId;
+    private long posterId;
     @Column
     private String poster_image_url;
-
+    @ManyToOne   //
+    @JoinColumn(name = "MOVIE_ID")
+    private Movie movie;
 }
