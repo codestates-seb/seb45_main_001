@@ -45,6 +45,8 @@ public class MovieController {
     @GetMapping("/test")
     public void test() throws Exception {
         kobisService.dailyBoxOffice();
+        kobisService.dailyKoreaBoxOffice();
+        kobisService.dailyForeignBoxOffice();
     }
     @GetMapping("/test2")
     public void test2() throws Exception {
@@ -78,14 +80,6 @@ public class MovieController {
 
     @GetMapping("/top10") //탑텐 무비 json 형태로 보내준다.
     public ResponseEntity getTop10Movies() {
-      /*
-      있어야 할 정보
-      1. 무비서비스에서 탑텐 객체를 db에서 가져옴. 영화 제목까지도 추출.
-      2. 무비서비스에서 영화 제목을 통해 영화 객체를 가져온다.
-      3. 무비서비스에서 영화 객체를 통해 포스터 객체를 가져온다.
-      4. dto와 매퍼를 통해 메인 페이지로 보낼 json 형태의 데이터를 가공한다.
-      5. 만든 데이터를 리턴한다.
-       */
         List<BoxOfficeMovieDto> boxOfficeMovieDtos= new ArrayList<>();
        List<BoxOfficeMovie> boxs= movieService.loadBoxOffice(); // 저장 방식을 업데이트가 아닌 누정 방식을 택할 경우 날짜 기준으로 불러올 예정
        for(int i=0; i<boxs.size(); i++){
@@ -97,7 +91,9 @@ public class MovieController {
            BoxOfficeMovieDto boxOfficeMovieDto= mapper.boxOfficeResponseDto(box,poster);
            boxOfficeMovieDtos.add(boxOfficeMovieDto);
        }
-        return new ResponseEntity(boxOfficeMovieDtos, HttpStatus.OK);
+        MainPageDto<List<BoxOfficeMovieDto>> mainPageDto = new MainPageDto<>();
+        mainPageDto.setBoxofficeList(boxOfficeMovieDtos);
+        return new ResponseEntity<>(mainPageDto, HttpStatus.OK);
     }
 
 //    @GetMapping("/top10Korean")
