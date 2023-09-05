@@ -1,23 +1,20 @@
 package com.sundayCinema.sundayCinema.movie.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sundayCinema.sundayCinema.comment.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class BoxOfficeMovie {
+@Table(name = "KoreaBoxOffice")
+public class KoreaBoxOffice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long boxOfficeId;
+    private long KoreaBoxOfficeId;
     /*박스오피스 조회 일자*/
     @Column
     private String openDt;
@@ -32,4 +29,11 @@ public class BoxOfficeMovie {
     @Column(nullable = false)
     private String audiAcc; // "누적 관객수"
 
+    public KoreaBoxOffice(BoxOfficeMovie boxOfficeMovie) {
+        this.openDt = boxOfficeMovie.getOpenDt();
+        this.rank = boxOfficeMovie.getRank();
+        this.movieCd = boxOfficeMovie.getMovieCd();
+        this.movieNm = boxOfficeMovie.getMovieNm();
+        this.audiAcc = boxOfficeMovie.getAudiAcc();
+    }
 }

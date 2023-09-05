@@ -6,8 +6,6 @@ import com.sundayCinema.sundayCinema.movie.entity.Movie;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @Setter
