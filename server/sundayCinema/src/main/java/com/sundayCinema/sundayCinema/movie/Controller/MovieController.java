@@ -8,7 +8,6 @@ import com.sundayCinema.sundayCinema.movie.dto.MainPageDto;
 import com.sundayCinema.sundayCinema.movie.entity.BoxOfficeMovie;
 import com.sundayCinema.sundayCinema.movie.entity.Movie;
 import com.sundayCinema.sundayCinema.movie.entity.Poster;
-import com.sundayCinema.sundayCinema.movie.entity.Trailer;
 import com.sundayCinema.sundayCinema.movie.mapper.BoxOfficeMovieMapper;
 import com.sundayCinema.sundayCinema.movie.repository.BoxOfficeMovieRepository;
 import org.springframework.http.HttpStatus;
@@ -44,9 +43,9 @@ public class MovieController {
 
     @GetMapping("/test")
     public void test() throws Exception {
-        kobisService.dailyBoxOffice();
-        kobisService.dailyKoreaBoxOffice();
-        kobisService.dailyForeignBoxOffice();
+        kobisService.dailyBoxOffice("");
+        kobisService.dailyBoxOffice("K");
+        kobisService.dailyBoxOffice("F");
     }
     @GetMapping("/test2")
     public void test2() throws Exception {
