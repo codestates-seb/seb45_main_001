@@ -30,7 +30,7 @@ public class BoxOfficeFactory {
             foreignBoxOfficeRepository.save(createForeignBoxOffice(boxOfficeMovie));
         }
     }
-    ///git 
+    ///git
     private KoreaBoxOffice createKoreaBoxOffice(BoxOfficeMovie boxOfficeMovie) {
         KoreaBoxOffice koreaBoxOffice = new KoreaBoxOffice(boxOfficeMovie);
         return koreaBoxOffice;
