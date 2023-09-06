@@ -11,7 +11,7 @@ interface LoginPageProps {
 }
 
 function SignupPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, setIsLogin }: LoginPageProps) {
-    const [name, setName] = useState<string>('');
+    const [nickName, setNickName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [nameError, setNameError] = useState<string>('');
@@ -19,7 +19,7 @@ function SignupPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, set
     const [emailError, setEmailError] = useState<string>('');
 
     function isNameValid(name: string): boolean {
-        const regex = /^[가-힣]{2,5}$/;
+        const regex = /^[가-힣]{2,8}$/;
         return regex.test(name);
     }
 
@@ -54,12 +54,12 @@ function SignupPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, set
             } else {
                 setPasswordError('');
             }
-        } else if (name === 'name') {
-            setName(value);
+        } else if (name === 'nickName') {
+            setNickName(value);
             if (value === '') {
                 setNameError('');
             } else if (!isNameValid(value)) {
-                setNameError('2~5글자의 한글이어야 합니다.');
+                setNameError('2~8글자의 한글이어야 합니다.');
             } else {
                 setNameError('');
             }
@@ -72,27 +72,26 @@ function SignupPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, set
         try {
             onClickToggleModal?.();
             onClickToggleSignupModal?.();
-        }
-        catch (error) {
+        } catch (error) {
             console.log('썸띵 롱', error);
         }
-    }
+    };
 
     const handleSubmit = () => {
         const myId = {
-            name,
+            nickName,
             email,
             password,
         };
         console.log('회원가입 data 슛', myId);
         apiCall({
             method: 'POST',
-            url: 'register',
+            url: 'host/signup',
             data: myId,
         })
             .then((response) => {
                 onClickToggleSignupModal?.();
-                handlelogintosignup?.()
+                handlelogintosignup?.();
                 console.log('회원가입 성공', response);
             })
             .catch((error) => {
@@ -109,8 +108,8 @@ function SignupPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, set
                         <LoginModallogin>회원가입</LoginModallogin>
                         <LoginModalinput
                             placeholder="이름"
-                            name="name"
-                            value={name}
+                            name="nickName"
+                            value={nickName}
                             onChange={handleInputChange}
                         ></LoginModalinput>
                         <LoginModalinput
@@ -131,7 +130,13 @@ function SignupPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, set
                             {emailError && <LoginModalerror>{emailError}</LoginModalerror>}
                             {passwordError && <LoginModalerror>{passwordError}</LoginModalerror>}
                         </LoginModalerrorwrap>
-                        <LoginModalbuttonin onClick={handleSubmit}>회원가입</LoginModalbuttonin>
+                        <LoginModalbuttonin
+                            disabled={!isNameValid(nickName) || !isEmailValid(email) || !isPasswordValid(password)}
+                            $isValid={isNameValid(nickName) && isEmailValid(email) && isPasswordValid(password)}
+                            onClick={handleSubmit}
+                        >
+                            회원가입
+                        </LoginModalbuttonin>
                         <LoginModalbuttonup onClick={handlelogintosignup}>로그인</LoginModalbuttonup>
                         <LoginModalorwrap>
                             <LoginModalor>OR</LoginModalor>
@@ -232,7 +237,7 @@ const LoginModalerror = styled.div`
     text-align: center;
 `;
 
-const LoginModalbuttonin = styled.button`
+const LoginModalbuttonin = styled.button<{ $isValid: boolean }>`
     font-size: 14px;
     font-weight: 500;
     color: white;
@@ -240,14 +245,16 @@ const LoginModalbuttonin = styled.button`
     margin-bottom: 4px;
     border: 0px solid black;
     border-radius: 20px;
-    background-color: #04d218;
+    background-color: ${({ $isValid }) => ($isValid ? '#04d218' : '#838383')};
     ${LoginModalwidth}
     height: 42px;
     cursor: pointer;
 
-    &:hover {
-        background-color: #309e3b;
-    }
+    ${({ $isValid }) => $isValid && css`
+        &:hover {
+            background-color: #95ffa0;
+        }
+    `}
 `;
 
 const LoginModalbuttonup = styled.button`

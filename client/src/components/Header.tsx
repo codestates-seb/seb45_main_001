@@ -7,17 +7,19 @@ import { fetchUserById } from '../slice/authslice';
 import { RootState } from '../store/authstore';
 import type { AppDispatch } from '../store/authstore';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { lastUrl } from '../api/authapi';
 
 const HeaderStyle = styled.header`
-    // width: 100%;
-    // height: 56px;
-    // display: flex;
-    // align-items: center;
-    // z-index: 1001;
-    // /* background-color: #1d1d1d; */
-    // background-color: transparent;
-    // /* 백그라운드는 나중에 투명으로 바꿀 것 */
-    // position: fixed;
+    /* width: 100%;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    z-index: 1001;
+    background-color: #1d1d1d;
+    background-color: transparent;
+    백그라운드는 나중에 투명으로 바꿀 것
+    position: fixed; */
     position: fixed;
     top: 0;
     width: 100%;
@@ -40,22 +42,38 @@ const Headerwrap = styled.div`
     align-items: center;
 `;
 
-// const [서버세션확인데이터위치, set서버세션확인데이터위치] = useState(false);
-// const [유저, set유저] = useState(null);
+// const [isLogin, setIsLogin] = useState<boolean>(false);
+// const [sessionUser, setSessionUser] = useState<any>(null); //받아오는 데이타의 세션유저이름
 
 // useEffect(() => {
 //     axios
-//         .get('세션로그인유지엔드포인트')
+//         .get(`${lastUrl}/check-session`)
 //         .then((response) => {
-//             if (response.data.서버세션확인데이터위치) {
-//                 setIsAuthenticated(true);
-//                 setUser(response.data.유저);
+//             if (response.data.isLogin) {
+//                 setIsLogin(true);
+//                 setSessionUser(response.data.sessionUser);
 //             }
 //         })
 //         .catch((error) => {
 //             console.error('로그인 상태 확인 중 오류 발생:', error);
 //         });
-// }, []); 세션용 로그인 유지
+// }, []);
+
+// const onClickLogout = () => {
+//     // 서버에 로그아웃 요청을 보냅니다.
+//     axios
+//         .post(`${lastUrl}/api/logout`)
+//         .then((response) => {
+//             if (response.data.success) {
+//                 setIsLogin(false);
+//                 setSessionUser(null);
+//                 console.log('Successfully logged out');
+//             }
+//         })
+//         .catch((error) => {
+//             console.error('Error during logout:', error);
+//         });
+// };
 
 function Header() {
     const dispatch: AppDispatch = useDispatch();
@@ -74,11 +92,20 @@ function Header() {
     const users = useSelector((state: RootState) => state.data.users);
     const memberId = localStorage.getItem('memberid');
     const user = memberId ? users?.[memberId] : undefined;
+    const token = localStorage.getItem('jwt');
 
     const [isLogin, setIsLogin] = useState<boolean>(() => {
-        const token = localStorage.getItem('jwt');
         return token ? !isTokenExpired(token) : false;
     });
+
+    console.log('Member ID:', memberId);
+    console.log('User Data:', user);
+
+    useEffect(() => {
+        if (memberId && !user) {
+            dispatch(fetchUserById(memberId));
+        }
+    }, [memberId, user, dispatch]);
 
     function handleMagnifierClick() {
         setisMagnifierClicked(!isMagnifierClicked);
@@ -121,15 +148,6 @@ function Header() {
         }
     }
 
-    console.log('Member ID:', memberId);
-    console.log('User Data:', user);
-
-    useEffect(() => {
-        if (memberId && !user) {
-            dispatch(fetchUserById(memberId));
-        }
-    }, [memberId, user, dispatch]);
-
     return (
         <>
             <HeaderStyle>
@@ -144,6 +162,7 @@ function Header() {
                         <OverseasStyle>해외</OverseasStyle>
                         <DomesticStyle>
                             <Link to="/submain">임시toSub</Link>
+                            <Link to="/mypage">임시toMypage</Link>
                         </DomesticStyle>
                     </CountryStyle>
                     <MagnifierStyle onClick={handleMagnifierClick}>
@@ -163,7 +182,7 @@ function Header() {
                         )}
                         {isLogin && (
                             <>
-                                <GeneralStyle>Hello, {user?.name}!</GeneralStyle>
+                                <GeneralStyle>Hello, !</GeneralStyle>
                                 <LoginbuttonStyle onClick={onClickLogout}>로그아웃</LoginbuttonStyle>
                             </>
                         )}
