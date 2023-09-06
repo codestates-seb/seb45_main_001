@@ -22,7 +22,7 @@ public class Comment extends Auditable {
     private String content;
 
     @Column(nullable = false)
-    private int Rank;
+    private int Score;
 
 
     //adsfdasf

@@ -1,8 +1,4 @@
 spring:
-  data:
-    elasticsearch:
-      cluster-nodes: localhost:9200
-      cluster-name: my-cluster
   h2:
     console:
       enabled: true
@@ -11,8 +7,8 @@ spring:
     url: jdbc:h2:mem:test
   jpa:
     hibernate:
-      ddl-auto: create
-    show-sql: true
+      ddl-auto: create-drop
+    show-sql: off
     properties:
       hibernate:
         format_sql: true
@@ -24,3 +20,5 @@ spring:
             clientId: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-ID}
             clientSecret: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-SECRET}
   youtubeApiKey: ${YOUTUBE_API_KEY}
+  KdmbApiKey: ${KDMB_API_KEY}
+  KobisApiKEY: ${KOBIS_API_KEY}
