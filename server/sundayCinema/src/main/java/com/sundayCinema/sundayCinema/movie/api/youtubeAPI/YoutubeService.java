@@ -6,15 +6,16 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
-import com.sundayCinema.sundayCinema.movie.entity.YoutubeReview;
-import com.sundayCinema.sundayCinema.movie.repository.MovieRepository;
-import com.sundayCinema.sundayCinema.movie.repository.YoutubeReviewRepository;
+import com.sundayCinema.sundayCinema.movie.entity.movieMedia.YoutubeReview;
+import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
+import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.YoutubeReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,50 +35,66 @@ public class YoutubeService {
         this.movieRepository = movieRepository;
     }
 
-    public void getMovieReview(String movieNm) throws GeneralSecurityException, IOException {
+    public List<SearchResult> searchYoutube(String movieNm, String keyword) throws GeneralSecurityException, IOException {
         YouTube youtubeService = getService();
 
-        YouTube.Search.List searchRequest = youtubeService.search().list(Collections.singletonList("id"));
+        YouTube.Search.List searchRequest = youtubeService.search().list(Collections.singletonList("id, snippet"));
         searchRequest.setKey(youtubeApiKey);
-        String query = movieNm + " 리뷰";
+        String query = movieNm + " " + keyword;
         searchRequest.setQ(query);  // 검색어 설정
         searchRequest.setRegionCode("KR");
         searchRequest.setTopicId("/m/02vxn");
         searchRequest.setType(Collections.singletonList("video"));
-        searchRequest.setVideoDuration("medium");
+//        searchRequest.setVideoDuration("medium");
         searchRequest.setVideoEmbeddable("true");
         searchRequest.setOrder("relevance");//관련성 높은 순
-
+        log.info(query);
         SearchListResponse response = searchRequest.execute();
         List<SearchResult> searchResults = response.getItems();
-        log.info(String.valueOf(searchResults.get(0)));
 
+        return searchResults;
+    }
 
+    public String extractYoutube(List<SearchResult> searchResults) {
+        List<String> resultList = new ArrayList<>();
         if (searchResults != null && !searchResults.isEmpty()) {
             int maxResults = Math.min(3, searchResults.size()); // 최대 3개 영상 가져오도록 설정
 
             for (int i = 0; i < maxResults; i++) {
                 SearchResult searchResult = searchResults.get(i);
-
+                log.info(String.valueOf(searchResult));
                 String videoId = searchResult.getId().getVideoId();
-//                String thumbnailUrl = searchResult.getSnippet().getThumbnails().getDefault().getUrl();
-//                String channelId = searchResult.getSnippet().getChannelId();
-//                log.info(thumbnailUrl);
-//                log.info(channelId);
-                YoutubeReview review = new YoutubeReview();
-                if (youtubeReviewRepository.findMaxReviewId() == null) {
-                    review.setReviewId(0);
-
-                } else {
-                    long youtubeId = youtubeReviewRepository.findMaxReviewId();
-                    review.setReviewId(youtubeId+1);
-                }
-                review.setYoutubeReview_url(videoId);
-//                    review.setYoutubeChannel(channelId);
-//                    review.setThumbnail(thumbnailUrl);
-                review.setMovie(movieRepository.findByMovieNm(movieNm));
-                youtubeReviewRepository.save(review);
+                String thumbnailUrl = searchResult.getSnippet().getThumbnails().getDefault().getUrl();
+                String channelId = searchResult.getSnippet().getChannelId();
+                String videoInfo = videoId + "|" + thumbnailUrl + "|" + channelId;
+                resultList.add(videoInfo);
             }
+        }
+        // 각각의 정보를 "|"로 구분하여 하나의 문자열로 결합
+        return String.join(",", resultList);
+    }
+
+    public void saveYoutube(String findYoutubeResult, String movieNm) {
+        String[] splitResults = findYoutubeResult.split(",");
+        for (String result : splitResults) {
+            String[] splitResult = result.split("\\|");
+            String videoId = splitResult[0];
+            String channelId = splitResult[1];
+            String thumbnailUrl = splitResult[2];
+
+            YoutubeReview review = new YoutubeReview();
+            if (youtubeReviewRepository.findMaxReviewId() == null) {
+                review.setReviewId(0);
+
+            } else {
+                long youtubeId = youtubeReviewRepository.findMaxReviewId();
+                review.setReviewId(youtubeId + 1);
+            }
+            review.setYoutubeReview_url("https://www.youtube.com/watch?v=" + videoId);
+            review.setYoutubeChannel("https://www.youtube.com/channel/" + channelId);
+            review.setThumbnail(thumbnailUrl);
+            review.setMovie(movieRepository.findByMovieNm(movieNm));
+            youtubeReviewRepository.save(review);
         }
     }
 

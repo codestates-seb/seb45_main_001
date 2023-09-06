@@ -11,7 +11,7 @@ public class CommentDto {
     public static class CommentResponseDto {
         private long commentId;
         private String content;
-        private int rank;
+        private int score;
 
         //  private long movieId;
         //  private String nickname;
@@ -29,7 +29,7 @@ public class CommentDto {
     @Setter
     public static class CommentPostDto {
         private String content;
-        private int rank;
+        private int score;
     }
 
     @Getter
@@ -37,7 +37,7 @@ public class CommentDto {
     public static class CommentPatchDto {
         private long CommentId;
         private String content;
-        private int rank;
+        private int score;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime modifiedAt;
     }

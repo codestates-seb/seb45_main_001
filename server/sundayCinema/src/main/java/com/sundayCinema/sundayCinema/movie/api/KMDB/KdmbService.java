@@ -3,11 +3,17 @@ package com.sundayCinema.sundayCinema.movie.api.KMDB;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sundayCinema.sundayCinema.movie.entity.Plots;
-import com.sundayCinema.sundayCinema.movie.entity.Poster;
-import com.sundayCinema.sundayCinema.movie.entity.StillCut;
-import com.sundayCinema.sundayCinema.movie.entity.Trailer;
-import com.sundayCinema.sundayCinema.movie.repository.*;
+import com.sundayCinema.sundayCinema.movie.api.youtubeAPI.YoutubeService;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
+import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Plots;
+import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Poster;
+import com.sundayCinema.sundayCinema.movie.entity.movieMedia.StillCut;
+import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Trailer;
+import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
+import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.PlotRepository;
+import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.PosterRepository;
+import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.StillCutRepository;
+import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.TrailerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,42 +43,54 @@ public class KdmbService {
     private final PlotRepository plotRepository;
     private final MovieRepository movieRepository;
 
+    private final YoutubeService youtubeService;
+
     public KdmbService(PosterRepository posterRepository, StillCutRepository stillCutRepository,
-                       TrailerRepository trailerRepository, PlotRepository plotRepository, MovieRepository movieRepository) {
+                       TrailerRepository trailerRepository, PlotRepository plotRepository,
+                       MovieRepository movieRepository, YoutubeService youtubeService) {
         this.posterRepository = posterRepository;
         this.stillCutRepository = stillCutRepository;
         this.trailerRepository = trailerRepository;
         this.plotRepository = plotRepository;
         this.movieRepository = movieRepository;
+        this.youtubeService = youtubeService;
     }
 
-    public void generateKdmb(String movieNm, String openDt) throws IOException {
-        String apiUrl = buildApiUrl(openDt, movieNm);
-        URL url = new URL(apiUrl);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-type", "application/json");
-        conn.setRequestProperty("ServiceKey", KdmbApiKey); // 인증키 추가
+    public void generateKdmb(String movieCd, String movieNm, String openDt) throws IOException, GeneralSecurityException {
+        if(verifyExistMovie(movieCd)){
+            // true일 때 아무 작업도 수행하지 않음
+        }
+        else {
+            String apiUrl = buildApiUrl(openDt, movieNm);
+            URL url = new URL(apiUrl);
+            log.info("url : " + url);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-type", "application/json");
+            conn.setRequestProperty("ServiceKey", KdmbApiKey); // 인증키 추가
 
-        System.out.println("kdmb Response code: " + conn.getResponseCode());
+            System.out.println("kdmb Response code: " + conn.getResponseCode());
 
-        String apiResponse = readApiResponse(conn);
-        conn.disconnect();
-        KdmbResponse kdmbResponse = parsingKdmb(apiResponse);
-        saveKdmb(kdmbResponse, movieNm);
+            String apiResponse = readApiResponse(conn);
+            conn.disconnect();
+            KdmbResponse kdmbResponse = parsingKdmb(apiResponse);
+            log.info("kdmb : " +kdmbResponse);
+            saveKdmb(kdmbResponse, movieCd);
+        }
     }
-    public void saveKdmb(KdmbResponse kdmbResponse, String movieNm){
-        savePoster(kdmbResponse,movieNm);
-        savePlot(kdmbResponse,movieNm);
-        saveStill(kdmbResponse,movieNm);
-        saveTrailer(kdmbResponse,movieNm);
+    public void saveKdmb(KdmbResponse kdmbResponse, String movieCd) throws GeneralSecurityException, IOException {
+        savePoster(kdmbResponse,movieCd);
+        savePlot(kdmbResponse,movieCd);
+        saveStill(kdmbResponse,movieCd);
+        saveTrailer(kdmbResponse,movieCd);
     }
-    public void savePoster(KdmbResponse kdmbResponse, String movieNm) {
+    public void savePoster(KdmbResponse kdmbResponse, String movieCd) {
         String posterUrls = kdmbResponse.getData().get(0).getResult().get(0).getPosters();
 
         String[] posterArray = posterUrls.split("\\|");
         for (int i = 0; i < posterArray.length; i++) {
             Poster poster = new Poster();
+            log.info("poster : " + poster.getPoster_image_url());
             if (posterRepository.findMaxPosterId() == null) {
                 poster.setPosterId(0);
             } else {
@@ -86,11 +105,11 @@ public class KdmbService {
             }
 
             poster.setPoster_image_url(posterImageUrl);
-            poster.setMovie(movieRepository.findByMovieNm(movieNm));
+            poster.setMovie(movieRepository.findByMovieCd(movieCd));
             posterRepository.save(poster);
         }
     }
-    public void saveStill(KdmbResponse kdmbResponse, String movieNm) {
+    public void saveStill(KdmbResponse kdmbResponse, String movieCd) {
         String stillUrls = kdmbResponse.getData().get(0).getResult().get(0).getStlls();
 
         String[] stillArray = stillUrls.split("\\|");
@@ -110,13 +129,13 @@ public class KdmbService {
             }
 
             stillCut.setStillCut_url(stillCutUrl);
-            stillCut.setMovie(movieRepository.findByMovieNm(movieNm));
+            stillCut.setMovie(movieRepository.findByMovieCd(movieCd));
             stillCutRepository.save(stillCut);
         }
     }
-    public void saveTrailer(KdmbResponse kdmbResponse, String movieNm) {
+    public void saveTrailer(KdmbResponse kdmbResponse, String movieCd) throws GeneralSecurityException, IOException {
         List<KdmbResponse.Vod.VodInfo> vods = kdmbResponse.getData().get(0).getResult().get(0).getVods().getVod();
-
+        Movie findMovie = movieRepository.findByMovieCd(movieCd);
         for (int i = 0; i < vods.size(); i++) {
             String vodUrl = vods.get(i).getVodUrl();
             String vodClass = vods.get(i).getVodClass();
@@ -129,16 +148,32 @@ public class KdmbService {
 
             // 트레일러 URL이 비어있을 경우 기본 URL 또는 다른 처리를 할 수 있습니다.
             if (vodUrl == null || vodUrl.isEmpty()) {
-                vodUrl = "기본 트레일러 URL"; // 기본 URL 또는 다른 처리 추가
+                String movieName= findMovie.getMovieNm();
+                String searchTrailer = youtubeService.extractYoutube(youtubeService.searchYoutube(movieName, "메인 예고편"));
+
+                String[] splitResults = searchTrailer.split(",");
+                for (String result : splitResults) {
+                    String[] splitResult = result.split("\\|");
+                    String videoId = splitResult[0];
+                    if(trailerRepository.findMaxTrailerId() == null){
+                        trailer.setTrailerId(0);
+                    }
+                    else {
+                        trailer.setTrailerId(trailerRepository.findMaxTrailerId() + 1);
+                    }
+                    trailer.setMovie(findMovie);
+                    trailer.setTrailer_url("https://www.youtube.com/watch?v="+videoId);
+                    trailerRepository.save(trailer);
+                }
             }
 
             trailer.setVodClass(vodClass);
             trailer.setTrailer_url(vodUrl);
-            trailer.setMovie(movieRepository.findByMovieNm(movieNm));
+            trailer.setMovie(findMovie);
             trailerRepository.save(trailer);
         }
     }
-    public void savePlot(KdmbResponse kdmbResponse, String movieNm){
+    public void savePlot(KdmbResponse kdmbResponse, String movieCd){
         String plotText = kdmbResponse.getData().get(0).getResult().get(0).getPlots().getPlot().get(0).getPlotText();
         // 플롯 텍스트가 비어있는지 확인
         if (plotText == null || plotText.isEmpty()) {
@@ -151,10 +186,14 @@ public class KdmbService {
                 plots.setPlotId(plotRepository.findMaxPlotId() + 1);
             }
             plots.setPlotText(plotText);
-            plots.setMovie(movieRepository.findByMovieNm(movieNm));
+            plots.setMovie(movieRepository.findByMovieCd(movieCd));
             plotRepository.save(plots);
         }
-
+    public boolean verifyExistMovie(String movieCd){
+        Movie findMovie = movieRepository.findByMovieCd(movieCd);
+        if(posterRepository.findByMovie(findMovie).isEmpty()) return false;
+        else return true;
+    }
     public KdmbResponse parsingKdmb(String response) throws JsonProcessingException {
         String jsonString = response;
 
@@ -188,7 +227,9 @@ public class KdmbService {
         // URL 파라미터 추가
         urlParameterBuilder.addParameter("ServiceKey", KdmbApiKey);
         urlParameterBuilder.addParameter("collection", "kmdb_new2");
-        urlParameterBuilder.addParameter("releaseDts", openDt);
+        if (openDt != null && !openDt.isEmpty()) {
+            urlParameterBuilder.addParameter("releaseDts", openDt);
+        }
         urlParameterBuilder.addParameter("title", title);
 
         return kdmbUrl + urlParameterBuilder.build();
