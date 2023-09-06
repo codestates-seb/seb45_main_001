@@ -2,6 +2,7 @@ package com.sundayCinema.sundayCinema.movie.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sundayCinema.sundayCinema.advice.audit.Auditable;
+import com.sundayCinema.sundayCinema.comment.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -57,4 +58,8 @@ public class Movie extends Auditable {
     private List<Trailer> trailers = new ArrayList<>();
     @OneToMany(mappedBy = "movie")
     private List<Plots> plots = new ArrayList<>();
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+    @Column(nullable = true)
+    private Double averageScore;
 }

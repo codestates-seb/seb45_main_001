@@ -1,6 +1,7 @@
 package com.sundayCinema.sundayCinema.comment;
 
 import com.sundayCinema.sundayCinema.advice.audit.Auditable;
+import com.sundayCinema.sundayCinema.movie.entity.Movie;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,16 @@ public class Comment extends Auditable {
     private String content;
 
     @Column(nullable = false)
-    private int Score;
+    private int score;
+
+    @ManyToOne   //
+    @JoinColumn(name = "MOVIE_ID")
+    private Movie movie;
+
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
+//    private User user;
+
 
 
     //adsfdasf
