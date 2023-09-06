@@ -1,11 +1,11 @@
 package com.sundayCinema.sundayCinema.movie.mapper;
 
-import com.sundayCinema.sundayCinema.movie.dto.mainPage.BoxOfficeMovieDto;
-import com.sundayCinema.sundayCinema.movie.entity.boxofficeMovie.BoxOfficeMovie;
-import com.sundayCinema.sundayCinema.movie.entity.boxofficeMovie.ForeignBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.boxofficeMovie.KoreaBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
-import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
+import com.sundayCinema.sundayCinema.movie.dto.BoxOfficeMovieDto;
+import com.sundayCinema.sundayCinema.movie.entity.BoxOfficeMovie;
+import com.sundayCinema.sundayCinema.movie.entity.ForeignBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.KoreaBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.Movie;
+import com.sundayCinema.sundayCinema.movie.repository.MovieRepository;
 import org.springframework.stereotype.Component;
 
 @Component

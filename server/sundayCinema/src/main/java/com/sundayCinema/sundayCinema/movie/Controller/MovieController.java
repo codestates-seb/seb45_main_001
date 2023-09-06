@@ -3,19 +3,22 @@ package com.sundayCinema.sundayCinema.movie.Controller;
 import com.sundayCinema.sundayCinema.movie.Service.MovieService;
 import com.sundayCinema.sundayCinema.movie.api.KMDB.KdmbService;
 import com.sundayCinema.sundayCinema.movie.api.KOBIS.KobisService;
-import com.sundayCinema.sundayCinema.movie.dto.detailPage.DetailPageDto;
-import com.sundayCinema.sundayCinema.movie.dto.detailPage.DetailsBasicInfo;
-import com.sundayCinema.sundayCinema.movie.dto.mainPage.BoxOfficeMovieDto;
-import com.sundayCinema.sundayCinema.movie.dto.mainPage.MainPageDto;
-import com.sundayCinema.sundayCinema.movie.entity.boxofficeMovie.BoxOfficeMovie;
-import com.sundayCinema.sundayCinema.movie.entity.boxofficeMovie.ForeignBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.boxofficeMovie.KoreaBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
-import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Poster;
+import com.sundayCinema.sundayCinema.movie.dto.DetailPageDto;
+import com.sundayCinema.sundayCinema.movie.dto.DetailsBasicInfo;
+import com.sundayCinema.sundayCinema.movie.dto.DetailsMainInfo;
+import com.sundayCinema.sundayCinema.movie.dto.DetailsMediaInfo;
+import com.sundayCinema.sundayCinema.movie.dto.BoxOfficeMovieDto;
+import com.sundayCinema.sundayCinema.movie.dto.MainPageDto;
+import com.sundayCinema.sundayCinema.movie.entity.BoxOfficeMovie;
+import com.sundayCinema.sundayCinema.movie.entity.ForeignBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.KoreaBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.Movie;
+import com.sundayCinema.sundayCinema.movie.entity.Poster;
 import com.sundayCinema.sundayCinema.movie.mapper.BoxOfficeMovieMapper;
 import com.sundayCinema.sundayCinema.movie.mapper.MovieDetailsMapper;
-import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.BoxOfficeMovieRepository;
-import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
+import com.sundayCinema.sundayCinema.movie.repository.BoxOfficeMovieRepository;
+import com.sundayCinema.sundayCinema.movie.repository.MovieRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequestMapping
 public class MovieController {
 
@@ -129,11 +133,30 @@ public class MovieController {
         Movie findMovie = movieRepository.findByMovieId(movieId);
         String movieCd = findMovie.getMovieCd();
         BoxOfficeMovie boxOfficeMovie = boxOfficeMovieRepository.findByMovieCd(movieCd);
-        DetailsBasicInfo basicInfo = movieDetailsMapper.movieDetailsBasicResponseDto(boxOfficeMovie, findMovie);
+        DetailsBasicInfo basicInfo = movieDetailsMapper.detailsBasicResponseDto(boxOfficeMovie, findMovie);
         DetailPageDto<DetailsBasicInfo> detailPageDto = new DetailPageDto<>();
         detailPageDto.setDetailsList(basicInfo);
         return new ResponseEntity(detailPageDto,HttpStatus.OK);
     }
+    @GetMapping("/details/{movieId}/mainInfo")
+    public ResponseEntity getMovieDetailsMainInfo(@PathVariable long movieId){
 
+        Movie findMovie = movieRepository.findByMovieId(movieId);
+        DetailsMainInfo detailsMainInfo= movieDetailsMapper.detailsMainInfoResponseDto(findMovie);
+        DetailPageDto<DetailsMainInfo> detailPageDto = new DetailPageDto<>();
+        detailPageDto.setDetailsList(detailsMainInfo);
+        return new ResponseEntity(detailPageDto,HttpStatus.OK);
+    }
+
+    @GetMapping("/details/{movieId}/mediaInfo")
+    public ResponseEntity getMovieDetailsMediaInfo(@PathVariable long movieId){
+
+        Movie findMovie = movieRepository.findByMovieId(movieId);
+        log.info("찾은 영화 :"+ findMovie.getMovieNm());
+        DetailsMediaInfo detailsMediaInfo= movieDetailsMapper.detailsMediaInfoResponseDto(findMovie);
+        DetailPageDto<DetailsMediaInfo> detailPageDto = new DetailPageDto<>();
+        detailPageDto.setDetailsList(detailsMediaInfo);
+        return new ResponseEntity(detailPageDto,HttpStatus.OK);
+    }
 
 }

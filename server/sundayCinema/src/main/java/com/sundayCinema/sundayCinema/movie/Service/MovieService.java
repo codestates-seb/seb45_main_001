@@ -3,18 +3,17 @@ package com.sundayCinema.sundayCinema.movie.Service;
 import com.sundayCinema.sundayCinema.movie.api.KMDB.KdmbService;
 import com.sundayCinema.sundayCinema.movie.api.KOBIS.KobisService;
 import com.sundayCinema.sundayCinema.movie.api.youtubeAPI.YoutubeService;
-import com.sundayCinema.sundayCinema.movie.entity.boxofficeMovie.BoxOfficeMovie;
-import com.sundayCinema.sundayCinema.movie.entity.boxofficeMovie.ForeignBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.boxofficeMovie.KoreaBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
-import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Poster;
-import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Trailer;
-import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.BoxOfficeMovieRepository;
-import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.ForeignBoxOfficeRepository;
-import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.KoreaBoxOfficeRepository;
-import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
-import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.PosterRepository;
-import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.TrailerRepository;
+import com.sundayCinema.sundayCinema.movie.entity.BoxOfficeMovie;
+import com.sundayCinema.sundayCinema.movie.entity.ForeignBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.KoreaBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.Movie;
+import com.sundayCinema.sundayCinema.movie.entity.Poster;
+import com.sundayCinema.sundayCinema.movie.repository.BoxOfficeMovieRepository;
+import com.sundayCinema.sundayCinema.movie.repository.ForeignBoxOfficeRepository;
+import com.sundayCinema.sundayCinema.movie.repository.KoreaBoxOfficeRepository;
+import com.sundayCinema.sundayCinema.movie.repository.MovieRepository;
+import com.sundayCinema.sundayCinema.movie.repository.PosterRepository;
+import com.sundayCinema.sundayCinema.movie.repository.TrailerRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -60,18 +59,6 @@ public class MovieService {
         kobisService.dailyUpdateBoxOffice("F");
         dailyUpdateMedia();
         getReview();
-    }
-
-    public List<Trailer> loadTrailerList(Movie movie) {
-        List<Trailer> trailerList = trailerRepository.findByMovie(movie);
-        return trailerList;
-    }
-
-    public Trailer loadTrailer(long movieId, String keyword) {
-
-        Trailer mainTrailer = trailerRepository.findByMovie_MovieIdAndVodClassContaining(movieId, keyword);
-
-        return mainTrailer;
     }
 
     public Movie loadMovie(String movieNm) {

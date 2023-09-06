@@ -2,10 +2,8 @@ package com.sundayCinema.sundayCinema.movie.api.KOBIS;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sundayCinema.sundayCinema.movie.entity.boxofficeMovie.BoxOfficeFactory;
-import com.sundayCinema.sundayCinema.movie.entity.boxofficeMovie.BoxOfficeMovie;
-import com.sundayCinema.sundayCinema.movie.entity.movieInfo.*;
-import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.*;
+import com.sundayCinema.sundayCinema.movie.entity.*;
+import com.sundayCinema.sundayCinema.movie.repository.*;
 import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
