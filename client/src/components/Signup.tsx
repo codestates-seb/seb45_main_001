@@ -169,7 +169,7 @@ const LoginModalbackground = styled.div`
     width: 100%;
     height: 100%;
     z-index: 5;
-    background-color: rgba(77, 77, 77, 0.7);
+    background-color: rgba(77, 77, 77, 0.5);
     /* 마지막이 투명도 조절 */
 `;
 

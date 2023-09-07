@@ -92,6 +92,7 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, setI
     return (
         <>
             <LoginModaltop>
+                <LoginModalbackground onClick={onClickToggleModal}></LoginModalbackground>
                 <LoginModalmain>
                     <LoginModalmain_low>
                         <LoginModallogo>일요시네마</LoginModallogo>
@@ -129,7 +130,6 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, setI
                         </LoginModaloauthwrap>
                     </LoginModalmain_low>
                 </LoginModalmain>
-                <LoginModalbackground onClick={onClickToggleModal}></LoginModalbackground>
             </LoginModaltop>
         </>
     );
@@ -151,7 +151,7 @@ const LoginModalbackground = styled.div`
     width: 100%;
     height: 100%;
     z-index: 5;
-    background-color: rgba(77, 77, 77, 0.7);
+    background-color: rgba(77, 77, 77, 0.5);
     /* 마지막이 투명도 조절 */
 `;
 
