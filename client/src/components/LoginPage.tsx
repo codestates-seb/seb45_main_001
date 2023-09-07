@@ -10,7 +10,7 @@ interface LoginPageProps {
     children?: React.ReactNode;
 }
 
-function LoginPage({ onClickToggleModal, onClickToggleSignupModal , isLogin, setIsLogin }: LoginPageProps) {
+function LoginPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, setIsLogin }: LoginPageProps) {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [passwordError, setPasswordError] = useState<string>('');
@@ -56,11 +56,10 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal , isLogin, set
         try {
             onClickToggleModal?.();
             onClickToggleSignupModal?.();
-        }
-        catch (error) {
+        } catch (error) {
             console.log('썸띵 롱', error);
         }
-    }
+    };
 
     const handleSubmit = () => {
         const myId = {
@@ -70,12 +69,10 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal , isLogin, set
         console.log('로그인 data 슛', myId);
         apiCall({
             method: 'POST',
-            url: 'login',
+            url: 'login', // host/signin - 우리 엔드포인트 // login - json 엔드포인트
             data: myId,
         })
             .then((response) => {
-                localStorage.setItem('jwt', response.data.accessToken);
-                localStorage.setItem("memberid",response.data.user.id)
                 setIsLogin(true);
                 onClickToggleModal?.();
                 console.log('로그인 성공', response);
@@ -83,9 +80,9 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal , isLogin, set
             .catch((error) => {
                 if (error.response && error.response.status === 400) {
                     console.error('로그인 실패 비밀번호 혹은 아이디');
-                    alert("로그인 할 수 없습니다. 비밀번호나 이메일을 확인해주세요.");
-                } else if ( error.message && error.message.includes("Network Error") ) {
-                    console.error('서버 안열림')
+                    alert('로그인 할 수 없습니다. 비밀번호나 이메일을 확인해주세요.');
+                } else if (error.message && error.message.includes('Network Error')) {
+                    console.error('서버 안열림');
                 } else {
                     console.error('로그인 에러', error);
                 }
@@ -95,6 +92,7 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal , isLogin, set
     return (
         <>
             <LoginModaltop>
+                <LoginModalbackground onClick={onClickToggleModal}></LoginModalbackground>
                 <LoginModalmain>
                     <LoginModalmain_low>
                         <LoginModallogo>일요시네마</LoginModallogo>
@@ -115,7 +113,13 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal , isLogin, set
                             {emailError && <LoginModalerror>{emailError}</LoginModalerror>}
                             {passwordError && <LoginModalerror>{passwordError}</LoginModalerror>}
                         </LoginModalerrorwrap>
-                        <LoginModalbuttonin onClick={handleSubmit}>로그인</LoginModalbuttonin>
+                        <LoginModalbuttonin
+                            disabled={!isEmailValid(email) || !isPasswordValid(password)}
+                            $isValid={isEmailValid(email) && isPasswordValid(password)}
+                            onClick={handleSubmit}
+                        >
+                            로그인
+                        </LoginModalbuttonin>
                         <LoginModalbuttonup onClick={handlelogintosignup}>회원가입</LoginModalbuttonup>
                         <LoginModalorwrap>
                             <LoginModalor>OR</LoginModalor>
@@ -126,7 +130,6 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal , isLogin, set
                         </LoginModaloauthwrap>
                     </LoginModalmain_low>
                 </LoginModalmain>
-                <LoginModalbackground onClick={onClickToggleModal}></LoginModalbackground>
             </LoginModaltop>
         </>
     );
@@ -148,7 +151,7 @@ const LoginModalbackground = styled.div`
     width: 100%;
     height: 100%;
     z-index: 5;
-    background-color: rgba(77, 77, 77, 0.7);
+    background-color: rgba(77, 77, 77, 0.5);
     /* 마지막이 투명도 조절 */
 `;
 
@@ -216,22 +219,25 @@ const LoginModalerror = styled.div`
     text-align: center;
 `;
 
-const LoginModalbuttonin = styled.button`
+const LoginModalbuttonin = styled.button<{ $isValid: boolean }>`
     font-size: 14px;
     font-weight: 500;
-    color: black;
+    color: ${({ $isValid }) => ($isValid ? '#000000' : '#ffffff')};
     margin-top: 36px;
     margin-bottom: 4px;
     border: 0px solid black;
     border-radius: 20px;
-    background-color: #ffe800;
+    background-color: ${({ $isValid }) => ($isValid ? '#ffe800' : '#838383')};
     ${LoginModalwidth}
     height: 42px;
     cursor: pointer;
 
-    &:hover {
-        background-color: #cfc54e;
-    }
+    ${({ $isValid }) => $isValid && css`
+        &:hover {
+            background-color: #fff9b4;
+        }
+    `}
+
 `;
 
 const LoginModalbuttonup = styled.button`
