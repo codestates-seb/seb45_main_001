@@ -4,10 +4,11 @@ import Submain from './components/Submain';
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import Mypage from './pages/Mypage';
+import "./css/App.css";
 
 function App() {
     return (
-        <>
+        <div className="app">
             {/* <Header /> */}
             <Routes>
                 <Route path="/*" element={<HomePage />} />
@@ -15,7 +16,7 @@ function App() {
                 <Route path="/mypage" element={<Mypage />} />
             </Routes>
             <Footer />
-        </>
+        </div>
     );
 }
 

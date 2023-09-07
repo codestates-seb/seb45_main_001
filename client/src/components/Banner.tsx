@@ -10,7 +10,8 @@ const BannerLayout = styled.header`
   color: white;
   object-fit: contain;
   height: 448px;
-
+  margin-bottom: 10px;
+  
   @media (min-width: 1500px) {
     position: relative;
     height: 600px;
