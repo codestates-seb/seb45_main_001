@@ -24,12 +24,10 @@ const HeaderStyle = styled.header`
     top: 0;
     width: 100%;
     height: 56px;
-    z-index: 1;
+    z-index: 1001;
     padding: 20px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    transition-timing-function: ease-in;
     transition: all 0.5s;
 `;
 
