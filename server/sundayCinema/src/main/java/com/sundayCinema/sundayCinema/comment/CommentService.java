@@ -1,7 +1,7 @@
 package com.sundayCinema.sundayCinema.comment;
 
-import com.sundayCinema.sundayCinema.movie.dto.MovieDto;
-import com.sundayCinema.sundayCinema.movie.entity.Movie;
+
+
 import com.sundayCinema.sundayCinema.movie.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

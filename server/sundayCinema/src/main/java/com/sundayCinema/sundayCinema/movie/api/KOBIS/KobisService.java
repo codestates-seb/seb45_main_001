@@ -63,7 +63,7 @@ public class KobisService {
         this.boxOfficeFactory = boxOfficeFactory;
     }
 
-    public void dailyBoxOffice(String repNationCd) throws Exception {
+    public void dailyUpdateBoxOffice(String repNationCd) throws Exception {
 
         // KOBIS 오픈 API Rest Client를 통해 호출
         KobisOpenAPIRestService service = new KobisOpenAPIRestService(KobisApiKEY);
@@ -79,7 +79,7 @@ public class KobisService {
 
 
     public void saveKobis(KobisOpenAPIRestService service, List<BoxOfficeMovie> dailyList,
-                              BoxofficeResponse parsingResponse, String repNationCd) throws Exception {
+                          BoxofficeResponse parsingResponse, String repNationCd) throws Exception {
         for (int i = 0; i < dailyList.size(); i++) {
             BoxOfficeMovie boxOfficeMovie = parsingResponse.getBoxOfficeResult().getDailyBoxOfficeList().get(i);
             boxOfficeMovie.setBoxOfficeId(i);

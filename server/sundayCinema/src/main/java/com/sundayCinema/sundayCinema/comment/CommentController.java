@@ -1,7 +1,6 @@
 package com.sundayCinema.sundayCinema.comment;
 
 import com.sundayCinema.sundayCinema.movie.Service.MovieService;
-import com.sundayCinema.sundayCinema.movie.dto.MovieDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
