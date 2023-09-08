@@ -1,0 +1,26 @@
+spring:
+  spring:
+    main:
+      allow-bean-definition-overriding: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: 1111
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: off
+    properties:
+      hibernate:
+        format_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-ID}
+            clientSecret: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-SECRET}
+  youtubeApiKey: ${YOUTUBE_API_KEY}
+  KdmbApiKey: ${KDMB_API_KEY}
+  KobisApiKEY: ${KOBIS_API_KEY}
