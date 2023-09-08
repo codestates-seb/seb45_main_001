@@ -12,6 +12,8 @@ spring:
       hibernate:
         format_sql: true
   security:
+    basic:
+      enabled: false
     oauth2:
       client:
         registration:
@@ -19,5 +21,19 @@ spring:
             clientId: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-ID}
             clientSecret: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-SECRET}
   youtubeApiKey: ${YOUTUBE_API_KEY}
+<<<<<<< HEAD
+spring.security.user:
+  name: 사용자이름
+  password: 비밀번호
+  roles: USER
+  server:
+    servlet:
+      session:
+        timeout=1800:
+logging:
+  level:
+    root: debug
+=======
   KdmbApiKey: ${KDMB_API_KEY}
   KobisApiKEY: ${KOBIS_API_KEY}
+>>>>>>> a8a0389c2ebfab9d514e616169e240966ee9b6a8
