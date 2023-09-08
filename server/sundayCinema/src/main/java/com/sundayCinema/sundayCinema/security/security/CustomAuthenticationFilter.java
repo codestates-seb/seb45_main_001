@@ -1,42 +1,56 @@
-//package com.sundayCinema.sundayCinema.security.security;
-//
-//
-//import org.springframework.core.annotation.Order;
-//import org.springframework.security.authentication.AuthenticationManager;
-//import org.springframework.security.authentication.AuthenticationServiceException;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.security.core.AuthenticationException;
-//import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-//
-//import javax.servlet.http.HttpServletRequest;
-//import javax.servlet.http.HttpServletResponse;
-//
-//@Order(1)
-//public class CustomAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
-//    public CustomAuthenticationFilter(String defaultFilterProcessesUrl, AuthenticationManager authenticationManager) {
-//        super(defaultFilterProcessesUrl);
-//        setAuthenticationManager(authenticationManager);
-//    }
-//
-//    @Override
-//    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-//            throws AuthenticationException {
-//        if (!request.getMethod().equals("POST")) {
-//            throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
-//        }
-//
-//        // 사용자가 전달한 인증 정보를 읽어옵니다.
-//        String email = request.getParameter("email");
-//        String password = request.getParameter("password");
-//
-//        email = (email != null) ? email : "";
-//        email = email.trim();
-//        password = (password != null) ? password : "";
-//
-//        // CustomAuthenticationToken을 생성하여 사용자 인증을 시도합니다.
-//        CustomAuthenticationToken authRequest = new CustomAuthenticationToken(email, password);
-//
-//        return this.getAuthenticationManager().authenticate(authRequest);
-//    }
-//
-//}
+package com.sundayCinema.sundayCinema.security.security;
+
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sundayCinema.sundayCinema.security.dto.LoginRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+@Slf4j
+public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
+        setAuthenticationManager(authenticationManager);
+    }
+
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationException {
+        log.info("CustomAuthenticationFilter's attemptAuthentication method is called.");
+        if (request.getContentType() != null && request.getContentType().contains("application/json")) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                LoginRequest authenticationRequest = objectMapper.readValue(
+                        request.getInputStream(), LoginRequest.class);
+
+                String username = authenticationRequest.getEmail();
+                String password = authenticationRequest.getPassword();
+                // 추가: 디버깅 로그
+                log.info("Attempting authentication for username: " + username);
+                UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username,
+                        password);
+                log.info("확인 ;"+authRequest.getName());
+                setDetails(request, authRequest);
+
+                return this.getAuthenticationManager().authenticate(authRequest);
+            } catch (IOException e) {
+                log.error("JSON 파싱 오류: " + e.getMessage(), e);
+                throw new AuthenticationServiceException("Failed to parse JSON authentication request", e);
+            }
+        } else {
+            // 다른 요청 형식은 기본 폼 로그인으로 처리
+            return super.attemptAuthentication(request, response);
+        }
+    }
+}
