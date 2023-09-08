@@ -10,7 +10,8 @@ const BannerLayout = styled.header`
   color: white;
   object-fit: contain;
   height: 448px;
-
+  margin-bottom: 10px;
+  
   @media (min-width: 1500px) {
     position: relative;
     height: 600px;
@@ -206,9 +207,12 @@ const Banner = () => {
           </BannerTitle>
 
           <BannerButtonBox>
+            { movie.videos && movie.videos.results.length > 0 ? (
             <button onClick={() => setIsClicked(true)}>
               Play
             </button>
+          )  : null
+          }
           </BannerButtonBox>
 
           <BannerDescription>
