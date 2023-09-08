@@ -4,6 +4,8 @@ import { styled, css } from 'styled-components';
 import Mymytap from '../components/Mytap';
 import Mycommenttap from '../components/Mycommenttap';
 import Mybookmarktap from '../components/Mybookmarktap';
+import { useSelector } from 'react-redux';
+import { DataState } from '../slice/authslice';
 
 const FlexCentercss = css`
     align-items: center;
@@ -82,25 +84,25 @@ const Tap = styled.div`
     } */
 `;
 
-const Mytap = styled.div<{ isActive: boolean }>`
+const Mytap = styled.div<{ $isActive: boolean }>`
     margin-left: 10px;
     margin-right: 10px;
     cursor: pointer;
-    border-bottom: ${({ isActive }) => (isActive ? '1px solid white' : 'none')};
+    border-bottom: ${({ $isActive }) => ($isActive ? '1px solid white' : 'none')};
 `;
 
-const Commenttap = styled.div<{ isActive: boolean }>`
+const Commenttap = styled.div<{ $isActive: boolean }>`
     margin-left: 10px;
     margin-right: 10px;
     cursor: pointer;
-    border-bottom: ${({ isActive }) => (isActive ? '1px solid white' : 'none')};
+    border-bottom: ${({ $isActive }) => ($isActive ? '1px solid white' : 'none')};
 `;
 
-const Bookmarktap = styled.div<{ isActive: boolean }>`
+const Bookmarktap = styled.div<{ $isActive: boolean }>`
     margin-left: 10px;
     margin-right: 10px;
     cursor: pointer;
-    border-bottom: ${({ isActive }) => (isActive ? '1px solid white' : 'none')};
+    border-bottom: ${({ $isActive }) => ($isActive ? '1px solid white' : 'none')};
 `;
 
 const Lowermypage = styled.div`
@@ -114,6 +116,7 @@ const Lowermypage = styled.div`
 
 function Mypage() {
     const [activeTab, setActiveTab] = useState<string>('My');
+    const globalName = useSelector((state: { data: DataState }) => state.data.name);
 
     const handleTabClick = (tabName: string) => {
         setActiveTab(tabName);
@@ -127,11 +130,11 @@ function Mypage() {
                     <Uppermypage>
                         <Upper_upper></Upper_upper>
                         <Upper_lower>
-                            <Ul_text>서강의 님</Ul_text>
+                            <Ul_text>{globalName} 님</Ul_text>
                             <Tap>
-                                <Mytap isActive={activeTab === 'My'} onClick={() => handleTabClick('My')}>My</Mytap>
-                                <Commenttap isActive={activeTab === 'Comment'} onClick={() => handleTabClick('Comment')}>작성 댓글</Commenttap>
-                                <Bookmarktap isActive={activeTab === 'Bookmark'} onClick={() => handleTabClick('Bookmark')}>북마크</Bookmarktap>
+                                <Mytap $isActive={activeTab === 'My'} onClick={() => handleTabClick('My')}>My</Mytap>
+                                <Commenttap $isActive={activeTab === 'Comment'} onClick={() => handleTabClick('Comment')}>작성 댓글</Commenttap>
+                                <Bookmarktap $isActive={activeTab === 'Bookmark'} onClick={() => handleTabClick('Bookmark')}>북마크</Bookmarktap>
                             </Tap>
                         </Upper_lower>
                     </Uppermypage>

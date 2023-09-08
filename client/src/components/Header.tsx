@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import LoginPage from './LoginPage';
 import SignupPage from './Signup';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserById } from '../slice/authslice';
+import { fetchUserById, DataState } from '../slice/authslice';
 import { RootState } from '../store/authstore';
 import type { AppDispatch } from '../store/authstore';
 import { Link } from 'react-router-dom';
@@ -99,6 +99,23 @@ const SearchinputStyle = styled.input`
     border-radius: 3px;
     padding: 3px;
     padding-left: 6px;
+    font-size: 14px;
+`;
+
+const SearchfilterStyle = styled.ul`
+    position: absolute;
+    width: 100%;
+    list-style: none;
+    top: 29px;
+    background-color: white;
+    border-radius: 5px;
+    text-align: left;
+`;
+
+const SearchfilterliStyle = styled.ul`
+    width: 100%;
+    padding-left: 6px;
+    margin-bottom: 3px;
 `;
 
 const MagnifierStyle = styled.div`
@@ -147,15 +164,13 @@ const TempStyle = styled.div`
     position: relative;
     color: white;
     cursor: pointer;
-    
+
     &:hover {
         > ${Templink} {
             display: flex;
         }
     }
 `;
-
-
 
 // const [isLogin, setIsLogin] = useState<boolean>(false);
 // const [sessionUser, setSessionUser] = useState<any>(null); //받아오는 데이타의 세션유저이름
@@ -193,6 +208,7 @@ const TempStyle = styled.div`
 function Header() {
     const dispatch: AppDispatch = useDispatch();
     const [isMagnifierClicked, setisMagnifierClicked] = useState<boolean>(false);
+    const globalName = useSelector((state: { data: DataState }) => state.data.name);
 
     const isTokenExpired = (token: string): boolean => {
         try {
@@ -263,6 +279,27 @@ function Header() {
         }
     }
 
+    const [query, setQuery] = useState<string>('');
+    const [searchData, setSearchData] = useState<string[]>([
+        '오펜하이머',
+        '범죄도시',
+        '범죄도시2',
+        '범죄도시3',
+        '범죄도시4',
+        '범죄도시5',
+        '기생충',
+        '에브리씽 에브리웨어 올 엣 원스',
+        '퓨리',
+        '풀 메탈 재킷',
+    ]);
+
+    const filteredData = searchData.filter((item) => {
+        if (query.trim() === '') {
+            return false;
+        }
+        return item.toLowerCase().includes(query.toLowerCase());
+    });
+
     return (
         <>
             <HeaderStyle>
@@ -288,7 +325,17 @@ function Header() {
                     </MagnifierStyle>
                     <SearchbarStyle $isOpen={isMagnifierClicked}>
                         <Relative>
-                            <SearchinputStyle aria-label="" placeholder="검색..."></SearchinputStyle>
+                            <SearchinputStyle
+                                aria-label=""
+                                placeholder="검색..."
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                            ></SearchinputStyle>
+                            <SearchfilterStyle>
+                                {filteredData.map((item, index) => (
+                                    <SearchfilterliStyle key={index}>{item}</SearchfilterliStyle>
+                                ))}
+                            </SearchfilterStyle>
                         </Relative>
                     </SearchbarStyle>
                     <LogSignStyle>
@@ -300,7 +347,7 @@ function Header() {
                         )}
                         {isLogin && (
                             <>
-                                <GeneralStyle>Hello, !</GeneralStyle>
+                                <GeneralStyle>Hello,{globalName}!</GeneralStyle>
                                 <LoginbuttonStyle onClick={onClickLogout}>로그아웃</LoginbuttonStyle>
                             </>
                         )}
