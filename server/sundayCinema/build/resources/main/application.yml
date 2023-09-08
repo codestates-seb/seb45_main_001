@@ -8,7 +8,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: true
+    show-sql: off
     properties:
       hibernate:
         format_sql: true
@@ -22,6 +22,7 @@ spring:
             clientId: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-ID}
             clientSecret: ${SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-SECRET}
   youtubeApiKey: ${YOUTUBE_API_KEY}
+<<<<<<< HEAD
 spring.security.user:
   name: 사용자이름
   password: 비밀번호
@@ -33,3 +34,7 @@ spring.security.user:
 logging:
   level:
     root: debug
+=======
+  KdmbApiKey: ${KDMB_API_KEY}
+  KobisApiKEY: ${KOBIS_API_KEY}
+>>>>>>> a8a0389c2ebfab9d514e616169e240966ee9b6a8

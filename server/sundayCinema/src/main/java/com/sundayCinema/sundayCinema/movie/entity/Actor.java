@@ -12,9 +12,15 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Actor {
     @Id
-    private String actorId;
+    private long actorId;
     @Column
-    private String actorName;
+    private String peopleNm;
+    @Column
+    private String peopleNmEn;
+    @Column(name = "cast")
+    private String cast;
+    @Column
+    private String castEn;
     @ManyToOne   //
     @JoinColumn(name = "MOVIE_ID")
     private Movie movie;
