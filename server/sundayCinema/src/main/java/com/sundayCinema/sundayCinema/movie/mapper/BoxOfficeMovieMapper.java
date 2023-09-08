@@ -5,7 +5,7 @@ import com.sundayCinema.sundayCinema.movie.entity.BoxOfficeMovie;
 import com.sundayCinema.sundayCinema.movie.entity.ForeignBoxOffice;
 import com.sundayCinema.sundayCinema.movie.entity.KoreaBoxOffice;
 import com.sundayCinema.sundayCinema.movie.entity.Movie;
-import com.sundayCinema.sundayCinema.movie.repository.MovieRepository;
+import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
 import org.springframework.stereotype.Component;
 
 @Component

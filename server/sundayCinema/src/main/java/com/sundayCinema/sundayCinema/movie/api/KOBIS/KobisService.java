@@ -3,7 +3,7 @@ package com.sundayCinema.sundayCinema.movie.api.KOBIS;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sundayCinema.sundayCinema.movie.entity.*;
-import com.sundayCinema.sundayCinema.movie.repository.*;
+import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.*;
 import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,12 +48,12 @@ public class KobisService {
     private final NationRepository nationRepository;
     private final GenreRepository genreRepository;
 
-    private final BoxOfficeFactory boxOfficeFactory;
+    private final BoxOfficeService boxOfficeFactory;
 
     public KobisService(MovieRepository movieRepository, ActorRepository actorRepository,
                         DirectorRepository directorRepository, MovieAuditRepository movieAuditRepository,
                         NationRepository nationRepository, GenreRepository genreRepository,
-                        BoxOfficeFactory boxOfficeFactory) {
+                        BoxOfficeService boxOfficeFactory) {
         this.movieRepository = movieRepository;
         this.actorRepository = actorRepository;
         this.directorRepository = directorRepository;
