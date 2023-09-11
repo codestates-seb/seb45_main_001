@@ -93,4 +93,5 @@ public class MovieDetailsMapper {
         log.info("list" + String.valueOf(stillCutList));
         return detailsMediaInfo;
     }
+
 }

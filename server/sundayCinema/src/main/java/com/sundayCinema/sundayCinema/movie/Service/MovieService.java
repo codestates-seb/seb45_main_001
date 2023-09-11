@@ -3,17 +3,22 @@ package com.sundayCinema.sundayCinema.movie.Service;
 import com.sundayCinema.sundayCinema.movie.api.KMDB.KdmbService;
 import com.sundayCinema.sundayCinema.movie.api.KOBIS.KobisService;
 import com.sundayCinema.sundayCinema.movie.api.youtubeAPI.YoutubeService;
+import com.sundayCinema.sundayCinema.movie.dto.BoxOfficeMovieDto;
+import com.sundayCinema.sundayCinema.movie.dto.GenreMovieDto;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.ForeignBoxOffice;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.KoreaBoxOffice;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
 import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Poster;
+import com.sundayCinema.sundayCinema.movie.mapper.BoxOfficeMovieMapper;
+import com.sundayCinema.sundayCinema.movie.mapper.GenreMovieMapper;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.BoxOfficeMovieRepository;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.ForeignBoxOfficeRepository;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.KoreaBoxOfficeRepository;
 import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
 import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.PosterRepository;
 import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.TrailerRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +27,12 @@ import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class MovieService {
     private final TrailerRepository trailerRepository;
     private final MovieRepository movieRepository;
@@ -36,11 +43,14 @@ public class MovieService {
     private final KdmbService kdmbService;
     private final KobisService kobisService;
     private final YoutubeService youtubeService;
+    private final BoxOfficeMovieMapper boxOfficeMovieMapper;
+
+    private final GenreMovieMapper genreMovieMapper;
 
     public MovieService(TrailerRepository trailerRepository, MovieRepository movieRepository,
                         PosterRepository posterRepository, BoxOfficeMovieRepository boxOfficeMovieRepository,
-                        KoreaBoxOfficeRepository koreaBoxOfficeRepository, ForeignBoxOfficeRepository foreignBoxOfficeRepository,
-                        KdmbService kdmbService, KobisService kobisService, YoutubeService youtubeService) {
+                        KoreaBoxOfficeRepository koreaBoxOfficeRepository, ForeignBoxOfficeRepository foreignBoxOfficeRepository, KdmbService kdmbService, KobisService kobisService, YoutubeService youtubeService,
+                        BoxOfficeMovieMapper boxOfficeMovieMapper, GenreMovieMapper genreMovieMapper) {
         this.trailerRepository = trailerRepository;
         this.movieRepository = movieRepository;
         this.posterRepository = posterRepository;
@@ -50,6 +60,8 @@ public class MovieService {
         this.kdmbService = kdmbService;
         this.kobisService = kobisService;
         this.youtubeService = youtubeService;
+        this.boxOfficeMovieMapper = boxOfficeMovieMapper;
+        this.genreMovieMapper = genreMovieMapper;
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
@@ -58,29 +70,91 @@ public class MovieService {
         dailyUpdateMedia();
         getReview();
     }
+    // 액션, 코메디, 드라마, 애니메이션, 스릴러, 판타지, 멜로/로맨스, 공포(호러), 어드밴처, 범죄
+    public List<GenreMovieDto>loadGenreMovie(){
+        List<GenreMovieDto>genreMovieDtos=new ArrayList<>();
+        List<Movie> movies = movieRepository.findAll();
+        for (Movie findMovie : movies) {
+            if(parsingGenre(findMovie,"범죄")){
+                GenreMovieDto genreMovieDto= genreMovieMapper.responseGenreMovieDto(findMovie,"범죄");
+                genreMovieDtos.add(genreMovieDto);
+            }
+            if (parsingGenre(findMovie, "액션")) {
+                GenreMovieDto genreMovieDto = genreMovieMapper.responseGenreMovieDto(findMovie, "액션");
+                log.info("액션" + genreMovieDto.toString());
+                genreMovieDtos.add(genreMovieDto);
+            }
+            if (parsingGenre(findMovie, "코메디")) {
+                GenreMovieDto genreMovieDto = genreMovieMapper.responseGenreMovieDto(findMovie, "코메디");
+                log.info("코메디" + genreMovieDto.toString());
+                genreMovieDtos.add(genreMovieDto);
+            }
+            if(parsingGenre(findMovie,"애니메이션")){
+                GenreMovieDto genreMovieDto= genreMovieMapper.responseGenreMovieDto(findMovie,"애니메이션");
+                genreMovieDtos.add(genreMovieDto);
+            }
+            if(parsingGenre(findMovie,"판타지")){
+                GenreMovieDto genreMovieDto= genreMovieMapper.responseGenreMovieDto(findMovie,"판타지");
+                genreMovieDtos.add(genreMovieDto);
+            }
+            if(parsingGenre(findMovie,"멜로/로맨스")){
+                GenreMovieDto genreMovieDto= genreMovieMapper.responseGenreMovieDto(findMovie,"멜로/로맨스");
+                genreMovieDtos.add(genreMovieDto);
+            }
+            if(parsingGenre(findMovie,"공포(호러)")){
+                GenreMovieDto genreMovieDto= genreMovieMapper.responseGenreMovieDto(findMovie,"공포(호러)");
+                genreMovieDtos.add(genreMovieDto);
+            }
+            if(parsingGenre(findMovie,"어드밴처")){
+                GenreMovieDto genreMovieDto= genreMovieMapper.responseGenreMovieDto(findMovie,"어드밴처");
+                genreMovieDtos.add(genreMovieDto);
+            }
 
-    public Movie loadMovie(String movieNm) {
-        Movie findMovie = movieRepository.findByMovieNm(movieNm);
-
-        return findMovie;
+        }
+        log.info("리스트"+genreMovieDtos.get(0).toString());
+        return genreMovieDtos;
     }
+    public List<BoxOfficeMovieDto> loadBoxOffice() {
 
-    public List<Poster> loadPosterList(Movie movie) {
-        List<Poster> posterList = posterRepository.findByMovie(movie);
-        return posterList;
+        List<BoxOfficeMovieDto> boxOfficeMovieDtos = new ArrayList<>();
+        List<BoxOfficeMovie> boxs = boxOfficeMovieRepository.findAll(); // 저장 방식을 업데이트가 아닌 누적 방식을 택할 경우 날짜 기준으로 불러올 예정
+        for (int i = 0; i < boxs.size(); i++) {
+            BoxOfficeMovie box = boxs.get(i);
+            String title = boxs.get(i).getMovieNm();
+            Movie findMovie = movieRepository.findByMovieNm(title);
+
+            BoxOfficeMovieDto boxOfficeMovieDto = boxOfficeMovieMapper.boxOfficeResponseDto(box);
+            boxOfficeMovieDtos.add(boxOfficeMovieDto);
+        }
+        return boxOfficeMovieDtos;
     }
+    public List<BoxOfficeMovieDto>  loadKoreaBoxOffice() {
 
-    public List<BoxOfficeMovie> loadBoxOffice() {
+        List<BoxOfficeMovieDto> boxOfficeMovieDtos = new ArrayList<>();
+        List<KoreaBoxOffice> boxs = koreaBoxOfficeRepository.findAll(); // 저장 방식을 업데이트가 아닌 누적 방식을 택할 경우 날짜 기준으로 불러올 예정
+        for (int i = 0; i < boxs.size(); i++) {
+            KoreaBoxOffice box = boxs.get(i);
+            String title = boxs.get(i).getMovieNm();
+            Movie findMovie = movieRepository.findByMovieNm(title);
 
-        return boxOfficeMovieRepository.findAll();
+            BoxOfficeMovieDto boxOfficeMovieDto = boxOfficeMovieMapper.boxOfficeResponseDto(box);
+            boxOfficeMovieDtos.add(boxOfficeMovieDto);
+        }
+        return boxOfficeMovieDtos;
     }
-    public List<KoreaBoxOffice> loadKoreaBoxOffice() {
+    public List<BoxOfficeMovieDto> loadForeignBoxOffice() {
 
-        return koreaBoxOfficeRepository.findAll();
-    }
-    public List<ForeignBoxOffice> loadForeignBoxOffice() {
+        List<BoxOfficeMovieDto> boxOfficeMovieDtos = new ArrayList<>();
+        List<ForeignBoxOffice> boxs = foreignBoxOfficeRepository.findAll(); // 저장 방식을 업데이트가 아닌 누적 방식을 택할 경우 날짜 기준으로 불러올 예정
+        for (int i = 0; i < boxs.size(); i++) {
+            ForeignBoxOffice box = boxs.get(i);
+            String title = boxs.get(i).getMovieNm();
+            Movie findMovie = movieRepository.findByMovieNm(title);
 
-        return foreignBoxOfficeRepository.findAll();
+            BoxOfficeMovieDto boxOfficeMovieDto = boxOfficeMovieMapper.boxOfficeResponseDto(box);
+            boxOfficeMovieDtos.add(boxOfficeMovieDto);
+        }
+        return boxOfficeMovieDtos;
     }
     public void dailyUpdateMedia() throws Exception {
 
@@ -147,5 +221,13 @@ public class MovieService {
         String outputDate = outputDateFormat.format(date);
 
         return outputDate;
+    }
+    public boolean parsingGenre(Movie movie, String genreNm) {
+        for (int i = 0; i < movie.getGenres().size(); i++) {
+            if (movie.getGenres().get(i).getGenreNm().equals(genreNm)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
