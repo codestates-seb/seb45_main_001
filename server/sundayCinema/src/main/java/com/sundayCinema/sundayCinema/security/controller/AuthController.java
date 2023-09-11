@@ -52,6 +52,7 @@ public class AuthController {
         String sessionId = session.getId();
 
         session.setAttribute("username", authentication.getName());
+
         // 로그인 응답에 세션 아이디 추가
         return ResponseEntity.ok(new LoginResponse(true, "로그인이 성공적으로 완료되었습니다.", sessionId));
     }

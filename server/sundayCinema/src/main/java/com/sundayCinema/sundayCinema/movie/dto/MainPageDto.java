@@ -7,6 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class MainPageDto<T> {
-    private T boxofficeList;
+public class MainPageDto {
+    private List<BoxOfficeMovieDto> boxofficeList;
+    private List<GenreMovieDto> genreMovieList;
 }

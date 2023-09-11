@@ -6,9 +6,11 @@ import com.sundayCinema.sundayCinema.movie.entity.boxOffice.KoreaBoxOffice;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.BoxOfficeMovieRepository;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.ForeignBoxOfficeRepository;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.KoreaBoxOfficeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class BoxOfficeService {
     private final BoxOfficeMovieRepository boxOfficeMovieRepository;
     private final KoreaBoxOfficeRepository koreaBoxOfficeRepository;
@@ -23,6 +25,7 @@ public class BoxOfficeService {
 
     public void saveBoxOffice(String repNationCd , BoxOfficeMovie boxOfficeMovie){
         if(repNationCd.equals("")){
+            log.info("boxOfficeMovie 팩토리 버전:"+boxOfficeMovie.getBoxOfficeId());
             boxOfficeMovieRepository.save(boxOfficeMovie);
         }
         else if(repNationCd.equals("K")){

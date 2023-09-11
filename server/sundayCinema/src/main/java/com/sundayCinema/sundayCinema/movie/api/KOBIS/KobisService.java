@@ -142,9 +142,11 @@ public class KobisService {
         for (int i = 0; i < dailyList.size(); i++) {
             BoxOfficeMovie boxOfficeMovie = dailyList.get(i);
             boxOfficeMovie.setBoxOfficeId(i);
+            log.info("setBoxOfficeId: "+boxOfficeMovie.getBoxOfficeId());
             movieResponse = service.getMovieInfo(true, boxOfficeMovie.getMovieCd());
             MovieResponse parsingMovieInfo = parsingMovieInfo(movieResponse);
             Movie movie = parsingMovieInfo.getMovieInfoResult().getMovieInfo();
+            log.info("saveBoxOffice"+boxOfficeMovie.getBoxOfficeId());
             boxOfficeFactory.saveBoxOffice("", boxOfficeMovie);
 
             if (verifyExistMovie(boxOfficeMovie.getMovieCd())) continue;
