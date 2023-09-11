@@ -9,7 +9,7 @@ export interface DataState {
     users: { [key: string]: any };
     answers: any[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
-    name: string;
+    globalname: string;
 }
 
 interface FetchPayload {
@@ -73,7 +73,7 @@ const initialState: DataState = {
     users: {},
     answers: [],
     status: 'idle',
-    name: '이용자',
+    globalname: '이용자',
 };
 
 export const dataSlice = createSlice({
@@ -81,7 +81,7 @@ export const dataSlice = createSlice({
     initialState: initialState,
     reducers: {
         updateName: (state, action: PayloadAction<string>) => {
-            state.name = action.payload;
+            state.globalname = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -125,6 +125,11 @@ export const dataSlice = createSlice({
 
 export const { updateName } = dataSlice.actions;
 
+
+export default dataSlice.reducer;
+
+
+
 // import { useDispatch, useSelector } from 'react-redux';
 // import { updateName } from '../slice/authslice';
 // const dispatch = useDispatch();
@@ -134,5 +139,3 @@ export const { updateName } = dataSlice.actions;
 // const [isNameEditing, setIsNameEditing] = useState<boolean>(false);  
 // onChange={(e) => dispatch(updateName(e.target.value))} 업데이트 네임 수정하려면 dispatch 사용
 // onBlur={() => setIsNameEditing(false)} 
-
-export default dataSlice.reducer;

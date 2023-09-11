@@ -1,7 +1,7 @@
 import { styled, css } from 'styled-components';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateName, DataState } from '../slice/authslice';
+import { updateName, DataState } from '../../slice/authslice';
 
 const FlexCentercss = css`
     align-items: center;
@@ -83,7 +83,7 @@ function Mymytap() {
     const [email, setEmail] = useState('colruck32@gmail.com');
 
     const dispatch = useDispatch();
-    const globalName = useSelector((state: { data: DataState }) => state.data.name);
+    const globalName = useSelector((state: { data: DataState }) => state.data.globalname);
     const [isNameEditing, setIsNameEditing] = useState<boolean>(false);
 
     const [tempName, setTempName] = useState(globalName);

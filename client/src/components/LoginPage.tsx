@@ -1,6 +1,8 @@
 import { styled, css } from 'styled-components';
 import { useState } from 'react';
 import { apiCall } from '../api/authapi';
+import { useSelector, useDispatch } from 'react-redux';
+import { DataState, updateName } from '../slice/authslice';
 
 interface LoginPageProps {
     onClickToggleModal?: () => void;
@@ -11,10 +13,12 @@ interface LoginPageProps {
 }
 
 function LoginPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, setIsLogin }: LoginPageProps) {
+    const dispatch = useDispatch();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [passwordError, setPasswordError] = useState<string>('');
     const [emailError, setEmailError] = useState<string>('');
+    const globalName = useSelector((state: { data: DataState }) => state.data.globalname);
 
     function isEmailValid(email: string): boolean {
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -76,6 +80,9 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, setI
                 setIsLogin(true);
                 onClickToggleModal?.();
                 console.log('로그인 성공', response);
+                localStorage.setItem('memberid', response.data.user.id);
+                localStorage.setItem('jwt', response.data.accessToken)
+                dispatch(updateName(response.data.user.nickname));
             })
             .catch((error) => {
                 if (error.response && error.response.status === 400) {

@@ -208,7 +208,7 @@ const TempStyle = styled.div`
 function Header() {
     const dispatch: AppDispatch = useDispatch();
     const [isMagnifierClicked, setisMagnifierClicked] = useState<boolean>(false);
-    const globalName = useSelector((state: { data: DataState }) => state.data.name);
+    const globalName = useSelector((state: { data: DataState }) => state.data.globalname);
 
     const isTokenExpired = (token: string): boolean => {
         try {
