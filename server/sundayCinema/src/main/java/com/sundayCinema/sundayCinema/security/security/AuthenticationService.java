@@ -1,6 +1,7 @@
 package com.sundayCinema.sundayCinema.security.security;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 @Service
+@Slf4j
 public class AuthenticationService {
     private final HttpServletRequest request;
 
@@ -39,12 +41,12 @@ public class AuthenticationService {
     }
 
 
-    public boolean loginCheck(HttpServletRequest request) {
+    public String loginCheck(HttpServletRequest request) {
         HttpSession requestSession = request.getSession();
         HttpSession authenticationSession = getSession();
-        if (requestSession.equals(authenticationSession)) return true;
-        else return false;
+        if (requestSession.equals(authenticationSession)) {
+            String username = (String) requestSession.getAttribute("username");
+            return username;
+        } else return "인증되지 않은 사용자입니다";
     }
-
-    // 현재 이용중인 사용자의 인증 여부 체크용 메서드
 }

@@ -1,10 +1,10 @@
 package com.sundayCinema.sundayCinema.movie.mapper;
 
 import com.sundayCinema.sundayCinema.movie.dto.BoxOfficeMovieDto;
-import com.sundayCinema.sundayCinema.movie.entity.BoxOfficeMovie;
-import com.sundayCinema.sundayCinema.movie.entity.ForeignBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.KoreaBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.Movie;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.ForeignBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.KoreaBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
 import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +15,9 @@ public class BoxOfficeMovieMapper {
     public BoxOfficeMovieMapper(MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
     }
+
+    //todo : boxoffice id로 받을지 말지 고민하기
+
 
     public BoxOfficeMovieDto boxOfficeResponseDto(BoxOfficeMovie boxOfficeMovie) {
         if (boxOfficeMovie == null) {

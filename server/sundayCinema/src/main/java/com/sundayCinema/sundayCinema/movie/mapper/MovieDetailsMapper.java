@@ -1,10 +1,10 @@
 package com.sundayCinema.sundayCinema.movie.mapper;
 
 import com.sundayCinema.sundayCinema.movie.dto.*;
-import com.sundayCinema.sundayCinema.movie.entity.BoxOfficeMovie;
-import com.sundayCinema.sundayCinema.movie.entity.Actor;
-import com.sundayCinema.sundayCinema.movie.entity.Movie;
-import com.sundayCinema.sundayCinema.movie.entity.Trailer;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Actor;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
+import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Trailer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

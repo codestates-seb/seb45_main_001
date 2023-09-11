@@ -44,17 +44,14 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest,
                                               HttpServletRequest request) {
 
-        // 사용자 인증 로직...
-
-        // 인증 처리
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
         );
-        log.info("요청 : " + loginRequest.getEmail());
-        // 세션 아이디 생성
+
         HttpSession session = request.getSession();
         String sessionId = session.getId();
-        log.info("세션 아이디: " + sessionId);
+
+        session.setAttribute("username", authentication.getName());
         // 로그인 응답에 세션 아이디 추가
         return ResponseEntity.ok(new LoginResponse(true, "로그인이 성공적으로 완료되었습니다.", sessionId));
     }
@@ -99,14 +96,8 @@ public class AuthController {
 
     @GetMapping("/check")
     public String check(HttpServletRequest request) {
-        HttpSession requestSession = request.getSession();
-        log.info("requestSession"+requestSession.toString());
-        HttpSession authenticationSession = authenticationService.getSession();
-        log.info("authenticationSession"+authenticationSession.toString());
-        if (requestSession.equals(authenticationSession)) return "현재 사용자는 로그인 상태입니다.";
-        else return "현재 사용자는 로그인되어 있지 않습니다.";
+        return authenticationService.loginCheck(request);
     }
-
 }
 
 

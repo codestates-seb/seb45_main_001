@@ -1,6 +1,6 @@
 package com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo;
 
-import com.sundayCinema.sundayCinema.movie.entity.Genre;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Genre;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

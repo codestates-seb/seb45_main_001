@@ -9,11 +9,11 @@ import com.sundayCinema.sundayCinema.movie.dto.DetailsMainInfo;
 import com.sundayCinema.sundayCinema.movie.dto.DetailsMediaInfo;
 import com.sundayCinema.sundayCinema.movie.dto.BoxOfficeMovieDto;
 import com.sundayCinema.sundayCinema.movie.dto.MainPageDto;
-import com.sundayCinema.sundayCinema.movie.entity.BoxOfficeMovie;
-import com.sundayCinema.sundayCinema.movie.entity.ForeignBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.KoreaBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.Movie;
-import com.sundayCinema.sundayCinema.movie.entity.Poster;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.ForeignBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.KoreaBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
+import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Poster;
 import com.sundayCinema.sundayCinema.movie.mapper.BoxOfficeMovieMapper;
 import com.sundayCinema.sundayCinema.movie.mapper.MovieDetailsMapper;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.BoxOfficeMovieRepository;
@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +35,6 @@ import java.util.List;
 @Slf4j
 @RequestMapping
 public class MovieController {
-
     private final KobisService kobisService;
     private final KdmbService kdmbService;
     private final MovieService movieService;
@@ -58,16 +59,21 @@ public class MovieController {
 
     @GetMapping("/test")
     public void test() throws Exception {
-        kobisService.dailyUpdateBoxOffice("");
-        kobisService.dailyUpdateBoxOffice("K");
-        kobisService.dailyUpdateBoxOffice("F");
+        kobisService.saveKobis();
     }
 
     @GetMapping("/test2")
     public void test2() throws Exception {
         movieService.dailyUpdateMedia();
     }
+    @GetMapping("/save")
+    public void saveMovieData() throws Exception {
+        kobisService.saveBoxOffice("20220915");
+        kobisService.saveBoxOffice("20220815");
+        kobisService.saveBoxOffice("20220701");
+        kobisService.saveBoxOffice("20220715");
 
+    }
     @GetMapping("/test3")
     public void test3() throws Exception {
         movieService.dailyUpdateAll();
