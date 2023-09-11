@@ -1,7 +1,7 @@
 import { styled, css } from 'styled-components';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateName, DataState } from '../../slice/authslice';
+import { updateName, updateMail, DataState } from '../../slice/authslice';
 
 const FlexCentercss = css`
     align-items: center;
@@ -79,14 +79,20 @@ const Pencil = styled.img`
 `;
 
 function Mymytap() {
-    const [isEmailEditing, setIsEmailEditing] = useState<boolean>(false);
-    const [email, setEmail] = useState('colruck32@gmail.com');
-
     const dispatch = useDispatch();
     const globalName = useSelector((state: { data: DataState }) => state.data.globalname);
-    const [isNameEditing, setIsNameEditing] = useState<boolean>(false);
+    const globalMail = useSelector((state: { data: DataState }) => state.data.globalmail);
 
+    const [isEmailEditing, setIsEmailEditing] = useState<boolean>(false);
+    const [tempEmail, setTempEmail] = useState('globalMail');
+
+    const [isNameEditing, setIsNameEditing] = useState<boolean>(false);
     const [tempName, setTempName] = useState(globalName);
+
+    const handleMailUpdate = () => {
+        dispatch(updateMail(tempEmail));
+        setIsEmailEditing(false);
+    };
 
     const handleNameUpdate = () => {
         dispatch(updateName(tempName));
@@ -97,6 +103,10 @@ function Mymytap() {
         setTempName(globalName);
     }, [globalName]);
 
+    useEffect(() => {
+        setTempEmail(globalMail);
+    }, [globalMail]);
+
     return (
         <>
             <My_lowertap>
@@ -106,11 +116,7 @@ function Mymytap() {
                     <My_lowertap_realwrap>
                         {isNameEditing ? (
                             <>
-                                <input
-                                    type="text"
-                                    value={tempName}
-                                    onChange={(e) => setTempName(e.target.value)}
-                                />
+                                <input type="text" value={tempName} onChange={(e) => setTempName(e.target.value)} />
                                 <Pencil src="/pencil.png" alt="" onClick={handleNameUpdate} />
                             </>
                         ) : (
@@ -126,15 +132,13 @@ function Mymytap() {
                     <My_lowertap_mail>이메일</My_lowertap_mail>
                     <My_lowertap_realwrap>
                         {isEmailEditing ? (
-                            <input
-                                type="text"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                onBlur={() => setIsEmailEditing(false)}
-                            />
+                            <>
+                                <input type="text" value={tempEmail} onChange={(e) => setTempEmail(e.target.value)} />
+                                <Pencil src="/pencil.png" alt="" onClick={handleMailUpdate} />
+                            </>
                         ) : (
                             <>
-                                <My_lowertap_realmail>{email}</My_lowertap_realmail>
+                                <My_lowertap_realmail>{globalMail}</My_lowertap_realmail>
                                 <Pencil src="/pencil.png" alt="" onClick={() => setIsEmailEditing(true)} />
                             </>
                         )}

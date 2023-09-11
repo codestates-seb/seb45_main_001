@@ -10,6 +10,7 @@ export interface DataState {
     answers: any[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     globalname: string;
+    globalmail: string;
 }
 
 interface FetchPayload {
@@ -73,7 +74,8 @@ const initialState: DataState = {
     users: {},
     answers: [],
     status: 'idle',
-    globalname: '이용자',
+    globalname: '비로그인',
+    globalmail: 'none@nope.com',
 };
 
 export const dataSlice = createSlice({
@@ -82,6 +84,9 @@ export const dataSlice = createSlice({
     reducers: {
         updateName: (state, action: PayloadAction<string>) => {
             state.globalname = action.payload;
+        },
+        updateMail: (state, action: PayloadAction<string>) => {
+            state.globalmail = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -123,7 +128,7 @@ export const dataSlice = createSlice({
     },
 });
 
-export const { updateName } = dataSlice.actions;
+export const { updateName, updateMail } = dataSlice.actions;
 
 
 export default dataSlice.reducer;

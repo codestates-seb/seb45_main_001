@@ -6,7 +6,7 @@ const Authguard = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const userId = localStorage.getItem('memberid');
+        const userId = sessionStorage.getItem('memberid');
 
         if (!userId) {
             navigate('/');
