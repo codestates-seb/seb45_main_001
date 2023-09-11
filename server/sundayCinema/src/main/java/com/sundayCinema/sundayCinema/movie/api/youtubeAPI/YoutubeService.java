@@ -6,7 +6,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
-import com.sundayCinema.sundayCinema.movie.entity.YoutubeReview;
+import com.sundayCinema.sundayCinema.movie.entity.movieMedia.YoutubeReview;
 import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
 import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.YoutubeReviewRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -78,23 +78,40 @@ public class YoutubeService {
         String[] splitResults = findYoutubeResult.split(",");
         for (String result : splitResults) {
             String[] splitResult = result.split("\\|");
-            String videoId = splitResult[0];
-            String channelId = splitResult[1];
-            String thumbnailUrl = splitResult[2];
+            if (splitResult.length < 2) {
+                String videoId = splitResult[0];
 
-            YoutubeReview review = new YoutubeReview();
-            if (youtubeReviewRepository.findMaxReviewId() == null) {
-                review.setReviewId(0);
+                YoutubeReview review = new YoutubeReview();
+                if (youtubeReviewRepository.findMaxReviewId() == null) {
+                    review.setReviewId(0);
 
-            } else {
-                long youtubeId = youtubeReviewRepository.findMaxReviewId();
-                review.setReviewId(youtubeId + 1);
+                } else {
+                    long youtubeId = youtubeReviewRepository.findMaxReviewId();
+                    review.setReviewId(youtubeId + 1);
+                }
+                review.setYoutubeReview_url("https://www.youtube.com/watch?v=" + videoId);
+                review.setMovie(movieRepository.findByMovieNm(movieNm));
+                youtubeReviewRepository.save(review);
             }
-            review.setYoutubeReview_url("https://www.youtube.com/watch?v=" + videoId);
-            review.setYoutubeChannel("https://www.youtube.com/channel/" + channelId);
-            review.setThumbnail(thumbnailUrl);
-            review.setMovie(movieRepository.findByMovieNm(movieNm));
-            youtubeReviewRepository.save(review);
+            else {
+                String videoId = splitResult[0];
+                String channelId = splitResult[1];
+                String thumbnailUrl = splitResult[2];
+
+                YoutubeReview review = new YoutubeReview();
+                if (youtubeReviewRepository.findMaxReviewId() == null) {
+                    review.setReviewId(0);
+
+                } else {
+                    long youtubeId = youtubeReviewRepository.findMaxReviewId();
+                    review.setReviewId(youtubeId + 1);
+                }
+                review.setYoutubeReview_url("https://www.youtube.com/watch?v=" + videoId);
+                review.setYoutubeChannel("https://www.youtube.com/channel/" + channelId);
+                review.setThumbnail(thumbnailUrl);
+                review.setMovie(movieRepository.findByMovieNm(movieNm));
+                youtubeReviewRepository.save(review);
+            }
         }
     }
 

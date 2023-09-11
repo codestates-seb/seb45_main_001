@@ -2,7 +2,7 @@ package com.sundayCinema.sundayCinema.movie.api.KOBIS;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sundayCinema.sundayCinema.movie.entity.Movie;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -25,7 +25,6 @@ public class Comment extends Auditable {
     private int Score;
 
 
-    //adsfdasf
     // movieId 연관관계 설정 필요
 
 }

@@ -3,11 +3,11 @@ package com.sundayCinema.sundayCinema.movie.Service;
 import com.sundayCinema.sundayCinema.movie.api.KMDB.KdmbService;
 import com.sundayCinema.sundayCinema.movie.api.KOBIS.KobisService;
 import com.sundayCinema.sundayCinema.movie.api.youtubeAPI.YoutubeService;
-import com.sundayCinema.sundayCinema.movie.entity.BoxOfficeMovie;
-import com.sundayCinema.sundayCinema.movie.entity.ForeignBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.KoreaBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.Movie;
-import com.sundayCinema.sundayCinema.movie.entity.Poster;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.ForeignBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.KoreaBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
+import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Poster;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.BoxOfficeMovieRepository;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.ForeignBoxOfficeRepository;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.KoreaBoxOfficeRepository;
@@ -54,9 +54,7 @@ public class MovieService {
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void dailyUpdateAll() throws Exception {
-        kobisService.dailyUpdateBoxOffice("");
-        kobisService.dailyUpdateBoxOffice("K");
-        kobisService.dailyUpdateBoxOffice("F");
+        kobisService.saveKobis();
         dailyUpdateMedia();
         getReview();
     }

@@ -1,6 +1,6 @@
 package com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo;
 
-import com.sundayCinema.sundayCinema.movie.entity.Movie;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {

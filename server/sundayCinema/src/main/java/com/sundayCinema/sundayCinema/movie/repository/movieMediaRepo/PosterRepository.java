@@ -1,7 +1,7 @@
 package com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo;
 
-import com.sundayCinema.sundayCinema.movie.entity.Movie;
-import com.sundayCinema.sundayCinema.movie.entity.Poster;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
+import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Poster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

@@ -2,7 +2,13 @@ package com.sundayCinema.sundayCinema.movie.api.KOBIS;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sundayCinema.sundayCinema.movie.entity.*;
+import com.sundayCinema.sundayCinema.movie.Service.BoxOfficeService;
+import com.sundayCinema.sundayCinema.movie.api.KMDB.KdmbService;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.*;
+import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.BoxOfficeMovieRepository;
+import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.ForeignBoxOfficeRepository;
+import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.KoreaBoxOfficeRepository;
 import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.*;
 import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +25,11 @@ public class KobisService {
     @Value("${KOBIS_API_KEY}")
     private String KobisApiKEY; // 발급받은 API 키 값을 입력해주세요
 
-    String dailyResponse = "";
+    String boxResponse = "";
     String movieResponse = "";
     //전날 박스오피스 조회 ( 오늘 날짜꺼는 안나옴.. )
     LocalDateTime time = LocalDateTime.now().minusDays(1);
-    String targetDt = time.format(DateTimeFormatter.ofPattern("yyyMMdd"));
+    String targetDt = time.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
     //ROW 개수
     String itemPerPage = "10";
@@ -39,7 +45,7 @@ public class KobisService {
     //상영지역별 코드/전체(default)
     String wideAreaCd = "";
 
-
+    String[] movieTypeCdArr = new String[0];
 
     private final MovieRepository movieRepository;
     private final ActorRepository actorRepository;
@@ -47,13 +53,20 @@ public class KobisService {
     private final MovieAuditRepository movieAuditRepository;
     private final NationRepository nationRepository;
     private final GenreRepository genreRepository;
-
     private final BoxOfficeService boxOfficeFactory;
+
+    private final BoxOfficeMovieRepository boxOfficeMovieRepository;
+    private final KoreaBoxOfficeRepository koreaBoxOfficeRepository;
+    private final ForeignBoxOfficeRepository foreignBoxOfficeRepository;
+
+    private final KdmbService kdmbService;
 
     public KobisService(MovieRepository movieRepository, ActorRepository actorRepository,
                         DirectorRepository directorRepository, MovieAuditRepository movieAuditRepository,
                         NationRepository nationRepository, GenreRepository genreRepository,
-                        BoxOfficeService boxOfficeFactory) {
+                        BoxOfficeService boxOfficeFactory, BoxOfficeMovieRepository boxOfficeMovieRepository,
+                        KoreaBoxOfficeRepository koreaBoxOfficeRepository, ForeignBoxOfficeRepository foreignBoxOfficeRepository,
+                        KdmbService kdmbService) {
         this.movieRepository = movieRepository;
         this.actorRepository = actorRepository;
         this.directorRepository = directorRepository;
@@ -61,34 +74,116 @@ public class KobisService {
         this.nationRepository = nationRepository;
         this.genreRepository = genreRepository;
         this.boxOfficeFactory = boxOfficeFactory;
+        this.boxOfficeMovieRepository = boxOfficeMovieRepository;
+        this.koreaBoxOfficeRepository = koreaBoxOfficeRepository;
+        this.foreignBoxOfficeRepository = foreignBoxOfficeRepository;
+        this.kdmbService = kdmbService;
     }
 
-    public void dailyUpdateBoxOffice(String repNationCd) throws Exception {
-
-        // KOBIS 오픈 API Rest Client를 통해 호출
+    public List<BoxOfficeMovie> searchingDailyBoxOffice(String repNationCd) throws Exception {
         KobisOpenAPIRestService service = new KobisOpenAPIRestService(KobisApiKEY);
 
         // 일일 박스오피스 서비스 호출 (boolean isJson, String targetDt, String itemPerPage,String multiMovieYn, String repNationCd, String wideAreaCd)
-        dailyResponse = service.getDailyBoxOffice(true, targetDt, itemPerPage, multiMovieYn, repNationCd, wideAreaCd);
+        boxResponse = service.getDailyBoxOffice(true, targetDt, itemPerPage, multiMovieYn, repNationCd, wideAreaCd);
 
-        BoxofficeResponse parsingResponse = parsingKobis(dailyResponse);
+        BoxofficeResponse parsingResponse = parsingKobis(boxResponse);
         List<BoxOfficeMovie> dailyList = parsingResponse.getBoxOfficeResult().getDailyBoxOfficeList();
 
-        saveKobis(service, dailyList, parsingResponse, repNationCd);
+        return dailyList;
     }
 
+    public List<BoxOfficeMovie> searchingBoxOffice(String targetDt) throws Exception {
+        KobisOpenAPIRestService service = new KobisOpenAPIRestService(KobisApiKEY);
 
-    public void saveKobis(KobisOpenAPIRestService service, List<BoxOfficeMovie> dailyList,
-                              BoxofficeResponse parsingResponse, String repNationCd) throws Exception {
+        // 일일 박스오피스 서비스 호출 (boolean isJson, String targetDt, String itemPerPage,String multiMovieYn, String repNationCd, String wideAreaCd)
+        boxResponse = service.getDailyBoxOffice(true, targetDt, itemPerPage, multiMovieYn, repNationCd, wideAreaCd);
+        log.info(boxResponse.toString());
+        BoxofficeResponse parsingResponse = parsingKobis(boxResponse);
+        List<BoxOfficeMovie> dailyList = parsingResponse.getBoxOfficeResult().getDailyBoxOfficeList();
+
+        return dailyList;
+    }
+
+    public void saveBoxOffice(String targetDt) throws Exception {
+        KobisOpenAPIRestService service = new KobisOpenAPIRestService(KobisApiKEY);
+        List<BoxOfficeMovie> dailyList= searchingBoxOffice(targetDt);
+
         for (int i = 0; i < dailyList.size(); i++) {
-            BoxOfficeMovie boxOfficeMovie = parsingResponse.getBoxOfficeResult().getDailyBoxOfficeList().get(i);
+            BoxOfficeMovie boxOfficeMovie = dailyList.get(i);
             boxOfficeMovie.setBoxOfficeId(i);
             movieResponse = service.getMovieInfo(true, boxOfficeMovie.getMovieCd());
             MovieResponse parsingMovieInfo = parsingMovieInfo(movieResponse);
             Movie movie = parsingMovieInfo.getMovieInfoResult().getMovieInfo();
-            boxOfficeFactory.saveBoxOffice(repNationCd,boxOfficeMovie);
 
-            if(verifyExistMovie(boxOfficeMovie.getMovieCd())) continue;
+            if (verifyExistMovie(boxOfficeMovie.getMovieCd())) continue;
+            else {
+                movieRepository.save(movie);
+                saveActors(movie);
+                saveGenres(movie);
+                saveNations(movie);
+                saveMovieAudit(movie);
+                saveDirectors(movie);
+                String movieNm = dailyList.get(i).getMovieNm();
+                String movieCd = dailyList.get(i).getMovieCd();
+                String outputDate = targetDt;
+                kdmbService.generateKdmb(movieCd, movieNm, outputDate);
+            }
+        }
+    }
+
+    public void saveKobis() throws Exception {
+        KobisOpenAPIRestService service = new KobisOpenAPIRestService(KobisApiKEY);
+        boxOfficeMovieRepository.deleteAll();
+        koreaBoxOfficeRepository.deleteAll();
+        foreignBoxOfficeRepository.deleteAll();
+        List<BoxOfficeMovie> dailyList = searchingDailyBoxOffice("");
+        List<BoxOfficeMovie> kList = searchingDailyBoxOffice("K");
+        List<BoxOfficeMovie> fList = searchingDailyBoxOffice("F");
+        for (int i = 0; i < dailyList.size(); i++) {
+            BoxOfficeMovie boxOfficeMovie = dailyList.get(i);
+            boxOfficeMovie.setBoxOfficeId(i);
+            movieResponse = service.getMovieInfo(true, boxOfficeMovie.getMovieCd());
+            MovieResponse parsingMovieInfo = parsingMovieInfo(movieResponse);
+            Movie movie = parsingMovieInfo.getMovieInfoResult().getMovieInfo();
+            boxOfficeFactory.saveBoxOffice("", boxOfficeMovie);
+
+            if (verifyExistMovie(boxOfficeMovie.getMovieCd())) continue;
+            else {
+                movieRepository.save(movie);
+                saveActors(movie);
+                saveGenres(movie);
+                saveNations(movie);
+                saveMovieAudit(movie);
+                saveDirectors(movie);
+            }
+        }
+        for (int i = 0; i < dailyList.size(); i++) {
+            BoxOfficeMovie boxOfficeMovie = kList.get(i);
+            boxOfficeMovie.setBoxOfficeId(i);
+            movieResponse = service.getMovieInfo(true, boxOfficeMovie.getMovieCd());
+            MovieResponse parsingMovieInfo = parsingMovieInfo(movieResponse);
+            Movie movie = parsingMovieInfo.getMovieInfoResult().getMovieInfo();
+            boxOfficeFactory.saveBoxOffice("K", boxOfficeMovie);
+
+            if (verifyExistMovie(boxOfficeMovie.getMovieCd())) continue;
+            else {
+                movieRepository.save(movie);
+                saveActors(movie);
+                saveGenres(movie);
+                saveNations(movie);
+                saveMovieAudit(movie);
+                saveDirectors(movie);
+            }
+        }
+        for (int i = 0; i < dailyList.size(); i++) {
+            BoxOfficeMovie boxOfficeMovie = fList.get(i);
+            boxOfficeMovie.setBoxOfficeId(i);
+            movieResponse = service.getMovieInfo(true, boxOfficeMovie.getMovieCd());
+            MovieResponse parsingMovieInfo = parsingMovieInfo(movieResponse);
+            Movie movie = parsingMovieInfo.getMovieInfoResult().getMovieInfo();
+            boxOfficeFactory.saveBoxOffice("F", boxOfficeMovie);
+
+            if (verifyExistMovie(boxOfficeMovie.getMovieCd())) continue;
             else {
                 movieRepository.save(movie);
                 saveActors(movie);
@@ -101,7 +196,7 @@ public class KobisService {
     }
 
 
-    public boolean verifyExistMovie(String movieCd){
+    public boolean verifyExistMovie(String movieCd) {
         boolean movieExists = movieRepository.existsByMovieCd(movieCd);
 
         return movieExists;
@@ -127,6 +222,7 @@ public class KobisService {
             }
         }
     }
+
     public void saveGenres(Movie movie) {
         for (int i = 0; i < movie.getGenres().size(); i++) {
             if (movie.getGenres() != null && !movie.getGenres().isEmpty()) {
