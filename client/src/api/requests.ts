@@ -11,7 +11,6 @@ const requests = {
   fetchAnimationMovies: "/discover/movie?with_genres=16",
   fetchFamilyMovies: "/discover/movie?with_genres=10751",
   fetchFantasyMovies: "/discover/movie?with_genres=14",
-  
 
   
 }
