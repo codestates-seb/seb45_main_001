@@ -1,45 +1,46 @@
 package com.sundayCinema.sundayCinema.comment;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import javax.validation.constraints.*;
 
 public class CommentDto {
-
-    public static class CommentResponseDto {
-        private long commentId;
-        private String content;
-        private int score;
-
-        //  private long movieId;
-        //  private String nickname;
-
-        /*
-        movieId/memberNickname 설정 필요
-        */
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime createdAt;
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime modifiedAt;
-    }
 
     @Getter
     @Setter
     public static class CommentPostDto {
+        @NotBlank(message = "댓글 내용은 비어있을 수 없습니다.")
+        @Size(max = 500, message = "댓글 내용은 최대 500자여야 합니다.")
         private String content;
+
+        @NotNull(message = "평점은 필수 입력 항목입니다.")
         private int score;
+
+        @NotNull(message = "영화 ID는 필수 입력 항목입니다.")
+        private long movieId;
+
+        @NotNull(message = "사용자 ID는 필수 입력 항목입니다.")
+        private long Id;
     }
 
     @Getter
     @Setter
     public static class CommentPatchDto {
-        private long CommentId;
+        @Size(max = 500, message = "댓글 내용은 최대 500자여야 합니다.")
         private String content;
-        private int score;
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime modifiedAt;
-    }
 
+        private long commentId;
+
+        private int score;
+    }
+    @Getter
+    @Setter
+    public static class CommentResponseDto{
+        @Size(max = 500, message = "댓글 내용은 최대 500자여야 합니다.")
+        private String content;
+
+        private long commentId;
+
+        private int score;
+    }
 }

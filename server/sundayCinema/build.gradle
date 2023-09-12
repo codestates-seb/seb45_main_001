@@ -42,6 +42,7 @@ dependencies {
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 	implementation files('libs/kobis-opcl-rest-v1.0.jar')
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+	implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 }
 
 tasks.named('test') {

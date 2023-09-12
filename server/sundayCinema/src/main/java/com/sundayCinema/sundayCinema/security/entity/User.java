@@ -1,10 +1,13 @@
 package com.sundayCinema.sundayCinema.security.entity;
 
+import com.sundayCinema.sundayCinema.comment.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,6 +26,8 @@ public class User {
 
     private String password;
 
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments = new ArrayList<>();
 //    @ManyToMany(fetch = FetchType.EAGER)
 //    @JoinTable(
 //            name = "user_roles",
