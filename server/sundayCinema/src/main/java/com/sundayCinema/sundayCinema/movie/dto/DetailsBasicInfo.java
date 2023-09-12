@@ -14,14 +14,15 @@ public class DetailsBasicInfo{
     public String rank;
 
     public String movieNm;// "영화명(국문)"
-
+    public String movieNmEn;
     // 영문 제목
     public String audiAcc; // "누적 관객수"
 
     public List<String> poster;
-
-    public String genre; // 리스트 형태로 수정
-    public String nation; // 리스트 형태로 수정
+    public List<StillCutDto> stillCut;
+    public String plot;
+    public List<String> genre; // 리스트 형태로 수정
+    public List<String> nation; // 리스트 형태로 수정
     public String watchGradeNm; // 등급
 
     //평균 평점

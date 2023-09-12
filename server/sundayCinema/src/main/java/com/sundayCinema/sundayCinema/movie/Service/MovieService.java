@@ -9,7 +9,6 @@ import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.ForeignBoxOffice;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.KoreaBoxOffice;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
-import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Poster;
 import com.sundayCinema.sundayCinema.movie.mapper.BoxOfficeMovieMapper;
 import com.sundayCinema.sundayCinema.movie.mapper.GenreMovieMapper;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.BoxOfficeMovieRepository;
@@ -71,9 +70,14 @@ public class MovieService {
         getReview();
     }
     // 액션, 코메디, 드라마, 애니메이션, 스릴러, 판타지, 멜로/로맨스, 공포(호러), 어드밴처, 범죄
-    public List<GenreMovieDto>loadGenreMovie(){
+    public List<GenreMovieDto>loadGenreMovie(String nation){
         List<GenreMovieDto>genreMovieDtos=new ArrayList<>();
-        List<Movie> movies = movieRepository.findAll();
+        List<Movie> movies = new ArrayList<>();
+
+        if(nation.equals("종합"))movies= movieRepository.findAll();
+        else if (nation.equals("국내"))movies= movieRepository.findByNationsNationNm("한국");
+        else if(nation.equals("해외")) movies=movieRepository.findByNationsNationNmIsNot("한국");
+
         for (Movie findMovie : movies) {
             if(parsingGenre(findMovie,"범죄")){
                 GenreMovieDto genreMovieDto= genreMovieMapper.responseGenreMovieDto(findMovie,"범죄");
@@ -81,12 +85,12 @@ public class MovieService {
             }
             if (parsingGenre(findMovie, "액션")) {
                 GenreMovieDto genreMovieDto = genreMovieMapper.responseGenreMovieDto(findMovie, "액션");
-                log.info("액션" + genreMovieDto.toString());
+
                 genreMovieDtos.add(genreMovieDto);
             }
             if (parsingGenre(findMovie, "코메디")) {
                 GenreMovieDto genreMovieDto = genreMovieMapper.responseGenreMovieDto(findMovie, "코메디");
-                log.info("코메디" + genreMovieDto.toString());
+
                 genreMovieDtos.add(genreMovieDto);
             }
             if(parsingGenre(findMovie,"애니메이션")){
@@ -109,9 +113,7 @@ public class MovieService {
                 GenreMovieDto genreMovieDto= genreMovieMapper.responseGenreMovieDto(findMovie,"어드밴처");
                 genreMovieDtos.add(genreMovieDto);
             }
-
         }
-        log.info("리스트"+genreMovieDtos.get(0).toString());
         return genreMovieDtos;
     }
     public List<BoxOfficeMovieDto> loadBoxOffice() {

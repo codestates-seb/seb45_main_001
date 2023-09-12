@@ -43,10 +43,15 @@ public class AuthenticationService {
 
     public String loginCheck(HttpServletRequest request) {
         HttpSession requestSession = request.getSession();
+
         HttpSession authenticationSession = getSession();
+
         if (requestSession.equals(authenticationSession)) {
+
             String username = (String) requestSession.getAttribute("username");
+            log.info("username 확인 :" + username);
             return username;
+
         } else return "인증되지 않은 사용자입니다";
     }
 }
