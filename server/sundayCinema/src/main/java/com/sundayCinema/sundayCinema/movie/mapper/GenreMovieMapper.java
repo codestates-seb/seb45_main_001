@@ -30,7 +30,7 @@ public class GenreMovieMapper {
             stillCutDto.setStillCut_url(stillCut.getStillCut_url());
             stillCutDtos.add(stillCutDto);
         }
-
+        genreMovieDto.movieId = movie.getMovieId();
         genreMovieDto.movieNm = movie.getMovieNm();
         genreMovieDto.posterUrl = poster;
         genreMovieDto.genre = genreNm;

@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
+
 @Mapper(componentModel = "spring")
 public interface CommentMapper {
     Comment commentPostDtoToComment(CommentDto.CommentPostDto commentPostDto);

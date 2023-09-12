@@ -1,4 +1,11 @@
 spring:
+  application:
+    name: your-application-name
+  main:
+    banner-mode: "off" # 배너 출력 끄기 (선택 사항)
+  logging:
+    level:
+      com.sundayCinema.sundayCinema.movie.api.TMDB: DEBUG
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/test?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
