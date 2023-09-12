@@ -23,3 +23,7 @@
   font-size: 1.3rem !important;
   font-weight: 600 !important;
 }
+
+.swiper-wrapper {
+  height: auto !important;
+}
