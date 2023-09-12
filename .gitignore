@@ -1,0 +1,6 @@
+# Default ignored files
+.idea/
+server/sundayCinema/.idea/
+server/sundayCinema/.gradle/
+server/sundayCinema/build/
+server/sundayCinema/Dockerfile
