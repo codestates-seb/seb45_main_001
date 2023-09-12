@@ -1,9 +1,9 @@
 import Header from '../components/Header';
 import { useState, useEffect } from 'react';
 import { styled, css } from 'styled-components';
-import Mymytap from '../components/Mytap';
-import Mycommenttap from '../components/Mycommenttap';
-import Mybookmarktap from '../components/Mybookmarktap';
+import Mymytap from '../components/mypagetab/Mytap';
+import Mycommenttap from '../components/mypagetab/Mycommenttap';
+import Mybookmarktap from '../components/mypagetab/Mybookmarktap';
 import { useSelector } from 'react-redux';
 import { DataState } from '../slice/authslice';
 
@@ -116,7 +116,7 @@ const Lowermypage = styled.div`
 
 function Mypage() {
     const [activeTab, setActiveTab] = useState<string>('My');
-    const globalName = useSelector((state: { data: DataState }) => state.data.name);
+    const globalName = useSelector((state: { data: DataState }) => state.data.globalname);
 
     const handleTabClick = (tabName: string) => {
         setActiveTab(tabName);

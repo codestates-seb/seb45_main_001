@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import LoginPage from './LoginPage';
 import SignupPage from './Signup';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserById, DataState } from '../slice/authslice';
+import { fetchUserById, DataState, updateName } from '../slice/authslice';
 import { RootState } from '../store/authstore';
 import type { AppDispatch } from '../store/authstore';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { lastUrl } from '../api/authapi';
 
@@ -207,8 +207,9 @@ const TempStyle = styled.div`
 
 function Header() {
     const dispatch: AppDispatch = useDispatch();
+    const navigate = useNavigate();
     const [isMagnifierClicked, setisMagnifierClicked] = useState<boolean>(false);
-    const globalName = useSelector((state: { data: DataState }) => state.data.name);
+    const globalName = useSelector((state: { data: DataState }) => state.data.globalname);
 
     const isTokenExpired = (token: string): boolean => {
         try {
@@ -221,9 +222,9 @@ function Header() {
     };
 
     const users = useSelector((state: RootState) => state.data.users);
-    const memberId = localStorage.getItem('memberid');
+    const memberId = sessionStorage.getItem('memberid');
     const user = memberId ? users?.[memberId] : undefined;
-    const token = localStorage.getItem('jwt');
+    const token = sessionStorage.getItem('jwt');
 
     const [isLogin, setIsLogin] = useState<boolean>(() => {
         return token ? !isTokenExpired(token) : false;
@@ -231,12 +232,6 @@ function Header() {
 
     console.log('Member ID:', memberId);
     console.log('User Data:', user);
-
-    useEffect(() => {
-        if (memberId && !user) {
-            dispatch(fetchUserById(memberId));
-        }
-    }, [memberId, user, dispatch]);
 
     function handleMagnifierClick() {
         setisMagnifierClicked(!isMagnifierClicked);
@@ -271,8 +266,11 @@ function Header() {
     function onClickLogout() {
         setIsLogin(false);
         try {
-            localStorage.removeItem('memberid');
-            localStorage.removeItem('jwt');
+            sessionStorage.removeItem('memberid');
+            sessionStorage.removeItem('jwt');
+            sessionStorage.removeItem('membername');
+            sessionStorage.removeItem('membermail');
+            navigate('/');
             console.log('로그아웃 성공');
         } catch (error) {
             console.log('로그아웃 실패', error);
@@ -299,6 +297,13 @@ function Header() {
         }
         return item.toLowerCase().includes(query.toLowerCase());
     });
+
+    useEffect(() => {
+        const memberName = sessionStorage.getItem('membername');
+        if (memberName) {
+            dispatch(updateName(memberName));
+        }
+    }, []);
 
     return (
         <>
