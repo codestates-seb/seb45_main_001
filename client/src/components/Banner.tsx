@@ -146,6 +146,9 @@ interface Movie {
   posterUrl?: string;
   plot: string;
   trailerUrl: string;
+  // trailerUrl: {
+  //   key?: string;
+  //   };
   movieId: number;
   stillCuts: {
     stillCut_url: string;   
@@ -156,6 +159,7 @@ const Banner = () => {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [isClicked, setIsClicked] = useState(false);
   const url = process.env.REACT_APP_API_URL;
+  // const key = process.env.REACT_APP_KDMB_API_KEY;
 
   useEffect(() => {
     fetchData()
@@ -167,10 +171,10 @@ const Banner = () => {
 
     const movieList = response.data.boxofficeList;
     console.log('movieList', movieList);
-    const randomIndex = Math.floor(Math.random() * movieList.results.length);
-    const movieIds = movieList.results[randomIndex].movieId;
-
-    setMovie(movieIds);
+    const randomIndex = Math.floor(Math.random() * movieList.length);
+    const movies = movieList[randomIndex];
+    console.log('movies', movies);
+    setMovie(movies);
   } catch (error) {
     console.error('Error fetching movie data:', error);
   }
@@ -190,7 +194,7 @@ const Banner = () => {
   return (
     <BannerLayout
         style={{
-          backgroundImage: `${movie.posterUrl}`,
+          backgroundImage: `url("${movie.posterUrl}")` ,
           backgroundPosition: "top center",
           backgroundSize: "cover",
         }}
