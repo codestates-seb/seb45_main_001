@@ -4,6 +4,7 @@ import com.sundayCinema.sundayCinema.movie.dto.*;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Actor;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
+import com.sundayCinema.sundayCinema.movie.entity.movieMedia.StillCut;
 import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Trailer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,23 +17,28 @@ import java.util.List;
 public class MovieDetailsMapper {
     public DetailsBasicInfo detailsBasicResponseDto(BoxOfficeMovie boxOfficeMovie, Movie movie) {
         DetailsBasicInfo detailsBasicInfo = new DetailsBasicInfo();
-        String nationList = "";
-        String genreList = "";
         List<String> posterList = new ArrayList<>(movie.getPosters().size());
+        List<String> nationList = new ArrayList<>();
+        List<String> genreList = new ArrayList<>();
         for (int i = 0; i < movie.getNations().size(); i++) {
-            if (i == 0) {
-                nationList = movie.getNations().get(i).getNationNm();
-            } else nationList += "/" + movie.getNations().get(i).getNationNm();
+                nationList.add(movie.getNations().get(i).getNationNm());
         }
         for (int i = 0; i < movie.getGenres().size(); i++) {
-            if (i == 0) {
-                genreList = movie.getGenres().get(i).getGenreNm();
-            } else genreList += "/" + movie.getGenres().get(i).getGenreNm();
+                genreList.add(movie.getGenres().get(i).getGenreNm());
+
         }
         for (int i = 0; i < movie.getPosters().size(); i++) {
             posterList.add(movie.getPosters().get(i).getPoster_image_url());
         }
+        ArrayList<StillCutDto> stillCutDtos=new ArrayList<>();
+        for (int i = 0; i < movie.getStillCuts().size(); i++) {
+            StillCutDto stillCutDto = new StillCutDto();
+            StillCut stillCut = movie.getStillCuts().get(i);
+            stillCutDto.setStillCut_url(stillCut.getStillCut_url());
+            stillCutDtos.add(stillCutDto);
+        }
         detailsBasicInfo.movieNm = boxOfficeMovie.getMovieNm();
+        detailsBasicInfo.movieNmEn = movie.getMovieNmEn();
         detailsBasicInfo.audiAcc = boxOfficeMovie.getAudiAcc();
         detailsBasicInfo.openDt = boxOfficeMovie.getOpenDt();
         detailsBasicInfo.rank = boxOfficeMovie.getRank();
@@ -40,7 +46,10 @@ public class MovieDetailsMapper {
         detailsBasicInfo.nation = nationList;
         detailsBasicInfo.genre = genreList;
         detailsBasicInfo.poster = posterList;
-
+        if(movie.getPlots().isEmpty()||movie.getPlots().get(0).getPlotText().isEmpty()){
+            detailsBasicInfo.plot="줄거리가 없습니다.";
+        }else detailsBasicInfo.plot = movie.getPlots().get(0).getPlotText();
+        detailsBasicInfo.stillCut = stillCutDtos;
         return detailsBasicInfo;
     }
 
@@ -59,7 +68,9 @@ public class MovieDetailsMapper {
             actorDto.setPeopleNm(actor.getPeopleNm());
             actorList.add(actorDto);
         }
-        detailsMainInfo.plot = movie.getPlots().get(0).getPlotText();
+        if(movie.getPlots().isEmpty()||movie.getPlots().get(0).getPlotText().isEmpty()){
+            detailsMainInfo.plot="줄거리가 없습니다.";
+        }else detailsMainInfo.plot = movie.getPlots().get(0).getPlotText();
         detailsMainInfo.director = directorList;
         detailsMainInfo.actors = actorList;
 

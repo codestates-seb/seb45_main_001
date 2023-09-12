@@ -16,10 +16,7 @@ import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieReposit
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -61,12 +58,9 @@ public class MovieController {
     public void test2() throws Exception {
         movieService.dailyUpdateMedia();
     }
-    @GetMapping("/save")
-    public void saveMovieData() throws Exception {
-        kobisService.saveBoxOffice("20220915");
-        kobisService.saveBoxOffice("20220815");
-        kobisService.saveBoxOffice("20220701");
-        kobisService.saveBoxOffice("20220715");
+    @GetMapping("/save/{date}")
+    public void saveMovieData(@PathVariable String date) throws Exception {
+        kobisService.saveBoxOffice(date);
     }
     @GetMapping("/test3")
     public void test3() throws Exception {
@@ -77,7 +71,7 @@ public class MovieController {
     @GetMapping("/top10") //탑텐 무비 json 형태로 보내준다.
     public ResponseEntity getTop10Movies() {
         List<BoxOfficeMovieDto>boxOfficeMovieDtos =  movieService.loadBoxOffice();
-        List<GenreMovieDto>genreMovieDtos= movieService.loadGenreMovie();
+        List<GenreMovieDto>genreMovieDtos= movieService.loadGenreMovie("종합");
         MainPageDto mainPageDto = new MainPageDto();
         mainPageDto.setBoxofficeList(boxOfficeMovieDtos);
         mainPageDto.setGenreMovieList(genreMovieDtos);
@@ -87,8 +81,7 @@ public class MovieController {
     @GetMapping("/top10Korean")
     public ResponseEntity getTop10KoreaMovies() {
         List<BoxOfficeMovieDto>boxOfficeMovieDtos =  movieService.loadKoreaBoxOffice();
-        List<GenreMovieDto>genreMovieDtos= movieService.loadGenreMovie();
-        log.info("getTop10KoreaMovies"+genreMovieDtos.get(0).movieNm);
+        List<GenreMovieDto>genreMovieDtos= movieService.loadGenreMovie("국내");
         MainPageDto mainPageDto = new MainPageDto();
         mainPageDto.setBoxofficeList(boxOfficeMovieDtos);
         mainPageDto.setGenreMovieList(genreMovieDtos);
@@ -98,7 +91,7 @@ public class MovieController {
     @GetMapping("/top10Foreign")
     public ResponseEntity getTop10ForeignMovies() {
         List<BoxOfficeMovieDto>boxOfficeMovieDtos =  movieService.loadForeignBoxOffice();
-        List<GenreMovieDto>genreMovieDtos= movieService.loadGenreMovie();
+        List<GenreMovieDto>genreMovieDtos= movieService.loadGenreMovie("해외");
         MainPageDto mainPageDto = new MainPageDto();
         mainPageDto.setBoxofficeList(boxOfficeMovieDtos);
         mainPageDto.setGenreMovieList(genreMovieDtos);

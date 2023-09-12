@@ -42,7 +42,6 @@ public class KdmbService {
     private final TrailerRepository trailerRepository;
     private final PlotRepository plotRepository;
     private final MovieRepository movieRepository;
-
     private final YoutubeService youtubeService;
 
     public KdmbService(PosterRepository posterRepository, StillCutRepository stillCutRepository,
