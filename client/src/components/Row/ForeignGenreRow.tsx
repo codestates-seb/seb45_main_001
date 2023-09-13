@@ -107,7 +107,7 @@ const ForeignGenreRow = ({isLargeRow, title, id, genre}: ForeignGenreRowProps) =
 
   const fetchMovieData = async () => {
     try {
-    const response = await axios.get(`${url}/top10`);
+    const response = await axios.get(`${url}/top10Foreign`);
     console.log("response", response);
     const filteredMovies = response.data.genreMovieList.filter((movie : ForeignGenreRow) =>
         genre && movie.genre?.includes(genre)
