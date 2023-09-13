@@ -1,6 +1,11 @@
 package com.sundayCinema.sundayCinema.movie.mapper;
 
-import com.sundayCinema.sundayCinema.movie.dto.*;
+import com.sundayCinema.sundayCinema.movie.dto.detailPageDto.DetailsBasicInfo;
+import com.sundayCinema.sundayCinema.movie.dto.detailPageDto.DetailsMainInfo;
+import com.sundayCinema.sundayCinema.movie.dto.detailPageDto.DetailsMediaInfo;
+import com.sundayCinema.sundayCinema.movie.dto.detailPageDto.ActorDto;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.StillCutDto;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.TrailerDto;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Actor;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
@@ -17,7 +22,7 @@ import java.util.List;
 public class MovieDetailsMapper {
     public DetailsBasicInfo detailsBasicResponseDto(BoxOfficeMovie boxOfficeMovie, Movie movie) {
         DetailsBasicInfo detailsBasicInfo = new DetailsBasicInfo();
-        List<String> posterList = new ArrayList<>(movie.getPosters().size());
+
         List<String> nationList = new ArrayList<>();
         List<String> genreList = new ArrayList<>();
         for (int i = 0; i < movie.getNations().size(); i++) {
@@ -26,9 +31,6 @@ public class MovieDetailsMapper {
         for (int i = 0; i < movie.getGenres().size(); i++) {
                 genreList.add(movie.getGenres().get(i).getGenreNm());
 
-        }
-        for (int i = 0; i < movie.getPosters().size(); i++) {
-            posterList.add(movie.getPosters().get(i).getPoster_image_url());
         }
         ArrayList<StillCutDto> stillCutDtos=new ArrayList<>();
         for (int i = 0; i < movie.getStillCuts().size(); i++) {
@@ -41,14 +43,15 @@ public class MovieDetailsMapper {
         detailsBasicInfo.movieNmEn = movie.getMovieNmEn();
         detailsBasicInfo.audiAcc = boxOfficeMovie.getAudiAcc();
         detailsBasicInfo.openDt = boxOfficeMovie.getOpenDt();
+        detailsBasicInfo.backDrop = movie.getBackDrop();
         detailsBasicInfo.rank = boxOfficeMovie.getRank();
         detailsBasicInfo.watchGradeNm = movie.getAudits().get(0).getWatchGradeNm();
         detailsBasicInfo.nation = nationList;
         detailsBasicInfo.genre = genreList;
-        detailsBasicInfo.poster = posterList;
-        if(movie.getPlots().isEmpty()||movie.getPlots().get(0).getPlotText().isEmpty()){
+        detailsBasicInfo.poster = movie.getPoster();
+        if(movie.getPlot().isEmpty()){
             detailsBasicInfo.plot="줄거리가 없습니다.";
-        }else detailsBasicInfo.plot = movie.getPlots().get(0).getPlotText();
+        }else detailsBasicInfo.plot = movie.getPlot();
         detailsBasicInfo.stillCut = stillCutDtos;
         return detailsBasicInfo;
     }
@@ -68,9 +71,9 @@ public class MovieDetailsMapper {
             actorDto.setPeopleNm(actor.getPeopleNm());
             actorList.add(actorDto);
         }
-        if(movie.getPlots().isEmpty()||movie.getPlots().get(0).getPlotText().isEmpty()){
+        if(movie.getPlot().isEmpty()){
             detailsMainInfo.plot="줄거리가 없습니다.";
-        }else detailsMainInfo.plot = movie.getPlots().get(0).getPlotText();
+        }else detailsMainInfo.plot = movie.getPlot();
         detailsMainInfo.director = directorList;
         detailsMainInfo.actors = actorList;
 
@@ -86,9 +89,9 @@ public class MovieDetailsMapper {
             stillCutList.add(movie.getStillCuts().get(i).getStillCut_url());
             log.info("stillCutList :" + movie.getStillCuts().get(i).getStillCut_url());
         }
-            for (int i = 0; i < movie.getYoutubeReviews().size(); i++) {
-            youtubeReviewList.add(movie.getYoutubeReviews().get(i).getYoutubeReview_url());
-            log.info("youtubeList : "+ movie.getYoutubeReviews().get(i).getYoutubeReview_url());
+            for (int i = 0; i < movie.getYoutubeEntities().size(); i++) {
+            youtubeReviewList.add(movie.getYoutubeEntities().get(i).getYoutubeVod_url());
+
         }
             for (int i=0; i< movie.getTrailers().size(); i++){
                 TrailerDto trailerDto = new TrailerDto();
@@ -96,7 +99,7 @@ public class MovieDetailsMapper {
                 trailerDto.setTrailer_url(trailer.getTrailer_url());
                 trailerDto.setVodClass(trailer.getVodClass());
                 trailerList.add(trailerDto);
-                log.info("trailer : "+ trailer.getTrailer_url());
+
             }
         detailsMediaInfo.stillCuts = stillCutList;
         detailsMediaInfo.youtubeReviews = youtubeReviewList;

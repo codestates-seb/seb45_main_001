@@ -24,25 +24,33 @@ public class Movie extends Auditable {
     @Column(nullable = false)
     private String movieCd;
     @Column(nullable = false)
-    private String movieNm;// "영화명(국문)"
+    private String movieNm;
     @Column(nullable = false)
-    private String movieNmEn;// "영화명(영문)"
+    private String movieNmEn;
     @Column(nullable = false)
-    private String movieNmOg;// ""
+    private String movieNmOg;
     @Column(nullable = false)
     private String showTm;// "상영시간"
     @Column(nullable = false)
     private String prdtYear;
     @Column(nullable = false)
-    private String openDt; // "개봉일"
+    private String openDt;
+    @Column
+    private String poster;
     @Column(nullable = false)
-    private String prdtStatNm; // 삭제 예정
+    private String prdtStatNm;
     @Column(nullable = false)
     private String typeNm;
+    @Column
+    private String backDrop;
+    @Column(columnDefinition = "text")
+    private String plot;
+
+
     @OneToMany(mappedBy = "movie")
     private List<MovieAudit> audits; // "관람 등급 명칭"
     @OneToMany(mappedBy = "movie")
-    private List<Nation> nations = new ArrayList<>(); //: "국가"
+    private List<Nation> nations = new ArrayList<>();
     @OneToMany(mappedBy = "movie")
     private List<Actor> actors = new ArrayList<>();
     @OneToMany(mappedBy = "movie")
@@ -50,15 +58,11 @@ public class Movie extends Auditable {
     @OneToMany(mappedBy = "movie")
     private List<Director> directors = new ArrayList<>();
     @OneToMany(mappedBy = "movie")
-    private List<YoutubeReview> youtubeReviews = new ArrayList<>();
-    @OneToMany(mappedBy = "movie")
-    private List<Poster> posters = new ArrayList<>();
+    private List<YoutubeEntity> youtubeEntities = new ArrayList<>();
     @OneToMany(mappedBy = "movie")
     private List<StillCut> stillCuts = new ArrayList<>();
     @OneToMany(mappedBy = "movie")
     private List<Trailer> trailers = new ArrayList<>();
-    @OneToMany(mappedBy = "movie")
-    private List<Plots> plots = new ArrayList<>();
     @OneToMany(mappedBy = "movie")
     private List<Comment> comments = new ArrayList<>();
 }

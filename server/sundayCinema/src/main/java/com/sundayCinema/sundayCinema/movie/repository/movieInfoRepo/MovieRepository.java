@@ -17,7 +17,4 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     default boolean existsByMovieCd(String movieCd) {
         return findByMovieCd(movieCd) != null;
     }
-
-
-
 }

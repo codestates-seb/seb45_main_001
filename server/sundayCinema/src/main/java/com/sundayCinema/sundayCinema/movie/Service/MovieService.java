@@ -1,22 +1,26 @@
 package com.sundayCinema.sundayCinema.movie.Service;
 
-import com.sundayCinema.sundayCinema.movie.api.KMDB.KdmbService;
-import com.sundayCinema.sundayCinema.movie.api.KOBIS.KobisService;
-import com.sundayCinema.sundayCinema.movie.api.youtubeAPI.YoutubeService;
-import com.sundayCinema.sundayCinema.movie.dto.BoxOfficeMovieDto;
-import com.sundayCinema.sundayCinema.movie.dto.GenreMovieDto;
+
+import com.google.api.services.youtube.model.SearchResult;
+import com.sundayCinema.sundayCinema.movie.api.apiRepositoryService.KobisRepositoryService;
+import com.sundayCinema.sundayCinema.movie.api.apiRepositoryService.YoutubeRepositoryService;
+
+
+import com.sundayCinema.sundayCinema.movie.api.apiService.KdmbApiService;
+import com.sundayCinema.sundayCinema.movie.api.apiService.YoutubeApiService;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.BoxOfficeMovieDto;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.GenreMovieDto;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.ForeignBoxOffice;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.KoreaBoxOffice;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
+
 import com.sundayCinema.sundayCinema.movie.mapper.BoxOfficeMovieMapper;
 import com.sundayCinema.sundayCinema.movie.mapper.GenreMovieMapper;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.BoxOfficeMovieRepository;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.ForeignBoxOfficeRepository;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.KoreaBoxOfficeRepository;
 import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
-import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.PosterRepository;
-import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.TrailerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -33,39 +37,37 @@ import java.util.List;
 @Service
 @Slf4j
 public class MovieService {
-    private final TrailerRepository trailerRepository;
+
     private final MovieRepository movieRepository;
-    private final PosterRepository posterRepository;
     private final BoxOfficeMovieRepository boxOfficeMovieRepository;
     private final KoreaBoxOfficeRepository koreaBoxOfficeRepository;
     private final ForeignBoxOfficeRepository foreignBoxOfficeRepository;
-    private final KdmbService kdmbService;
-    private final KobisService kobisService;
-    private final YoutubeService youtubeService;
+    private final KdmbApiService kdmbService;
+
+    private final YoutubeApiService youtubeApiService;
     private final BoxOfficeMovieMapper boxOfficeMovieMapper;
-
     private final GenreMovieMapper genreMovieMapper;
+    private final KobisRepositoryService kobisRepositoryService;
+    private final YoutubeRepositoryService youtubeRepositoryService;
 
-    public MovieService(TrailerRepository trailerRepository, MovieRepository movieRepository,
-                        PosterRepository posterRepository, BoxOfficeMovieRepository boxOfficeMovieRepository,
-                        KoreaBoxOfficeRepository koreaBoxOfficeRepository, ForeignBoxOfficeRepository foreignBoxOfficeRepository, KdmbService kdmbService, KobisService kobisService, YoutubeService youtubeService,
-                        BoxOfficeMovieMapper boxOfficeMovieMapper, GenreMovieMapper genreMovieMapper) {
-        this.trailerRepository = trailerRepository;
+    public MovieService(MovieRepository movieRepository, BoxOfficeMovieRepository boxOfficeMovieRepository,
+                        KoreaBoxOfficeRepository koreaBoxOfficeRepository, ForeignBoxOfficeRepository foreignBoxOfficeRepository, KdmbApiService kdmbService, YoutubeApiService youtubeApiService, BoxOfficeMovieMapper boxOfficeMovieMapper, GenreMovieMapper genreMovieMapper, KobisRepositoryService kobisRepositoryService,
+                        YoutubeRepositoryService youtubeRepositoryService) {
         this.movieRepository = movieRepository;
-        this.posterRepository = posterRepository;
         this.boxOfficeMovieRepository = boxOfficeMovieRepository;
         this.koreaBoxOfficeRepository = koreaBoxOfficeRepository;
         this.foreignBoxOfficeRepository = foreignBoxOfficeRepository;
         this.kdmbService = kdmbService;
-        this.kobisService = kobisService;
-        this.youtubeService = youtubeService;
+        this.youtubeApiService = youtubeApiService;
         this.boxOfficeMovieMapper = boxOfficeMovieMapper;
         this.genreMovieMapper = genreMovieMapper;
+        this.kobisRepositoryService = kobisRepositoryService;
+        this.youtubeRepositoryService = youtubeRepositoryService;
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void dailyUpdateAll() throws Exception {
-        kobisService.saveKobis();
+        kobisRepositoryService.saveKobis();
         dailyUpdateMedia();
         getReview();
     }
@@ -163,26 +165,25 @@ public class MovieService {
         List<BoxOfficeMovie> boxList = boxOfficeMovieRepository.findAll();
         for (int i = 0; i < boxList.size(); i++) {
             String movieNm = boxList.get(i).getMovieNm();
-            String movieCd = boxList.get(i).getMovieCd();
+
             String openDt = boxList.get(i).getOpenDt();
             String outputDate = parsingDate(openDt);
-            kdmbService.generateKdmb(movieCd, movieNm, outputDate);
+            kdmbService.generateKdmb(movieNm, outputDate);
         }
         List<KoreaBoxOffice> kList = koreaBoxOfficeRepository.findAll();
         for (int i = 0; i < kList.size(); i++) {
             String movieNm = kList.get(i).getMovieNm();
-            String movieCd = kList.get(i).getMovieCd();
+
             String openDt = kList.get(i).getOpenDt();
             String outputDate = parsingDate(openDt);
-            kdmbService.generateKdmb(movieCd, movieNm, outputDate);
+            kdmbService.generateKdmb(movieNm, outputDate);
         }
         List<ForeignBoxOffice> fList = foreignBoxOfficeRepository.findAll();
         for (int i = 0; i < fList.size(); i++) {
             String movieNm = fList.get(i).getMovieNm();
-            String movieCd = fList.get(i).getMovieCd();
             String openDt = fList.get(i).getOpenDt();
             String outputDate = parsingDate(openDt);
-            kdmbService.generateKdmb(movieCd, movieNm, outputDate);
+            kdmbService.generateKdmb( movieNm, outputDate);
         }
     }
 
@@ -193,18 +194,21 @@ public class MovieService {
         List<ForeignBoxOffice> fList = foreignBoxOfficeRepository.findAll();
         for(int i=0; i< boxList.size(); i++) {
             String movieName = boxList.get(i).getMovieNm();
-            String searchReview = youtubeService.extractYoutube(youtubeService.searchYoutube(movieName, "리뷰"));
-            youtubeService.saveYoutube(searchReview, movieName);
+            Movie findMovie = movieRepository.findByMovieCd(boxList.get(i).getMovieCd());
+            List<SearchResult> searchReview = youtubeApiService.searchYoutube(movieName,"리뷰");
+            youtubeRepositoryService.saveYoutube(searchReview,findMovie);
         }
         for(int i=0; i< kList.size(); i++) {
             String movieName = kList.get(i).getMovieNm();
-            String searchReview = youtubeService.extractYoutube(youtubeService.searchYoutube(movieName, "리뷰"));
-            youtubeService.saveYoutube(searchReview, movieName);
+            Movie findMovie = movieRepository.findByMovieCd(kList.get(i).getMovieCd());
+            List<SearchResult> searchReview = youtubeApiService.searchYoutube(movieName,"리뷰");
+            youtubeRepositoryService.saveYoutube(searchReview,findMovie);
         }
         for(int i=0; i< fList.size(); i++) {
             String movieName = fList.get(i).getMovieNm();
-            String searchReview = youtubeService.extractYoutube(youtubeService.searchYoutube(movieName, "리뷰"));
-            youtubeService.saveYoutube(searchReview, movieName);
+            Movie findMovie = movieRepository.findByMovieCd(fList.get(i).getMovieCd());
+            List<SearchResult> searchReview = youtubeApiService.searchYoutube(movieName,"리뷰");
+            youtubeRepositoryService.saveYoutube(searchReview,findMovie);
         }
     }
 

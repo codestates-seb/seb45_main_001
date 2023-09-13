@@ -1,13 +1,11 @@
 package com.sundayCinema.sundayCinema.movie.mapper;
 
-import com.sundayCinema.sundayCinema.movie.dto.ActorDto;
-import com.sundayCinema.sundayCinema.movie.dto.BoxOfficeMovieDto;
-import com.sundayCinema.sundayCinema.movie.dto.GenreDto;
-import com.sundayCinema.sundayCinema.movie.dto.StillCutDto;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.BoxOfficeMovieDto;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.GenreDto;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.StillCutDto;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.ForeignBoxOffice;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.KoreaBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Actor;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Genre;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
 import com.sundayCinema.sundayCinema.movie.entity.movieMedia.StillCut;
@@ -42,13 +40,11 @@ public class BoxOfficeMovieMapper {
             genreDtos.add(genreDto);
         }
         String trailerUrl="";
-        String posterUrl="";
-        if (findMovie.getTrailers().isEmpty() || findMovie.getPosters().isEmpty()) {
-             trailerUrl = "http://file.koreafilm.or.kr/thm/02/99/18/17/tn_DPF027860.jpg";
-             posterUrl = "https://www.kmdb.or.kr/trailer/trailerPlayPop?pFileNm=MK006689_P03.mp4";
+
+        if (findMovie.getTrailers().isEmpty()) {
+              trailerUrl= "https://www.kmdb.or.kr/trailer/trailerPlayPop?pFileNm=MK006689_P03.mp4";
         }else {
             trailerUrl = findMovie.getTrailers().get(0).getTrailer_url();
-            posterUrl = findMovie.getPosters().get(0).getPoster_image_url();
         }
 
         ArrayList<StillCutDto> stillCutDtos=new ArrayList<>();
@@ -63,15 +59,16 @@ public class BoxOfficeMovieMapper {
         BoxOfficeMovieDto boxOfficeMovieDto = new BoxOfficeMovieDto();
         boxOfficeMovieDto.movieId= findMovie.getMovieId();
         boxOfficeMovieDto.trailerUrl= trailerUrl;
-        boxOfficeMovieDto.posterUrl = posterUrl;
+        boxOfficeMovieDto.posterUrl = findMovie.getPoster();
         boxOfficeMovieDto.rank = boxOfficeMovie.getRank();
         boxOfficeMovieDto.movieNm = boxOfficeMovie.getMovieNm();
         boxOfficeMovieDto.genre=genreDtos;
         boxOfficeMovieDto.stillCut=stillCutDtos;
-        if(findMovie.getPlots().isEmpty()||findMovie.getPlots().get(0)==null){
+        boxOfficeMovieDto.backDrop = findMovie.getBackDrop();
+        if(findMovie.getPlot().isEmpty()){
             boxOfficeMovieDto.plot="줄거리가 없습니다.";
         }
-        boxOfficeMovieDto.plot = findMovie.getPlots().get(0).getPlotText();
+        boxOfficeMovieDto.plot = findMovie.getPlot();
         return boxOfficeMovieDto;
     }
     public BoxOfficeMovieDto boxOfficeResponseDto(KoreaBoxOffice boxOfficeMovie) {
@@ -89,13 +86,12 @@ public class BoxOfficeMovieMapper {
             genreDtos.add(genreDto);
         }
         String trailerUrl="";
-        String posterUrl="";
-        if (findMovie.getTrailers().isEmpty() || findMovie.getPosters().isEmpty()) {
-            trailerUrl = "http://file.koreafilm.or.kr/thm/02/99/18/17/tn_DPF027860.jpg";
-            posterUrl = "https://www.kmdb.or.kr/trailer/trailerPlayPop?pFileNm=MK006689_P03.mp4";
+        if (findMovie.getTrailers().isEmpty()) {
+
+            trailerUrl = "https://www.kmdb.or.kr/trailer/trailerPlayPop?pFileNm=MK006689_P03.mp4";
         }else {
             trailerUrl = findMovie.getTrailers().get(0).getTrailer_url();
-            posterUrl = findMovie.getPosters().get(0).getPoster_image_url();
+
         }
         ArrayList<StillCutDto> stillCutDtos=new ArrayList<>();
         for (int i = 0; i < findMovie.getStillCuts().size(); i++) {
@@ -108,14 +104,15 @@ public class BoxOfficeMovieMapper {
         BoxOfficeMovieDto boxOfficeMovieDto = new BoxOfficeMovieDto();
         boxOfficeMovieDto.movieId= findMovie.getMovieId();
         boxOfficeMovieDto.trailerUrl= trailerUrl;
-        boxOfficeMovieDto.posterUrl = posterUrl;
+        boxOfficeMovieDto.posterUrl = findMovie.getPoster();
         boxOfficeMovieDto.rank = boxOfficeMovie.getRank();
         boxOfficeMovieDto.movieNm = boxOfficeMovie.getMovieNm();
         boxOfficeMovieDto.genre=genreDtos;
         boxOfficeMovieDto.stillCut=stillCutDtos;
-        if(findMovie.getPlots().isEmpty()||findMovie.getPlots().get(0)==null){
+        boxOfficeMovieDto.backDrop = findMovie.getBackDrop();
+        if(findMovie.getPlot().isEmpty()){
             boxOfficeMovieDto.plot="줄거리가 없습니다.";
-        }else boxOfficeMovieDto.plot = findMovie.getPlots().get(0).getPlotText();
+        }else boxOfficeMovieDto.plot = findMovie.getPlot();
 
         return boxOfficeMovieDto;
     }
@@ -134,13 +131,10 @@ public class BoxOfficeMovieMapper {
             genreDtos.add(genreDto);
         }
         String trailerUrl="";
-        String posterUrl="";
-        if (findMovie.getTrailers().isEmpty() || findMovie.getPosters().isEmpty()) {
-            trailerUrl = "http://file.koreafilm.or.kr/thm/02/99/18/17/tn_DPF027860.jpg";
-            posterUrl = "https://www.kmdb.or.kr/trailer/trailerPlayPop?pFileNm=MK006689_P03.mp4";
+        if (findMovie.getTrailers().isEmpty() || findMovie.getPoster().isEmpty()) {
+            trailerUrl = "https://www.kmdb.or.kr/trailer/trailerPlayPop?pFileNm=MK006689_P03.mp4";
         }else {
             trailerUrl = findMovie.getTrailers().get(0).getTrailer_url();
-            posterUrl = findMovie.getPosters().get(0).getPoster_image_url();
         }
         ArrayList<StillCutDto> stillCutDtos=new ArrayList<>();
         for (int i = 0; i < findMovie.getStillCuts().size(); i++) {
@@ -153,14 +147,15 @@ public class BoxOfficeMovieMapper {
         BoxOfficeMovieDto boxOfficeMovieDto = new BoxOfficeMovieDto();
         boxOfficeMovieDto.movieId= findMovie.getMovieId();
         boxOfficeMovieDto.trailerUrl= trailerUrl;
-        boxOfficeMovieDto.posterUrl = posterUrl;
+        boxOfficeMovieDto.posterUrl = findMovie.getPoster();
         boxOfficeMovieDto.rank = boxOfficeMovie.getRank();
         boxOfficeMovieDto.movieNm = boxOfficeMovie.getMovieNm();
+        boxOfficeMovieDto.backDrop = findMovie.getBackDrop();
         boxOfficeMovieDto.genre=genreDtos;
         boxOfficeMovieDto.stillCut=stillCutDtos;
-        if(findMovie.getPlots().isEmpty()||findMovie.getPlots().get(0)==null){
+        if(findMovie.getPlot().isEmpty()){
             boxOfficeMovieDto.plot="줄거리가 없습니다.";
-        } else boxOfficeMovieDto.plot = findMovie.getPlots().get(0).getPlotText();
+        } else boxOfficeMovieDto.plot = findMovie.getPlot();
 
         return boxOfficeMovieDto;
     }

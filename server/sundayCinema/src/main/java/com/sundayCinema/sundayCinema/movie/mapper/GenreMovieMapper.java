@@ -1,7 +1,7 @@
 package com.sundayCinema.sundayCinema.movie.mapper;
 
-import com.sundayCinema.sundayCinema.movie.dto.GenreMovieDto;
-import com.sundayCinema.sundayCinema.movie.dto.StillCutDto;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.GenreMovieDto;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.StillCutDto;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
 import com.sundayCinema.sundayCinema.movie.entity.movieMedia.StillCut;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +15,9 @@ public class GenreMovieMapper {
     public GenreMovieDto responseGenreMovieDto(Movie movie, String genreNm){
         String poster ="";
         String trailer="";
-        if(movie.getPosters().isEmpty()){
+        if(movie.getPoster().isEmpty()){
             poster= "http://file.koreafilm.or.kr/thm/02/99/18/12/tn_DPF027618.jpg";
-        }else{poster= movie.getPosters().get(0).getPoster_image_url();}
+        }else{poster= movie.getPoster();}
         if(movie.getTrailers().isEmpty()){
             trailer= "https://www.kmdb.or.kr/trailer/trailerPlayPop?pFileNm=MK006689_P03.mp4";
         }else{trailer= movie.getTrailers().get(0).getTrailer_url();}
@@ -35,10 +35,11 @@ public class GenreMovieMapper {
         genreMovieDto.posterUrl = poster;
         genreMovieDto.genre = genreNm;
         genreMovieDto.trailerUrl =trailer;
-        if(movie.getPlots().isEmpty()||movie.getPlots().get(0)==null){
+        genreMovieDto.backDrop = movie.getBackDrop();
+        if(movie.getPlot().isEmpty()){
             genreMovieDto.plot="줄거리가 없습니다.";
         }
-        else genreMovieDto.plot = movie.getPlots().get(0).getPlotText();
+        else genreMovieDto.plot = movie.getPlot();
         genreMovieDto.stillCut= stillCutDtos;
         return genreMovieDto;
     }

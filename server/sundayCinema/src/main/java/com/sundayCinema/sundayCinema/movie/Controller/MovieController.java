@@ -1,75 +1,54 @@
 package com.sundayCinema.sundayCinema.movie.Controller;
 
+
 import com.sundayCinema.sundayCinema.movie.Service.MovieService;
-import com.sundayCinema.sundayCinema.movie.api.ImageDownloadService;
-import com.sundayCinema.sundayCinema.movie.api.KMDB.KdmbService;
-import com.sundayCinema.sundayCinema.movie.api.KOBIS.KobisService;
-import com.sundayCinema.sundayCinema.movie.api.TMDB.MovieDetails;
-import com.sundayCinema.sundayCinema.movie.api.TMDB.TmdbService;
-import com.sundayCinema.sundayCinema.movie.dto.*;
+import com.sundayCinema.sundayCinema.movie.api.apiRepositoryService.KobisRepositoryService;
+import com.sundayCinema.sundayCinema.movie.dto.detailPageDto.DetailPageDto;
+import com.sundayCinema.sundayCinema.movie.dto.detailPageDto.DetailsBasicInfo;
+import com.sundayCinema.sundayCinema.movie.dto.detailPageDto.DetailsMainInfo;
+import com.sundayCinema.sundayCinema.movie.dto.detailPageDto.DetailsMediaInfo;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.BoxOfficeMovieDto;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.GenreMovieDto;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.MainPageDto;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
-import com.sundayCinema.sundayCinema.movie.entity.boxOffice.ForeignBoxOffice;
-import com.sundayCinema.sundayCinema.movie.entity.boxOffice.KoreaBoxOffice;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
-import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Poster;
-import com.sundayCinema.sundayCinema.movie.mapper.BoxOfficeMovieMapper;
 import com.sundayCinema.sundayCinema.movie.mapper.MovieDetailsMapper;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.BoxOfficeMovieRepository;
 import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.io.IOException;
-import java.nio.file.Files;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @Slf4j
 @RequestMapping
 public class MovieController {
-    private final KobisService kobisService;
-    private final KdmbService kdmbService;
     private final MovieService movieService;
-    private final BoxOfficeMovieMapper boxOfficeMovieMapper;
     private final BoxOfficeMovieRepository boxOfficeMovieRepository;
     private final MovieRepository movieRepository;
-    private final TmdbService tmdbService;
     private final MovieDetailsMapper movieDetailsMapper;
-    private final ImageDownloadService imageDownloadService;
+    private final KobisRepositoryService kobisRepositoryService;
 
-    public MovieController(KobisService kobisService, KdmbService kdmbService,
-                           MovieService movieService, BoxOfficeMovieMapper boxOfficeMovieMapper,
-                           BoxOfficeMovieRepository boxOfficeMovieRepository, MovieRepository movieRepository,
-                           TmdbService tmdbService, MovieDetailsMapper movieDetailsMapper,
-                           ImageDownloadService imageDownloadService) {
-        this.kobisService = kobisService;
-        this.kdmbService = kdmbService;
+    public MovieController(MovieService movieService, BoxOfficeMovieRepository boxOfficeMovieRepository,
+                           MovieRepository movieRepository,
+                           MovieDetailsMapper movieDetailsMapper, KobisRepositoryService kobisRepositoryService) {
         this.movieService = movieService;
-        this.boxOfficeMovieMapper = boxOfficeMovieMapper;
         this.boxOfficeMovieRepository = boxOfficeMovieRepository;
         this.movieRepository = movieRepository;
-        this.tmdbService = tmdbService;
         this.movieDetailsMapper = movieDetailsMapper;
-        this.imageDownloadService = imageDownloadService;
+        this.kobisRepositoryService = kobisRepositoryService;
     }
 
     @GetMapping("/test")
     public void test() throws Exception {
-        kobisService.saveKobis();
+        kobisRepositoryService.saveKobis();
     }
 
     @GetMapping("/test2")
@@ -78,29 +57,17 @@ public class MovieController {
     }
     @GetMapping("/save/{date}")
     public void saveMovieData(@PathVariable String date) throws Exception {
-        kobisService.saveBoxOffice(date);
+        kobisRepositoryService.saveBoxOfficeAndMovieInfo(date);
     }
     @GetMapping("/test3")
     public void test3() throws Exception {
         movieService.dailyUpdateAll();
     }
-    @GetMapping("/download")
-    public void downloadImage() throws IOException {
-        imageDownloadService.downloadImage("http://file.koreafilm.or.kr/thm/01/copy/00/65/19/tn_DST817433.jpg","C:\\sundayImages\\image.jpg");
+    @GetMapping("/test4")
+    public void test4() throws Exception {
+        movieService.getReview();
     }
-    @GetMapping("/tmdb/{movieTitle}")
-    public String getMovieDetails(@PathVariable String movieTitle) throws IOException {
-        tmdbService.getMovieDetailsByTitle(movieTitle);
-        tmdbService.getMovieTrailer(movieTitle);
-//        tmdbService.getCollectionIdByMovieTitle(movieTitle);
-        log.info("제목 :"+ tmdbService.getMovieDetailsByTitle(movieTitle).getTitle());
-        log.info("배경화면 :"+tmdbService.getMovieDetailsByTitle(movieTitle).getBackdropPath());
-        log.info("줄거리 :"+tmdbService.getMovieDetailsByTitle(movieTitle).getOverview());
-        log.info("포스터 :"+tmdbService.getMovieDetailsByTitle(movieTitle).getPosterPath());
-        log.info("영화 예고편 :"+ tmdbService.getMovieTrailer(movieTitle));
-//        log.info("이미지 컬렉션 :" + tmdbService.getCollectionIdByMovieTitle(movieTitle));
-        return tmdbService.getMovieDetailsByTitle(movieTitle).getTitle();
-    }
+
     @GetMapping("/top10") //탑텐 무비 json 형태로 보내준다.
     public ResponseEntity getTop10Movies() {
         List<BoxOfficeMovieDto>boxOfficeMovieDtos =  movieService.loadBoxOffice();
