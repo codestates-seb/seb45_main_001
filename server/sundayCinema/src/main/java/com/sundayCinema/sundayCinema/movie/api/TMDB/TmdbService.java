@@ -4,6 +4,7 @@ import com.sundayCinema.sundayCinema.movie.Service.MovieService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import okhttp3.OkHttpClient;
@@ -14,7 +15,8 @@ import java.io.IOException;
 @Service
 @Slf4j
 public class TmdbService {
-    private final String apiKey = "ccba510dce22da81439817bcf25e5121"; // application.properties에서 읽어올 수도 있음
+    @Value("${TMDB_API_KEY}")
+    private  String apiKey; // application.properties에서 읽어올 수도 있음
     private final String tmdbBaseUrl = "https://api.themoviedb.org/3";
     private final RestTemplate restTemplate = new RestTemplate();
 

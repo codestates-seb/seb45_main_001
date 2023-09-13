@@ -22,8 +22,8 @@ import java.util.List;
 @Service
 @Slf4j
 public class YoutubeService {
-
-    private String youtubeApiKey="AIzaSyB8WrnR8bDlLdTCabm5kDbBBrvj1-P1y80";
+    @Value("${YOUTUBE_API_KEY}")
+    private String youtubeApiKey;
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     private final YoutubeReviewRepository youtubeReviewRepository;
