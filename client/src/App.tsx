@@ -6,6 +6,8 @@ import HomePage from './pages/HomePage';
 import Mypage from './pages/Mypage';
 import './css/App.css';
 import Authguard from './components/Authguard';
+import KoreaPage from './pages/KoreaPage';
+import ForeignPage from './pages/ForeignPage';
 
 function App() {
     return (
@@ -13,9 +15,12 @@ function App() {
             {/* <Header /> */}
             <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/korea" element={<KoreaPage />} />
+                <Route path="/foreign" element={<ForeignPage />} />
                 <Route path="/submain" element={<Submain />} />
                 <Route path="/mypage" element={<Authguard />}>
-                    <Route index element={<Mypage />} />
+                
+                
                 </Route>
             </Routes>
             <Footer />

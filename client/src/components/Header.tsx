@@ -315,8 +315,12 @@ function Header() {
                         </Link>
                     </LogoStyle>
                     <CountryStyle>
-                        <DomesticStyle>국내</DomesticStyle>
-                        <OverseasStyle>해외</OverseasStyle>
+                        <DomesticStyle>
+                            <Link to="/korea">국내</Link>
+                        </DomesticStyle>
+                        <OverseasStyle>
+                            <Link to="/foreign">해외</Link>
+                        </OverseasStyle>
                         <TempStyle>
                             임시링크
                             <Templink>
