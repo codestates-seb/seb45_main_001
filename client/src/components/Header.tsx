@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import LoginPage from './LoginPage';
 import SignupPage from './Signup';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserById } from '../slice/authslice';
+import { fetchUserById, DataState, updateName } from '../slice/authslice';
 import { RootState } from '../store/authstore';
 import type { AppDispatch } from '../store/authstore';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { lastUrl } from '../api/authapi';
 
@@ -99,6 +99,23 @@ const SearchinputStyle = styled.input`
     border-radius: 3px;
     padding: 3px;
     padding-left: 6px;
+    font-size: 14px;
+`;
+
+const SearchfilterStyle = styled.ul`
+    position: absolute;
+    width: 100%;
+    list-style: none;
+    top: 29px;
+    background-color: white;
+    border-radius: 5px;
+    text-align: left;
+`;
+
+const SearchfilterliStyle = styled.ul`
+    width: 100%;
+    padding-left: 6px;
+    margin-bottom: 3px;
 `;
 
 const MagnifierStyle = styled.div`
@@ -147,15 +164,13 @@ const TempStyle = styled.div`
     position: relative;
     color: white;
     cursor: pointer;
-    
+
     &:hover {
         > ${Templink} {
             display: flex;
         }
     }
 `;
-
-
 
 // const [isLogin, setIsLogin] = useState<boolean>(false);
 // const [sessionUser, setSessionUser] = useState<any>(null); //받아오는 데이타의 세션유저이름
@@ -192,7 +207,9 @@ const TempStyle = styled.div`
 
 function Header() {
     const dispatch: AppDispatch = useDispatch();
+    const navigate = useNavigate();
     const [isMagnifierClicked, setisMagnifierClicked] = useState<boolean>(false);
+    const globalName = useSelector((state: { data: DataState }) => state.data.globalname);
 
     const isTokenExpired = (token: string): boolean => {
         try {
@@ -205,9 +222,9 @@ function Header() {
     };
 
     const users = useSelector((state: RootState) => state.data.users);
-    const memberId = localStorage.getItem('memberid');
+    const memberId = sessionStorage.getItem('memberid');
     const user = memberId ? users?.[memberId] : undefined;
-    const token = localStorage.getItem('jwt');
+    const token = sessionStorage.getItem('jwt');
 
     const [isLogin, setIsLogin] = useState<boolean>(() => {
         return token ? !isTokenExpired(token) : false;
@@ -215,12 +232,6 @@ function Header() {
 
     console.log('Member ID:', memberId);
     console.log('User Data:', user);
-
-    useEffect(() => {
-        if (memberId && !user) {
-            dispatch(fetchUserById(memberId));
-        }
-    }, [memberId, user, dispatch]);
 
     function handleMagnifierClick() {
         setisMagnifierClicked(!isMagnifierClicked);
@@ -255,13 +266,44 @@ function Header() {
     function onClickLogout() {
         setIsLogin(false);
         try {
-            localStorage.removeItem('memberid');
-            localStorage.removeItem('jwt');
+            sessionStorage.removeItem('memberid');
+            sessionStorage.removeItem('jwt');
+            sessionStorage.removeItem('membername');
+            sessionStorage.removeItem('membermail');
+            navigate('/');
             console.log('로그아웃 성공');
         } catch (error) {
             console.log('로그아웃 실패', error);
         }
     }
+
+    const [query, setQuery] = useState<string>('');
+    const [searchData, setSearchData] = useState<string[]>([
+        '오펜하이머',
+        '범죄도시',
+        '범죄도시2',
+        '범죄도시3',
+        '범죄도시4',
+        '범죄도시5',
+        '기생충',
+        '에브리씽 에브리웨어 올 엣 원스',
+        '퓨리',
+        '풀 메탈 재킷',
+    ]);
+
+    const filteredData = searchData.filter((item) => {
+        if (query.trim() === '') {
+            return false;
+        }
+        return item.toLowerCase().includes(query.toLowerCase());
+    });
+
+    useEffect(() => {
+        const memberName = sessionStorage.getItem('membername');
+        if (memberName) {
+            dispatch(updateName(memberName));
+        }
+    }, []);
 
     return (
         <>
@@ -288,7 +330,17 @@ function Header() {
                     </MagnifierStyle>
                     <SearchbarStyle $isOpen={isMagnifierClicked}>
                         <Relative>
-                            <SearchinputStyle aria-label="" placeholder="검색..."></SearchinputStyle>
+                            <SearchinputStyle
+                                aria-label=""
+                                placeholder="검색..."
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                            ></SearchinputStyle>
+                            <SearchfilterStyle>
+                                {filteredData.map((item, index) => (
+                                    <SearchfilterliStyle key={index}>{item}</SearchfilterliStyle>
+                                ))}
+                            </SearchfilterStyle>
                         </Relative>
                     </SearchbarStyle>
                     <LogSignStyle>
@@ -300,7 +352,7 @@ function Header() {
                         )}
                         {isLogin && (
                             <>
-                                <GeneralStyle>Hello, !</GeneralStyle>
+                                <GeneralStyle>Hello,{globalName}!</GeneralStyle>
                                 <LoginbuttonStyle onClick={onClickLogout}>로그아웃</LoginbuttonStyle>
                             </>
                         )}

@@ -3,12 +3,14 @@ import { apiCall } from '../api/authapi';
 
 // any는 나중에 api의 data 들어오는 거 보고 바꿀 것
 
-interface DataState {
+export interface DataState {
     items: any[];
     question: any | null;
     users: { [key: string]: any };
     answers: any[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    globalname: string;
+    globalmail: string;
 }
 
 interface FetchPayload {
@@ -55,13 +57,16 @@ export const fetchUserById = createAsyncThunk('data/fetchUserById', async (membe
     return { memberId, user: response.data };
 });
 
-export const fetchAnswersByQuestionId = createAsyncThunk('data/fetchAnswersByQuestionId', async (questionId: string) => {
-    const response = await apiCall({
-        method: 'GET',
-        url: `questions/${questionId}/answers`,
-    });
-    return response;
-});
+export const fetchAnswersByQuestionId = createAsyncThunk(
+    'data/fetchAnswersByQuestionId',
+    async (questionId: string) => {
+        const response = await apiCall({
+            method: 'GET',
+            url: `questions/${questionId}/answers`,
+        });
+        return response;
+    },
+);
 
 const initialState: DataState = {
     items: [],
@@ -69,12 +74,21 @@ const initialState: DataState = {
     users: {},
     answers: [],
     status: 'idle',
+    globalname: '비로그인',
+    globalmail: 'none@nope.com',
 };
 
 export const dataSlice = createSlice({
     name: 'data',
     initialState: initialState,
-    reducers: {},
+    reducers: {
+        updateName: (state, action: PayloadAction<string>) => {
+            state.globalname = action.payload;
+        },
+        updateMail: (state, action: PayloadAction<string>) => {
+            state.globalmail = action.payload;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchUserById.fulfilled, (state, action: PayloadAction<any>) => {
@@ -114,4 +128,19 @@ export const dataSlice = createSlice({
     },
 });
 
+export const { updateName, updateMail } = dataSlice.actions;
+
+
 export default dataSlice.reducer;
+
+
+
+// import { useDispatch, useSelector } from 'react-redux';
+// import { updateName } from '../slice/authslice';
+// const dispatch = useDispatch();
+// const globalName = useSelector((state) => state.data.name); 업데이트네임 사용예
+
+// -----------------------------------------
+// const [isNameEditing, setIsNameEditing] = useState<boolean>(false);  
+// onChange={(e) => dispatch(updateName(e.target.value))} 업데이트 네임 수정하려면 dispatch 사용
+// onBlur={() => setIsNameEditing(false)} 

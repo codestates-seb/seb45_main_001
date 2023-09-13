@@ -1,5 +1,5 @@
 import { styled } from 'styled-components';
-import axios from '../api/axios';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
 import SwiperCore,{ Navigation, Pagination, Scrollbar, A11y } from 'swiper';
@@ -8,7 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import "../css/Row.css";
+import "../../css/Row.css";
 
 SwiperCore.use([Navigation, Pagination, Scrollbar, A11y]);
 
@@ -22,78 +22,6 @@ const RowLayout = styled.section`
     // padding-bottom: 15px;
   }
 `;
-
-// const RowSliderBox = styled.div`
-//   position: relative;
-
-//   &:hover {
-//     .RowSliderArrowLeft {
-//       transition: 400ms all ease-in-out;
-//       visibility: visible;
-//     }
-//     .RowSliderArrowRight {
-//       transition: 400ms all ease-in-out;
-//       visibility: visible;
-//     }
-//   }
-// `;
-
-// const RowSliderArrowLeft = styled.div`
-//   background-clip: content-box;
-//   padding: 20px 0;
-//   box-sizing: border-box;
-//   transition: 400ms all ease-in-out;
-//   cursor: pointer;
-//   width: 80px;
-//   z-index: 1000;
-//   position: absolute;
-//   left: 0;
-//   top: 0;
-//   height: 100%;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   visibility: hidden;
-
-//   :hover {
-//     background: rgba(20, 20, 20, 0.5);
-//     transition: 400ms all ease-in-out;
-//   }
-// `;
-
-// const RowSliderArrowRight = styled.div`
-//   background-clip: content-box;
-//   padding: 20px 0;
-//   box-sizing: border-box;
-//   transition: 400ms all ease-in-out;
-//   cursor: pointer;
-//   width: 80px;
-//   z-index: 1000;
-//   position: absolute;
-//   right: 0;
-//   top: 0;
-//   height: 100%;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   visibility: hidden;
-
-//   :hover {
-//     background: rgba(20, 20, 20, 0.5);
-//     transition: 400ms all ease-in-out;
-//   }
-
-// `;
-
-// const RowSliderArrow = styled.span`
-//   transition: 400ms all ease-in-out;
-//   font-size: 40px;
-
-//   :hover {
-//     transition: 400ms all ease-in-out;
-//     transform: scale(1.5);
-//   }
-// `;
 
 const RowPosters = styled.div`
   display: flex;
@@ -146,7 +74,7 @@ const RowPosterLarge = styled.img`
   }
 
   @media screen and (min-width: 1200px) {
-    max-height: 360px;
+    max-height: 304px;
   }
 
   @media screen and (max-width: 768px) {
@@ -154,32 +82,33 @@ const RowPosterLarge = styled.img`
   }
 `;
 
-interface Row {
-  id: number;
-  poster_path: string;
-  backdrop_path: string;
-  name: string;
+interface TopRow {
+  movieId: number;
+  movieNm? : string;
+  posterUrl: string;
+  rank: number;
 }
 
-interface RowProps {
+interface TopRowProps {
   isLargeRow: boolean;
   title: string;
   id: string;
-  fetchURl: string;
 }
 
-const Row = ({isLargeRow, title, id, fetchURl}: RowProps) => {
+const TopRow = ({isLargeRow, title, id}: TopRowProps) => {
   const navigate = useNavigate();
-  const [movies, setMovies] = useState<Row[]>([]);
+  const [movies, setMovies] = useState<TopRow[]>([]);  
+  const url = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchMovieData();
   }, []);
 
   const fetchMovieData = async () => {
-    const request = await axios.get(fetchURl);
-    console.log("request", request);
-    setMovies(request.data.results);
+    const response = await axios.get(`${url}/top10`);
+    console.log("response", response);
+    const top10Movies = response.data.boxofficeList.slice(0, 10);
+    setMovies(top10Movies);
   }
 
   const navigateTo = () => {
@@ -217,21 +146,17 @@ const Row = ({isLargeRow, title, id, fetchURl}: RowProps) => {
       {movies.map((movie) => (
         // eslint-disable-next-line react/jsx-key
         <SwiperSlide>
-        <React.Fragment key={movie.id}>
+        <React.Fragment key={movie.rank}>
         {isLargeRow ? (
           <RowPosterLarge
-            src={`https://image.tmdb.org/t/p/original/${
-            isLargeRow ? movie.poster_path : movie.backdrop_path
-            } `}
-            alt={movie.name}
+            src={movie.posterUrl}
+            alt={movie.movieNm}
             onClick={navigateTo}
             />
         ) : (
           <RowPoster  
-            src={`https://image.tmdb.org/t/p/original/${
-            isLargeRow ? movie.poster_path : movie.backdrop_path
-            } `}
-            alt={movie.name}
+            src={movie.posterUrl}
+            alt={movie.movieNm}
             onClick={navigateTo}
             />
         )}
@@ -246,4 +171,4 @@ const Row = ({isLargeRow, title, id, fetchURl}: RowProps) => {
   )
 }
 
-export default Row;
+export default TopRow;
