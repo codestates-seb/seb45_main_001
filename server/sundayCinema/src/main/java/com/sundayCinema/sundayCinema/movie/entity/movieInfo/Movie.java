@@ -39,6 +39,9 @@ public class Movie extends Auditable {
     private String prdtStatNm; // 삭제 예정
     @Column(nullable = false)
     private String typeNm;
+    @Column
+    private String backDrop;
+
     @OneToMany(mappedBy = "movie")
     private List<MovieAudit> audits; // "관람 등급 명칭"
     @OneToMany(mappedBy = "movie")

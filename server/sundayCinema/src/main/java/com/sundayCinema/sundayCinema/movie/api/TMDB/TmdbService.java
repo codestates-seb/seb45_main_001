@@ -18,9 +18,6 @@ public class TmdbService {
     private final String tmdbBaseUrl = "https://api.themoviedb.org/3";
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Autowired
-    private MovieService movieService;
-
     public MovieDetails getMovieDetailsByTitle(String movieTitle) {
         String searchUrl = tmdbBaseUrl + "/search/movie?api_key=" + apiKey + "&language=ko-KR&query=" + movieTitle;
 
@@ -34,13 +31,19 @@ public class TmdbService {
 //            log.info("movieDetails"+movieDetails.getPosterPath().isEmpty());
             // 배경화면 및 포스터 이미지 URL을 절대 URL로 변환
             if (movieDetails != null) {
-                movieDetails.setBackdropPath(makeAbsoluteImageUrl(movieDetails.getBackdropPath()));
-                movieDetails.setPosterPath(makeAbsoluteImageUrl(movieDetails.getPosterPath()));
+                if(movieDetails.getBackdropPath()==null){
+                    movieDetails.setBackdropPath("배경화면을 준비중입니다");
+                }else  movieDetails.setBackdropPath(makeAbsoluteImageUrl(movieDetails.getBackdropPath()));
+                if(movieDetails.getPosterPath()==null){
+                    movieDetails.setPosterPath("포스터를 준비중입니다");
+                }else movieDetails.setPosterPath(makeAbsoluteImageUrl(movieDetails.getPosterPath()));
             }
 
             return movieDetails;
         } else {
-            return null;
+            MovieDetails movieDetails= new MovieDetails();
+            movieDetails.setBackdropPath("배경화면을 준비중입니다");
+            return movieDetails;
         }
     }
 

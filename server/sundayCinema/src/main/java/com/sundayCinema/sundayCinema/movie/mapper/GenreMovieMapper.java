@@ -35,6 +35,7 @@ public class GenreMovieMapper {
         genreMovieDto.posterUrl = poster;
         genreMovieDto.genre = genreNm;
         genreMovieDto.trailerUrl =trailer;
+        genreMovieDto.backDrop=movie.getBackDrop();
         if(movie.getPlots().isEmpty()||movie.getPlots().get(0)==null){
             genreMovieDto.plot="줄거리가 없습니다.";
         }

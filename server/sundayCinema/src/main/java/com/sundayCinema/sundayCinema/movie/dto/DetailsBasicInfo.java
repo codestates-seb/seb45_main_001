@@ -24,6 +24,6 @@ public class DetailsBasicInfo{
     public List<String> genre; // 리스트 형태로 수정
     public List<String> nation; // 리스트 형태로 수정
     public String watchGradeNm; // 등급
-
+    public String backDrop;
     //평균 평점
 }

@@ -68,6 +68,7 @@ public class BoxOfficeMovieMapper {
         boxOfficeMovieDto.movieNm = boxOfficeMovie.getMovieNm();
         boxOfficeMovieDto.genre=genreDtos;
         boxOfficeMovieDto.stillCut=stillCutDtos;
+        boxOfficeMovieDto.backDrop= findMovie.getBackDrop();
         if(findMovie.getPlots().isEmpty()||findMovie.getPlots().get(0)==null){
             boxOfficeMovieDto.plot="줄거리가 없습니다.";
         }
@@ -113,6 +114,7 @@ public class BoxOfficeMovieMapper {
         boxOfficeMovieDto.movieNm = boxOfficeMovie.getMovieNm();
         boxOfficeMovieDto.genre=genreDtos;
         boxOfficeMovieDto.stillCut=stillCutDtos;
+        boxOfficeMovieDto.backDrop= findMovie.getBackDrop();
         if(findMovie.getPlots().isEmpty()||findMovie.getPlots().get(0)==null){
             boxOfficeMovieDto.plot="줄거리가 없습니다.";
         }else boxOfficeMovieDto.plot = findMovie.getPlots().get(0).getPlotText();
@@ -158,6 +160,7 @@ public class BoxOfficeMovieMapper {
         boxOfficeMovieDto.movieNm = boxOfficeMovie.getMovieNm();
         boxOfficeMovieDto.genre=genreDtos;
         boxOfficeMovieDto.stillCut=stillCutDtos;
+        boxOfficeMovieDto.backDrop= findMovie.getBackDrop();
         if(findMovie.getPlots().isEmpty()||findMovie.getPlots().get(0)==null){
             boxOfficeMovieDto.plot="줄거리가 없습니다.";
         } else boxOfficeMovieDto.plot = findMovie.getPlots().get(0).getPlotText();

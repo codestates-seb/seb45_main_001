@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sundayCinema.sundayCinema.movie.Service.BoxOfficeService;
 import com.sundayCinema.sundayCinema.movie.api.KMDB.KdmbService;
+import com.sundayCinema.sundayCinema.movie.api.TMDB.MovieDetails;
+import com.sundayCinema.sundayCinema.movie.api.TMDB.TmdbService;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.*;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.BoxOfficeMovieRepository;
@@ -58,15 +60,16 @@ public class KobisService {
     private final BoxOfficeMovieRepository boxOfficeMovieRepository;
     private final KoreaBoxOfficeRepository koreaBoxOfficeRepository;
     private final ForeignBoxOfficeRepository foreignBoxOfficeRepository;
-
     private final KdmbService kdmbService;
+
+    private final TmdbService tmdbService;
 
     public KobisService(MovieRepository movieRepository, ActorRepository actorRepository,
                         DirectorRepository directorRepository, MovieAuditRepository movieAuditRepository,
-                        NationRepository nationRepository, GenreRepository genreRepository,
-                        BoxOfficeService boxOfficeFactory, BoxOfficeMovieRepository boxOfficeMovieRepository,
-                        KoreaBoxOfficeRepository koreaBoxOfficeRepository, ForeignBoxOfficeRepository foreignBoxOfficeRepository,
-                        KdmbService kdmbService) {
+                        NationRepository nationRepository, GenreRepository genreRepository, BoxOfficeService boxOfficeFactory,
+                        BoxOfficeMovieRepository boxOfficeMovieRepository, KoreaBoxOfficeRepository koreaBoxOfficeRepository,
+                        ForeignBoxOfficeRepository foreignBoxOfficeRepository,
+                        KdmbService kdmbService, TmdbService tmdbService) {
         this.movieRepository = movieRepository;
         this.actorRepository = actorRepository;
         this.directorRepository = directorRepository;
@@ -78,6 +81,7 @@ public class KobisService {
         this.koreaBoxOfficeRepository = koreaBoxOfficeRepository;
         this.foreignBoxOfficeRepository = foreignBoxOfficeRepository;
         this.kdmbService = kdmbService;
+        this.tmdbService = tmdbService;
     }
 
     public List<BoxOfficeMovie> searchingDailyBoxOffice(String repNationCd) throws Exception {
@@ -110,22 +114,24 @@ public class KobisService {
 
         for (int i = 0; i < dailyList.size(); i++) {
             BoxOfficeMovie boxOfficeMovie = dailyList.get(i);
-            boxOfficeMovie.setBoxOfficeId(i);
+
             movieResponse = service.getMovieInfo(true, boxOfficeMovie.getMovieCd());
             MovieResponse parsingMovieInfo = parsingMovieInfo(movieResponse);
             Movie movie = parsingMovieInfo.getMovieInfoResult().getMovieInfo();
 
             if (verifyExistMovie(boxOfficeMovie.getMovieCd())) continue;
             else {
+                String movieNm = dailyList.get(i).getMovieNm();
+                String movieCd = dailyList.get(i).getMovieCd();
+                String outputDate = targetDt;
+                MovieDetails movieDetails = tmdbService.getMovieDetailsByTitle(movieNm);
+                movie.setBackDrop(movieDetails.getBackdropPath());
                 movieRepository.save(movie);
                 saveActors(movie);
                 saveGenres(movie);
                 saveNations(movie);
                 saveMovieAudit(movie);
                 saveDirectors(movie);
-                String movieNm = dailyList.get(i).getMovieNm();
-                String movieCd = dailyList.get(i).getMovieCd();
-                String outputDate = targetDt;
                 kdmbService.generateKdmb(movieCd, movieNm, outputDate);
             }
         }
@@ -151,12 +157,18 @@ public class KobisService {
 
             if (verifyExistMovie(boxOfficeMovie.getMovieCd())) continue;
             else {
+                String movieNm = dailyList.get(i).getMovieNm();
+                String movieCd = dailyList.get(i).getMovieCd();
+                String outputDate = targetDt;
+                MovieDetails movieDetails = tmdbService.getMovieDetailsByTitle(movieNm);
+                movie.setBackDrop(movieDetails.getBackdropPath());
                 movieRepository.save(movie);
                 saveActors(movie);
                 saveGenres(movie);
                 saveNations(movie);
                 saveMovieAudit(movie);
                 saveDirectors(movie);
+
             }
         }
         for (int i = 0; i < dailyList.size(); i++) {
@@ -169,12 +181,18 @@ public class KobisService {
 
             if (verifyExistMovie(boxOfficeMovie.getMovieCd())) continue;
             else {
+                String movieNm = dailyList.get(i).getMovieNm();
+                String movieCd = dailyList.get(i).getMovieCd();
+                String outputDate = targetDt;
+                MovieDetails movieDetails = tmdbService.getMovieDetailsByTitle(movieNm);
+                movie.setBackDrop(movieDetails.getBackdropPath());
                 movieRepository.save(movie);
                 saveActors(movie);
                 saveGenres(movie);
                 saveNations(movie);
                 saveMovieAudit(movie);
                 saveDirectors(movie);
+
             }
         }
         for (int i = 0; i < dailyList.size(); i++) {
@@ -187,12 +205,18 @@ public class KobisService {
 
             if (verifyExistMovie(boxOfficeMovie.getMovieCd())) continue;
             else {
+                String movieNm = dailyList.get(i).getMovieNm();
+                String movieCd = dailyList.get(i).getMovieCd();
+                String outputDate = targetDt;
+                MovieDetails movieDetails = tmdbService.getMovieDetailsByTitle(movieNm);
+                movie.setBackDrop(movieDetails.getBackdropPath());
                 movieRepository.save(movie);
                 saveActors(movie);
                 saveGenres(movie);
                 saveNations(movie);
                 saveMovieAudit(movie);
                 saveDirectors(movie);
+
             }
         }
     }

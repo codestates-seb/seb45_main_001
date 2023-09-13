@@ -50,6 +50,7 @@ public class MovieDetailsMapper {
             detailsBasicInfo.plot="줄거리가 없습니다.";
         }else detailsBasicInfo.plot = movie.getPlots().get(0).getPlotText();
         detailsBasicInfo.stillCut = stillCutDtos;
+        detailsBasicInfo.backDrop=movie.getBackDrop();
         return detailsBasicInfo;
     }
 
