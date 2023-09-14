@@ -11,7 +11,9 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 public class Actor {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long actorId;
     @Column
     private String peopleNm;

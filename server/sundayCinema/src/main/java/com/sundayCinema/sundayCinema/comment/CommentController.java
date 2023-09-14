@@ -1,10 +1,9 @@
 package com.sundayCinema.sundayCinema.comment;
 
+import com.sundayCinema.sundayCinema.member.Member;
+import com.sundayCinema.sundayCinema.member.MemberRepository;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
 import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
-import com.sundayCinema.sundayCinema.security.entity.User;
-import com.sundayCinema.sundayCinema.security.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,30 +16,30 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final MovieRepository movieRepository;
 
-    public CommentController(CommentService commentService, UserRepository userRepository, MovieRepository movieRepository) {
+    public CommentController(CommentService commentService, MemberRepository memberRepository, MovieRepository movieRepository) {
         this.commentService = commentService;
-        this.userRepository = userRepository;
+        this.memberRepository = memberRepository;
         this.movieRepository = movieRepository;
     }
 
     @PostMapping
     public ResponseEntity<CommentDto.CommentResponseDto> createComment(
             @Valid @RequestBody CommentDto.CommentPostDto commentPostDto,
-            @RequestParam("userId") Long id,
+            @RequestParam("memberId") long memberId,
             @RequestParam("movieId") long movieId) {
         // Fetch User and Movie objects based on userId and movieId
-        User user = userRepository.findById(id).orElse(null);
+        Member member = memberRepository.findById(memberId).orElse(null);
         Movie movie = movieRepository.findById(movieId).orElse(null);
 
-        if (user == null || movie == null) {
+        if (member == null || movie == null) {
             // 사용자 또는 영화가 존재하지 않는 경우 처리
             return ResponseEntity.badRequest().build();
         }
 
-        CommentDto.CommentResponseDto response = commentService.createComment(commentPostDto, user, movie);
+        CommentDto.CommentResponseDto response = commentService.createComment(commentPostDto, member, movie);
         return ResponseEntity.ok(response);
     }
 

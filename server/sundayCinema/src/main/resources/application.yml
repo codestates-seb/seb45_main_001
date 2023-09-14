@@ -12,6 +12,7 @@ spring:
     show-sql: off
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
   security:
     oauth2:
@@ -23,3 +24,8 @@ spring:
   youtubeApiKey: ${YOUTUBE_API_KEY}
   KdmbApiKey: ${KDMB_API_KEY}
   KobisApiKEY: ${KOBIS_API_KEY}
+jwt:
+  key:
+    secret: ${JWT_SECRET_KEY}
+  access-token-expiration-minutes: 30
+  refresh-token-expiration-minutes: 429

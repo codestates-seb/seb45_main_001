@@ -10,37 +10,40 @@ public class CommentDto {
     @Setter
     public static class CommentPostDto {
         @NotBlank(message = "댓글 내용은 비어있을 수 없습니다.")
-        @Size(max = 500, message = "댓글 내용은 최대 500자여야 합니다.")
         private String content;
 
+
+
         @NotNull(message = "평점은 필수 입력 항목입니다.")
-        private int score;
+        private double score;
 
         @NotNull(message = "영화 ID는 필수 입력 항목입니다.")
         private long movieId;
 
         @NotNull(message = "사용자 ID는 필수 입력 항목입니다.")
-        private long Id;
+        private long memberId;
     }
 
     @Getter
     @Setter
     public static class CommentPatchDto {
-        @Size(max = 500, message = "댓글 내용은 최대 500자여야 합니다.")
+        @NotBlank(message = "댓글 내용은 비어있을 수 없습니다.")
         private String content;
 
         private long commentId;
 
-        private int score;
+        @NotNull(message = "평점은 필수 입력 항목입니다.")
+        private double score;
     }
     @Getter
     @Setter
     public static class CommentResponseDto{
-        @Size(max = 500, message = "댓글 내용은 최대 500자여야 합니다.")
+        @NotBlank(message = "댓글 내용은 비어있을 수 없습니다.")
         private String content;
 
         private long commentId;
 
-        private int score;
+        @NotNull(message = "평점은 필수 입력 항목입니다.")
+        private double score;
     }
 }

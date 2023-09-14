@@ -1,6 +1,6 @@
 package com.sundayCinema.sundayCinema.comment;
+import com.sundayCinema.sundayCinema.member.Member;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
-import com.sundayCinema.sundayCinema.security.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +19,17 @@ public class CommentService {
     }
 
     // Create a new comment
-    public CommentDto.CommentResponseDto createComment(CommentDto.CommentPostDto commentPostDto, User user, Movie movie) {
+    public CommentDto.CommentResponseDto createComment(CommentDto.CommentPostDto commentPostDto, Member member, Movie movie) {
+        double score = commentPostDto.getScore();
+        String content = commentPostDto.getContent();
+        if (score < 0 || score > 5 || content.length() > 100) {
+            throw new InvalidInputException("평점(score)은 0에서 5 사이의 값이어야 하며, 댓글 내용(content)은 최대 100자여야 합니다.");
+        }
+        if (commentRepository.existsByMemberAndMovie(member, movie)) {
+            throw new DuplicateCommentException("이미 댓글과 평점을 작성했습니다.");
+        }
         Comment comment = commentMapper.commentPostDtoToComment(commentPostDto);
-        comment.setUser(user);
+        comment.setMember(member);
         comment.setMovie(movie);
         comment = commentRepository.save(comment);
         CommentDto.CommentResponseDto commentResponseDto = commentMapper.commentToCommentResponseDto(comment);
