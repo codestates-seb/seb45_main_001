@@ -12,7 +12,8 @@ const requests = {
   fetchFamilyMovies: "/discover/movie?with_genres=10751",
   fetchFantasyMovies: "/discover/movie?with_genres=14",
 
-  
+  fetchMovieInfo: "/discover/movie"
+
 }
 
 export default requests;
