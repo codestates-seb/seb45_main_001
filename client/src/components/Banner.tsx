@@ -141,7 +141,7 @@ const HomeContainer = styled.div`
 `;
 
 interface Movie {
-  backdrop_path: string;
+  backDrop: string;
   movieNm? : string;
   posterUrl?: string;
   plot: string;
@@ -167,7 +167,7 @@ const Banner = () => {
 
   const fetchData = async () => {
     try {
-    const response = await axios.get(`${url}/top10`);
+    const response = await axios.get(`${url}/top10Korean`);
 
     const movieList = response.data.boxofficeList;
     console.log('movieList', movieList);
@@ -194,7 +194,7 @@ const Banner = () => {
   return (
     <BannerLayout
         style={{
-          backgroundImage: `url("${movie.posterUrl}")` ,
+          backgroundImage: `url("${movie.backDrop}")` ,
           backgroundPosition: "top center",
           backgroundSize: "cover",
         }}
@@ -226,10 +226,10 @@ const Banner = () => {
           <Iframe
             width="640"
             height="360"
-            src={`${movie.trailerUrl}?controls=0&autoplay=1&loop=1&mute=0&playlist=${movie.trailerUrl}`}
-            title="YouTube video player"
+            src={movie.trailerUrl}
+            title="Movie Trailer"
             frameBorder="0"
-            allow="autoplay; fullscreen"
+            allow="autoplay; picture-in-picture; fullscreen"
             allowFullScreen
           ></Iframe>
         </HomeContainer>
