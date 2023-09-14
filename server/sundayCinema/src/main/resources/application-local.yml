@@ -17,7 +17,6 @@ spring:
     show-sql: off
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
   security:
     oauth2:
