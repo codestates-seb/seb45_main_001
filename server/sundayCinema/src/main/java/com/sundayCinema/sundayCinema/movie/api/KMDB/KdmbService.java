@@ -4,8 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sundayCinema.sundayCinema.movie.api.youtubeAPI.YoutubeService;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
-import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Plots;
+import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Plot;
 import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Poster;
 import com.sundayCinema.sundayCinema.movie.entity.movieMedia.StillCut;
 import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Trailer;
@@ -55,11 +56,11 @@ public class KdmbService {
         this.youtubeService = youtubeService;
     }
 
-    public void generateKdmb(String movieCd, String movieNm, String openDt) throws IOException, GeneralSecurityException {
-        if (verifyExistMovie(movieCd)) {
-            // true일 때 아무 작업도 수행하지 않음
-        } else {
+    public KdmbResponse generateKdmb(BoxOfficeMovie boxOfficeMovie) throws IOException {
+            String openDt = boxOfficeMovie.getOpenDt();
+            String movieNm = boxOfficeMovie.getMovieNm();
             String apiUrl = buildApiUrl(openDt, movieNm);
+
             URL url = new URL(apiUrl);
             log.info("url : " + url);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -67,50 +68,22 @@ public class KdmbService {
             conn.setRequestProperty("Content-type", "application/json");
             conn.setRequestProperty("ServiceKey", KdmbApiKey); // 인증키 추가
 
-            System.out.println("kdmb Response code: " + conn.getResponseCode());
-
             String apiResponse = readApiResponse(conn);
             conn.disconnect();
             KdmbResponse kdmbResponse = parsingKdmb(apiResponse);
-            log.info("kdmb : " + kdmbResponse);
-            saveKdmb(kdmbResponse, movieCd);
-        }
+            return kdmbResponse;
     }
 
-    public void saveKdmb(KdmbResponse kdmbResponse, String movieCd) throws GeneralSecurityException, IOException {
-        savePoster(kdmbResponse, movieCd);
-        savePlot(kdmbResponse, movieCd);
-        saveStill(kdmbResponse, movieCd);
-        saveTrailer(kdmbResponse, movieCd);
-    }
-
-    public void savePoster(KdmbResponse kdmbResponse, String movieCd) {
+    public void savePoster(KdmbResponse kdmbResponse, Poster poster) {
         if (kdmbResponse != null && kdmbResponse.getData() != null
                 && !kdmbResponse.getData().isEmpty() && kdmbResponse.getData().get(0).getResult() != null
                 && !kdmbResponse.getData().get(0).getResult().isEmpty()) {
-            String posterUrls = kdmbResponse.getData().get(0).getResult().get(0).getPosters();
+            String posterUrls = kdmbResponse.getData().get(0).getResult().get(0).getPosters(); // 포스터 주소 추출
             if (posterUrls != null) {
                 String[] posterArray = posterUrls.split("\\|");
-                for (int i = 0; i < posterArray.length; i++) {
-                    Poster poster = new Poster();
-                    log.info("poster : " + poster.getPoster_image_url());
-                    if (posterRepository.findMaxPosterId() == null) {
-                        poster.setPosterId(0);
-                    } else {
-                        poster.setPosterId(posterRepository.findMaxPosterId() + 1);
-                    }
-
-                    String posterImageUrl = posterArray[i];
-
-                    // 포스터 이미지 URL이 비어있을 경우 기본 URL 또는 다른 처리를 할 수 있습니다.
-                    if (posterImageUrl == null || posterImageUrl.isEmpty()) {
-                        posterImageUrl = "기본 포스터 이미지 URL"; // 기본 URL 또는 다른 처리 추가
-                    }
-
+                    String posterImageUrl = posterArray[0];
                     poster.setPoster_image_url(posterImageUrl);
-                    poster.setMovie(movieRepository.findByMovieCd(movieCd));
                     posterRepository.save(poster);
-                }
             }
         }
     }
@@ -188,7 +161,7 @@ public class KdmbService {
         }
     }
 
-    public void savePlot(KdmbResponse kdmbResponse, String movieCd) {
+    public void savePlot(KdmbResponse kdmbResponse, Plot plot) {
         if (kdmbResponse != null && kdmbResponse.getData() != null
                 && !kdmbResponse.getData().isEmpty() && kdmbResponse.getData().get(0).getResult() != null
                 && !kdmbResponse.getData().get(0).getResult().isEmpty()
@@ -197,20 +170,10 @@ public class KdmbService {
                 && !kdmbResponse.getData().get(0).getResult().get(0).getPlots().getPlot().isEmpty()) {
 
             String plotText = kdmbResponse.getData().get(0).getResult().get(0).getPlots().getPlot().get(0).getPlotText();
-            // 플롯 텍스트가 비어있는지 확인
-            if (plotText == null || plotText.isEmpty()) {
-                plotText = "플롯 텍스트가 없습니다."; // 플롯 텍스트가 없을 경우 기본 메시지 설정
-            }
 
-            Plots plots = new Plots();
-            if (plotRepository.findMaxPlotId() == null) {
-                plots.setPlotId(0);
-            } else {
-                plots.setPlotId(plotRepository.findMaxPlotId() + 1);
-            }
-            plots.setPlotText(plotText);
-            plots.setMovie(movieRepository.findByMovieCd(movieCd));
-            plotRepository.save(plots);
+
+            plot.setPlotText(plotText);
+            plotRepository.save(plot);
         }
     }
 

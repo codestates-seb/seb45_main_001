@@ -13,11 +13,8 @@ import java.util.ArrayList;
 @Slf4j
 public class GenreMovieMapper {
     public GenreMovieDto responseGenreMovieDto(Movie movie, String genreNm){
-        String poster ="";
+
         String trailer="";
-        if(movie.getPosters().isEmpty()){
-            poster= "http://file.koreafilm.or.kr/thm/02/99/18/12/tn_DPF027618.jpg";
-        }else{poster= movie.getPosters().get(0).getPoster_image_url();}
         if(movie.getTrailers().isEmpty()){
             trailer= "https://www.kmdb.or.kr/trailer/trailerPlayPop?pFileNm=MK006689_P03.mp4";
         }else{trailer= movie.getTrailers().get(0).getTrailer_url();}
@@ -32,14 +29,12 @@ public class GenreMovieMapper {
         }
         genreMovieDto.movieId = movie.getMovieId();
         genreMovieDto.movieNm = movie.getMovieNm();
-        genreMovieDto.posterUrl = poster;
+        genreMovieDto.posterUrl = movie.getPoster().getPoster_image_url();
         genreMovieDto.genre = genreNm;
         genreMovieDto.trailerUrl =trailer;
-        if(movie.getPlots().isEmpty()||movie.getPlots().get(0)==null){
-            genreMovieDto.plot="줄거리가 없습니다.";
-        }
-        else genreMovieDto.plot = movie.getPlots().get(0).getPlotText();
+        genreMovieDto.backDrop = movie.getBackDrop().getBackDrop_image_url();
         genreMovieDto.stillCut= stillCutDtos;
+        genreMovieDto.plot = movie.getPlot().getPlotText();
         return genreMovieDto;
     }
 }

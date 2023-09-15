@@ -18,4 +18,5 @@ public class GenreMovieDto {
     public String trailerUrl;
     public List<StillCutDto> stillCut;
     public String plot;
+    public String backDrop;
 }

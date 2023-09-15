@@ -5,11 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sundayCinema.sundayCinema.logIn.jwt.dto.LoginDto;
 import com.sundayCinema.sundayCinema.logIn.jwt.jwt.JwtTokenizer;
 import com.sundayCinema.sundayCinema.member.Member;
+import com.sundayCinema.sundayCinema.member.MemberRepository;
 import lombok.SneakyThrows;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.PortResolverImpl;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -20,11 +23,7 @@ import java.io.PrintWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-/*
-(1)에서는 UsernamePasswordAuthenticationFilter를 상속하고 있습니다.
-UsernamePasswordAuthenticationFilter는 폼 로그인 방식에서 사용하는 디폴트 Security Filter로써, 폼 로그인이 아니더라도
-Username/Password 기반의 인증을 처리하기 위해 UsernamePasswordAuthenticationFilter를 확장해서 구현할 수 있습니다.
- */
+
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {  // (1)
     /*
     DI 받은 AuthenticationManager는 로그인 인증 정보(Username/Password)를 전달받아
@@ -32,14 +31,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
      */
     private final AuthenticationManager authenticationManager;
     private final JwtTokenizer jwtTokenizer;
+    private final MemberRepository memberRepository;
 
-    // (2)
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenizer jwtTokenizer) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenizer jwtTokenizer, MemberRepository memberRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenizer = jwtTokenizer;
+        this.memberRepository = memberRepository;
     }
 
-    // (3)
     @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
@@ -68,7 +67,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("accessToken", "Bearer " + accessToken);
         responseBody.put("refreshToken", refreshToken);
-
         response.setContentType("application/json");
         PrintWriter writer = response.getWriter();
         writer.write(new ObjectMapper().writeValueAsString(responseBody));

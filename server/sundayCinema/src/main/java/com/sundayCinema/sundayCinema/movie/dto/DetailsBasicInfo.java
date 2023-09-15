@@ -18,12 +18,13 @@ public class DetailsBasicInfo{
     // 영문 제목
     public String audiAcc; // "누적 관객수"
 
-    public List<String> poster;
+    public String poster;
     public List<StillCutDto> stillCut;
     public String plot;
     public List<String> genre; // 리스트 형태로 수정
     public List<String> nation; // 리스트 형태로 수정
     public String watchGradeNm; // 등급
+    public String backDrop;
 
     //평균 평점
 }

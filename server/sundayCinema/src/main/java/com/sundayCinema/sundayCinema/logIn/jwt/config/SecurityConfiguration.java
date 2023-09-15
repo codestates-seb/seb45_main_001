@@ -10,6 +10,7 @@ import com.sundayCinema.sundayCinema.logIn.jwt.handler.MemberAuthenticationSucce
 import com.sundayCinema.sundayCinema.logIn.jwt.jwt.JwtTokenizer;
 import com.sundayCinema.sundayCinema.logIn.utils.CustomAuthorityUtils;
 import com.sundayCinema.sundayCinema.logIn.utils.UserAuthService;
+import com.sundayCinema.sundayCinema.member.MemberRepository;
 import com.sundayCinema.sundayCinema.member.MemberService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,12 +45,16 @@ public class SecurityConfiguration {
 
     private final UserAuthService userAuthService;
 
+    private final MemberRepository memberRepository;
+
     public SecurityConfiguration(JwtTokenizer jwtTokenizer, CustomAuthorityUtils authorityUtils,
-                                 MemberService memberService, UserAuthService userAuthService) {
+                                 MemberService memberService, UserAuthService userAuthService,
+                                 MemberRepository memberRepository) {
         this.jwtTokenizer = jwtTokenizer;
         this.authorityUtils = authorityUtils;
         this.memberService = memberService;
         this.userAuthService = userAuthService;
+        this.memberRepository = memberRepository;
     }
 
     @Bean
@@ -84,7 +89,7 @@ public class SecurityConfiguration {
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
 
-            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtTokenizer);
+            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtTokenizer, memberRepository);
             jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
             jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler());
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new MemberAuthenticationFailureHandler());

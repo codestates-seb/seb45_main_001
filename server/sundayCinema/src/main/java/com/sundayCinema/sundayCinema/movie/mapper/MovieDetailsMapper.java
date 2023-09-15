@@ -17,7 +17,7 @@ import java.util.List;
 public class MovieDetailsMapper {
     public DetailsBasicInfo detailsBasicResponseDto(BoxOfficeMovie boxOfficeMovie, Movie movie) {
         DetailsBasicInfo detailsBasicInfo = new DetailsBasicInfo();
-        List<String> posterList = new ArrayList<>(movie.getPosters().size());
+
         List<String> nationList = new ArrayList<>();
         List<String> genreList = new ArrayList<>();
         for (int i = 0; i < movie.getNations().size(); i++) {
@@ -27,9 +27,7 @@ public class MovieDetailsMapper {
                 genreList.add(movie.getGenres().get(i).getGenreNm());
 
         }
-        for (int i = 0; i < movie.getPosters().size(); i++) {
-            posterList.add(movie.getPosters().get(i).getPoster_image_url());
-        }
+
         ArrayList<StillCutDto> stillCutDtos=new ArrayList<>();
         for (int i = 0; i < movie.getStillCuts().size(); i++) {
             StillCutDto stillCutDto = new StillCutDto();
@@ -45,11 +43,10 @@ public class MovieDetailsMapper {
         detailsBasicInfo.watchGradeNm = movie.getAudits().get(0).getWatchGradeNm();
         detailsBasicInfo.nation = nationList;
         detailsBasicInfo.genre = genreList;
-        detailsBasicInfo.poster = posterList;
-        if(movie.getPlots().isEmpty()||movie.getPlots().get(0).getPlotText().isEmpty()){
-            detailsBasicInfo.plot="줄거리가 없습니다.";
-        }else detailsBasicInfo.plot = movie.getPlots().get(0).getPlotText();
+        detailsBasicInfo.plot = movie.getPlot().getPlotText();
+        detailsBasicInfo.poster = movie.getPoster().getPoster_image_url();
         detailsBasicInfo.stillCut = stillCutDtos;
+        detailsBasicInfo.backDrop = movie.getBackDrop().getBackDrop_image_url();
         return detailsBasicInfo;
     }
 
@@ -68,12 +65,10 @@ public class MovieDetailsMapper {
             actorDto.setPeopleNm(actor.getPeopleNm());
             actorList.add(actorDto);
         }
-        if(movie.getPlots().isEmpty()||movie.getPlots().get(0).getPlotText().isEmpty()){
-            detailsMainInfo.plot="줄거리가 없습니다.";
-        }else detailsMainInfo.plot = movie.getPlots().get(0).getPlotText();
+
         detailsMainInfo.director = directorList;
         detailsMainInfo.actors = actorList;
-
+        detailsMainInfo.plot = movie.getPlot().getPlotText();
         return detailsMainInfo;
     }
 
@@ -81,7 +76,7 @@ public class MovieDetailsMapper {
         DetailsMediaInfo detailsMediaInfo = new DetailsMediaInfo();
         List<String> stillCutList = new ArrayList<>();
         List<String> youtubeReviewList = new ArrayList<>();
-        List<TrailerDto> trailerList = new ArrayList<>();
+
             for (int i = 0; i < movie.getStillCuts().size(); i++) {
             stillCutList.add(movie.getStillCuts().get(i).getStillCut_url());
             log.info("stillCutList :" + movie.getStillCuts().get(i).getStillCut_url());
@@ -90,18 +85,11 @@ public class MovieDetailsMapper {
             youtubeReviewList.add(movie.getYoutubeReviews().get(i).getYoutubeReview_url());
             log.info("youtubeList : "+ movie.getYoutubeReviews().get(i).getYoutubeReview_url());
         }
-            for (int i=0; i< movie.getTrailers().size(); i++){
-                TrailerDto trailerDto = new TrailerDto();
-                Trailer trailer= movie.getTrailers().get(i);
-                trailerDto.setTrailer_url(trailer.getTrailer_url());
-                trailerDto.setVodClass(trailer.getVodClass());
-                trailerList.add(trailerDto);
-                log.info("trailer : "+ trailer.getTrailer_url());
-            }
+
         detailsMediaInfo.stillCuts = stillCutList;
         detailsMediaInfo.youtubeReviews = youtubeReviewList;
-        detailsMediaInfo.trailers = trailerList;
-        log.info("list" + String.valueOf(stillCutList));
+        detailsMediaInfo.trailers = movie.getTrailers().get(0).getTrailer_url();
+
         return detailsMediaInfo;
     }
 

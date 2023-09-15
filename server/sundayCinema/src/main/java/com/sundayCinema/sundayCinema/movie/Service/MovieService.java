@@ -1,5 +1,7 @@
 package com.sundayCinema.sundayCinema.movie.Service;
 
+import com.sundayCinema.sundayCinema.movie.api.ApiRepoService.KobisRepoService;
+import com.sundayCinema.sundayCinema.movie.api.ApiRepoService.MediaRepoService;
 import com.sundayCinema.sundayCinema.movie.api.KMDB.KdmbService;
 import com.sundayCinema.sundayCinema.movie.api.KOBIS.KobisService;
 import com.sundayCinema.sundayCinema.movie.api.youtubeAPI.YoutubeService;
@@ -33,41 +35,63 @@ import java.util.List;
 @Service
 @Slf4j
 public class MovieService {
-    private final TrailerRepository trailerRepository;
+
     private final MovieRepository movieRepository;
-    private final PosterRepository posterRepository;
+
     private final BoxOfficeMovieRepository boxOfficeMovieRepository;
     private final KoreaBoxOfficeRepository koreaBoxOfficeRepository;
     private final ForeignBoxOfficeRepository foreignBoxOfficeRepository;
-    private final KdmbService kdmbService;
-    private final KobisService kobisService;
+
     private final YoutubeService youtubeService;
     private final BoxOfficeMovieMapper boxOfficeMovieMapper;
 
     private final GenreMovieMapper genreMovieMapper;
 
-    public MovieService(TrailerRepository trailerRepository, MovieRepository movieRepository,
-                        PosterRepository posterRepository, BoxOfficeMovieRepository boxOfficeMovieRepository,
-                        KoreaBoxOfficeRepository koreaBoxOfficeRepository, ForeignBoxOfficeRepository foreignBoxOfficeRepository, KdmbService kdmbService, KobisService kobisService, YoutubeService youtubeService,
-                        BoxOfficeMovieMapper boxOfficeMovieMapper, GenreMovieMapper genreMovieMapper) {
-        this.trailerRepository = trailerRepository;
+    private final KobisRepoService kobisRepoService;
+    private final MediaRepoService mediaRepoService;
+
+    public MovieService(MovieRepository movieRepository, BoxOfficeMovieRepository boxOfficeMovieRepository, KoreaBoxOfficeRepository koreaBoxOfficeRepository, ForeignBoxOfficeRepository foreignBoxOfficeRepository, YoutubeService youtubeService, BoxOfficeMovieMapper boxOfficeMovieMapper,
+                        GenreMovieMapper genreMovieMapper, KobisRepoService kobisRepoService, MediaRepoService mediaRepoService) {
         this.movieRepository = movieRepository;
-        this.posterRepository = posterRepository;
         this.boxOfficeMovieRepository = boxOfficeMovieRepository;
         this.koreaBoxOfficeRepository = koreaBoxOfficeRepository;
         this.foreignBoxOfficeRepository = foreignBoxOfficeRepository;
-        this.kdmbService = kdmbService;
-        this.kobisService = kobisService;
         this.youtubeService = youtubeService;
         this.boxOfficeMovieMapper = boxOfficeMovieMapper;
         this.genreMovieMapper = genreMovieMapper;
+        this.kobisRepoService = kobisRepoService;
+        this.mediaRepoService = mediaRepoService;
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void dailyUpdateAll() throws Exception {
-        kobisService.saveKobis();
         dailyUpdateMedia();
         getReview();
+    }
+
+    public void saveGenreAll(String date) throws Exception {
+        List<BoxOfficeMovie> genreList= kobisRepoService.saveGenreBox(date);
+        mediaRepoService.saveBackDrop(genreList);
+        mediaRepoService.savePoster(genreList);
+        mediaRepoService.savePlot(genreList);
+        mediaRepoService.saveTrailer(genreList);
+    }
+    public void saveTop10All() throws Exception {
+        List<BoxOfficeMovie> top10Box= kobisRepoService.saveTop10Box();
+        mediaRepoService.saveBackDrop(top10Box);
+        mediaRepoService.savePoster(top10Box);
+        mediaRepoService.savePlot(top10Box);
+        mediaRepoService.saveTrailer(top10Box);
+        List<BoxOfficeMovie> kBox= kobisRepoService.saveKoreaTop10Box();
+        mediaRepoService.saveBackDrop(kBox);
+        mediaRepoService.savePoster(kBox);
+        mediaRepoService.savePlot(kBox);
+        mediaRepoService.saveTrailer(kBox);
+        List<BoxOfficeMovie> fBox= kobisRepoService.saveForeignTop10Box();
+        mediaRepoService.saveBackDrop(fBox);
+        mediaRepoService.savePoster(fBox);
+        mediaRepoService.savePlot(fBox);
+        mediaRepoService.saveTrailer(fBox);
     }
     // 액션, 코메디, 드라마, 애니메이션, 스릴러, 판타지, 멜로/로맨스, 공포(호러), 어드밴처, 범죄
     public List<GenreMovieDto>loadGenreMovie(String nation){
@@ -166,7 +190,7 @@ public class MovieService {
             String movieCd = boxList.get(i).getMovieCd();
             String openDt = boxList.get(i).getOpenDt();
             String outputDate = parsingDate(openDt);
-            kdmbService.generateKdmb(movieCd, movieNm, outputDate);
+
         }
         List<KoreaBoxOffice> kList = koreaBoxOfficeRepository.findAll();
         for (int i = 0; i < kList.size(); i++) {
@@ -174,7 +198,7 @@ public class MovieService {
             String movieCd = kList.get(i).getMovieCd();
             String openDt = kList.get(i).getOpenDt();
             String outputDate = parsingDate(openDt);
-            kdmbService.generateKdmb(movieCd, movieNm, outputDate);
+
         }
         List<ForeignBoxOffice> fList = foreignBoxOfficeRepository.findAll();
         for (int i = 0; i < fList.size(); i++) {
@@ -182,7 +206,7 @@ public class MovieService {
             String movieCd = fList.get(i).getMovieCd();
             String openDt = fList.get(i).getOpenDt();
             String outputDate = parsingDate(openDt);
-            kdmbService.generateKdmb(movieCd, movieNm, outputDate);
+
         }
     }
 

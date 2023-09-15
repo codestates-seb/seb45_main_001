@@ -13,6 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Trailer {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long trailerId;
     @Column
     private String vodClass;

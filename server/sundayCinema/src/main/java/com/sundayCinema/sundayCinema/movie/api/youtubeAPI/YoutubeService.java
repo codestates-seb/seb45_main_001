@@ -62,7 +62,7 @@ public class YoutubeService {
 
             for (int i = 0; i < maxResults; i++) {
                 SearchResult searchResult = searchResults.get(i);
-                log.info(String.valueOf(searchResult));
+
                 String videoId = searchResult.getId().getVideoId();
                 String thumbnailUrl = searchResult.getSnippet().getThumbnails().getDefault().getUrl();
                 String channelId = searchResult.getSnippet().getChannelId();

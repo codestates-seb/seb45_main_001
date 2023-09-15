@@ -3,6 +3,10 @@ package com.sundayCinema.sundayCinema.movie.entity.movieInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sundayCinema.sundayCinema.advice.audit.Auditable;
 import com.sundayCinema.sundayCinema.comment.Comment;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.ForeignBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.GenreBoxOffice;
+import com.sundayCinema.sundayCinema.movie.entity.boxOffice.KoreaBoxOffice;
 import com.sundayCinema.sundayCinema.movie.entity.movieMedia.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,6 +43,23 @@ public class Movie extends Auditable {
     private String prdtStatNm; // 삭제 예정
     @Column(nullable = false)
     private String typeNm;
+
+    @OneToOne(mappedBy = "movie", cascade = CascadeType.ALL)
+    private BoxOfficeMovie boxOfficeMovie;
+    @OneToOne(mappedBy = "movie", cascade = CascadeType.ALL)
+    private ForeignBoxOffice foreignBoxOffice;
+    @OneToOne(mappedBy = "movie", cascade = CascadeType.ALL)
+    private KoreaBoxOffice koreaBoxOfficeMovie;
+    @OneToOne(mappedBy = "movie", cascade = CascadeType.ALL)
+    private GenreBoxOffice genreBoxOfficeMovie;
+    @OneToOne(mappedBy = "movie", cascade = CascadeType.ALL)
+    private Plot plot;
+    @OneToOne(mappedBy = "movie", cascade = CascadeType.ALL)
+    private Poster poster;
+    @OneToOne(mappedBy = "movie", cascade = CascadeType.ALL)
+    private BackDrop backDrop;
+
+
     @OneToMany(mappedBy = "movie")
     private List<MovieAudit> audits; // "관람 등급 명칭"
     @OneToMany(mappedBy = "movie")
@@ -51,14 +72,12 @@ public class Movie extends Auditable {
     private List<Director> directors = new ArrayList<>();
     @OneToMany(mappedBy = "movie")
     private List<YoutubeReview> youtubeReviews = new ArrayList<>();
-    @OneToMany(mappedBy = "movie")
-    private List<Poster> posters = new ArrayList<>();
+
     @OneToMany(mappedBy = "movie")
     private List<StillCut> stillCuts = new ArrayList<>();
     @OneToMany(mappedBy = "movie")
     private List<Trailer> trailers = new ArrayList<>();
-    @OneToMany(mappedBy = "movie")
-    private List<Plots> plots = new ArrayList<>();
+
     @OneToMany(mappedBy = "movie")
     private List<Comment> comments = new ArrayList<>();
 }

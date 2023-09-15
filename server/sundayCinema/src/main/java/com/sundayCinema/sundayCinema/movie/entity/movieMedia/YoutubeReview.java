@@ -13,6 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class YoutubeReview {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long reviewId;
     @Column
     private String youtubeChannel;

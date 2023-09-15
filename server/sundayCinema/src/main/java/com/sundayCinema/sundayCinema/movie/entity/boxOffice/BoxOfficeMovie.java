@@ -2,6 +2,7 @@ package com.sundayCinema.sundayCinema.movie.entity.boxOffice;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sundayCinema.sundayCinema.comment.Comment;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,11 +32,15 @@ public class BoxOfficeMovie {
     private String movieNm;// "영화명(국문)"
     @Column(nullable = false)
     private String audiAcc; // "누적 관객수"
-    public BoxOfficeMovie(String openDt, String rank, String movieCd, String movieNm, String audiAcc) {
-        this.openDt = openDt;
-        this.rank = rank;
-        this.movieCd = movieCd;
-        this.movieNm = movieNm;
-        this.audiAcc = audiAcc;
+    @OneToOne
+    @JoinColumn(name = "MOVIE_ID")
+    private Movie movie;
+    public BoxOfficeMovie(BoxOfficeMovie boxOfficeMovie) {
+        this.openDt = boxOfficeMovie.getOpenDt();
+        this.rank = boxOfficeMovie.getRank();
+        this.movieCd = boxOfficeMovie.getMovieCd();
+        this.movieNm = boxOfficeMovie.getMovieNm();
+        this.audiAcc = boxOfficeMovie.getAudiAcc();
+        this.movie=boxOfficeMovie.getMovie();
     }
 }

@@ -7,6 +7,7 @@ import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieReposit
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -16,30 +17,22 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
-    private final MemberRepository memberRepository;
-    private final MovieRepository movieRepository;
 
-    public CommentController(CommentService commentService, MemberRepository memberRepository, MovieRepository movieRepository) {
+    public CommentController(CommentService commentService) {
         this.commentService = commentService;
-        this.memberRepository = memberRepository;
-        this.movieRepository = movieRepository;
     }
 
     @PostMapping
     public ResponseEntity<CommentDto.CommentResponseDto> createComment(
             @Valid @RequestBody CommentDto.CommentPostDto commentPostDto,
             @RequestParam("memberId") long memberId,
-            @RequestParam("movieId") long movieId) {
-        // Fetch User and Movie objects based on userId and movieId
-        Member member = memberRepository.findById(memberId).orElse(null);
-        Movie movie = movieRepository.findById(movieId).orElse(null);
+            @RequestParam("movieId") long movieId,
+            HttpServletRequest request) {
 
-        if (member == null || movie == null) {
-            // 사용자 또는 영화가 존재하지 않는 경우 처리
-            return ResponseEntity.badRequest().build();
-        }
 
-        CommentDto.CommentResponseDto response = commentService.createComment(commentPostDto, member, movie);
+        CommentDto.CommentResponseDto response = commentService.createComment(commentPostDto, memberId,movieId, request);
+
+
         return ResponseEntity.ok(response);
     }
 
@@ -47,9 +40,11 @@ public class CommentController {
     @PatchMapping("/{commentId}")
     public ResponseEntity<CommentDto.CommentResponseDto> updateComment(
             @PathVariable("commentId") long commentId,
-            @Valid @RequestBody CommentDto.CommentPatchDto commentPatchDto) {
+            @Valid @RequestBody CommentDto.CommentPatchDto commentPatchDto,
+            long memberId, long movieId, HttpServletRequest request) {
         commentPatchDto.setCommentId(commentId);
-        CommentDto.CommentResponseDto response = commentService.updateComment(commentPatchDto);
+
+        CommentDto.CommentResponseDto response = commentService.updateComment(commentPatchDto, memberId, movieId, request);
         if (response != null) {
             return ResponseEntity.ok(response);
         }
@@ -57,14 +52,15 @@ public class CommentController {
     }
 
     @GetMapping("/movie/{movieId}")
-    public ResponseEntity<List<CommentDto.CommentResponseDto>> getCommentsForMovie(@PathVariable("movieId") long movieId) {
-        List<CommentDto.CommentResponseDto> comments = commentService.getCommentsForMovie(movieId);
+    public ResponseEntity<List<CommentDto.CommentResponseDto>> getCommentsForMovie(@PathVariable("movieId") long movieId,
+                                                                                   long memberId, HttpServletRequest request) {
+        List<CommentDto.CommentResponseDto> comments = commentService.getCommentsForMovie(movieId, memberId, request);
         return ResponseEntity.ok(comments);
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable("commentId") long commentId) {
-        if (commentService.deleteComment(commentId)) {
+    public ResponseEntity<Void> deleteComment(@PathVariable("commentId") long commentId, long memberId, long movieId, HttpServletRequest request) {
+        if (commentService.deleteComment(commentId, memberId, movieId, request)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
