@@ -18,7 +18,5 @@ public class MovieSearchResult {
     private String posterPath;
     @JsonProperty("backdrop_path")
     private String backdropPath;
-    private int collectionId; // 컬렉션 ID를 추가
-    private String collectionImageUrl; // 컬렉션 이미지 URL을 추가
 
 }

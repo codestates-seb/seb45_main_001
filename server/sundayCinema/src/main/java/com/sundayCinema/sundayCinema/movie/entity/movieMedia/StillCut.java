@@ -13,6 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class StillCut {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long  stillCutId;
     @Column
     private String stillCut_url;

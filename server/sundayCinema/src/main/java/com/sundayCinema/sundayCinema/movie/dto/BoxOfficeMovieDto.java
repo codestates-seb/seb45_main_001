@@ -17,6 +17,6 @@ public class BoxOfficeMovieDto {
     public String movieNm;
     public List<GenreDto> genre;
     public String trailerUrl;
-    // 메인 예고편
-    // 영화 플롯
+    public String backDrop;
+
 }

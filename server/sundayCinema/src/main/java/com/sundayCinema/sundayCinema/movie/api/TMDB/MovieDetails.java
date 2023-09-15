@@ -23,14 +23,8 @@ public class MovieDetails {
     @JsonProperty("poster_path")
     private String posterPath;
 
-    @JsonProperty("belongs_to_collection")
-    private CollectionInfo collectionInfo;
+    @JsonProperty("key")
+    private String key;  // 예고편 키값을 추가
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    @Getter
-    @Setter
-    public static class CollectionInfo {
-        @JsonProperty("id")
-        private int id;
-    }
+    // 추가로 필요한 필드들을 정의할 수 있음
 }

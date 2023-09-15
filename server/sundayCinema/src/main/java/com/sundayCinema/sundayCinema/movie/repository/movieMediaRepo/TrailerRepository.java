@@ -12,6 +12,6 @@ public interface TrailerRepository extends JpaRepository<Trailer, Long> {
     Long findMaxTrailerId();
 
     List<Trailer> findByMovie(Movie movie); // 전체 예고편 리스트 가져오기
-
+    boolean existsByMovie(Movie movie);
     Trailer findByMovie_MovieIdAndVodClassContaining(Long movieId, String keyword); // 키워드가 포함된 예고편 가져오기
 }

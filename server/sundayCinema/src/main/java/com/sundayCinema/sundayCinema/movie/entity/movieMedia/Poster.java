@@ -13,10 +13,11 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Poster {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long posterId;
     @Column
     private String poster_image_url;
-    @ManyToOne   //
+    @OneToOne
     @JoinColumn(name = "MOVIE_ID")
     private Movie movie;
 }

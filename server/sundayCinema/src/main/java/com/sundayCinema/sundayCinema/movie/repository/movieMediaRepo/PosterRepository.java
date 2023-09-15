@@ -12,4 +12,5 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
     Long findMaxPosterId();
 
     List<Poster> findByMovie(Movie movie); // 전체 리스트 가져오기
+    boolean existsByMovie(Movie movie);
 }
