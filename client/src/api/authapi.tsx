@@ -12,15 +12,6 @@ function getToken() {
     return sessionStorage.getItem('jwt');
 }
 
-const token = getToken();
-
-const headers = {
-    // "Session-Id": `${token}`,
-    Authorization: `${token}`,
-    // 'Cookie': `sessionId=${token}`
-    // withCredentials: true,
-};
-
 
 type ApiConfig<D> = {
     method: Method;
@@ -31,6 +22,16 @@ type ApiConfig<D> = {
 
 
 export function apiCall<T = any, D = any>(config: ApiConfig<D>): Promise<AxiosResponse<T>> {
+
+    const token = getToken();
+
+    const headers = {
+        // "Session-Id": `${token}`,
+        Authorization: `${token}`,
+        // 'Cookie': `sessionId=${token}`
+        // withCredentials: true,
+    };
+
     const fullUrl = `${lastUrl}/${config.url}`;
     console.log('api:', fullUrl);
     console.log('origin', location.origin);

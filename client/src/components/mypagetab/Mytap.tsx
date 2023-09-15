@@ -91,19 +91,18 @@ function Mymytap() {
     const [tempName, setTempName] = useState(globalName);
 
     const handleMailUpdate = () => {
-        // const sendEmail = {
-        //     email: tempEmail,
-        // };
-        // apiCall({
-        //     method: 'PATCH',
-        //     url: 'users/patch', // users/patch
-        //     data: sendEmail,
-        // }).then((response) => {
-        //     dispatch(updateLogin(true));
-        //     console.log('내가 뭘 보냄?', sendEmail);
-        //     dispatch(updateMail(tempEmail));
-        //     setIsEmailEditing(false);
-        // });
+        const sendEmail = {
+            email: tempEmail,
+        };
+        apiCall({
+            method: 'PATCH',
+            url: 'users/patch', // users/patch
+            data: sendEmail,
+        }).then((response) => {
+            console.log('내가 뭘 보냄?', sendEmail);
+            dispatch(updateMail(tempEmail));
+            setIsEmailEditing(false);
+        });
     };
 
     const handleNameUpdate = () => {
