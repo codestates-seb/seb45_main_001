@@ -24,6 +24,7 @@
     "@types/styled-components": "^5.1.26",
     "axios": "^1.4.0",
     "base-64": "^1.0.0",
+    "bcryptjs": "^2.4.3",
     "buffer": "^6.0.3",
     "ckeditor5-custom-build": "^0.0.6",
     "crypto": "^1.0.1",
@@ -71,6 +72,7 @@
     ]
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.3",
     "@types/styled-components": "^5.1.26",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.0.0",

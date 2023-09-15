@@ -3,12 +3,12 @@ import { useState, useEffect } from 'react';
 import LoginPage from './LoginPage';
 import SignupPage from './Signup';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserById, DataState, updateName } from '../slice/authslice';
+import { fetchUserById, DataState, updateName, updateLogin, updateMail } from '../slice/authslice';
 import { RootState } from '../store/authstore';
 import type { AppDispatch } from '../store/authstore';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { lastUrl } from '../api/authapi';
+import { lastUrl, apiCall } from '../api/authapi';
 
 const HeaderStyle = styled.header`
     /* width: 100%;
@@ -173,20 +173,110 @@ const TempStyle = styled.div`
 `;
 
 // const [isLogin, setIsLogin] = useState<boolean>(false);
+//     const [sessionUser, setSessionUser] = useState<any>(null); //받아오는 데이타의 세션유저이름
+
+//     useEffect(() => {
+//         axios
+//             .get(`${lastUrl}/check-session`)
+//             .then((response) => {
+//                 if (response.data.isLogin) {
+//                     setIsLogin(true);
+//                     setSessionUser(response.data.sessionUser);
+//                 }
+//             })
+//             .catch((error) => {
+//                 console.error('로그인 상태 확인 중 오류 발생:', error);
+//             });
+//     }, []);
+
+//     const onClickLogout = () => {
+//         // 서버에 로그아웃 요청을 보냅니다.
+//         axios
+//             .post(`${lastUrl}/api/logout`)
+//             .then((response) => {
+//                 if (response.data.success) {
+//                     setIsLogin(false);
+//                     setSessionUser(null);
+//                     sessionStorage.removeItem('memberid');
+//                     sessionStorage.removeItem('jwt');
+//                     sessionStorage.removeItem('membername');
+//                     sessionStorage.removeItem('membermail');
+//                     navigate('/');
+//                     console.log('로그아웃 성공');
+//                 }
+//             })
+//             .catch((error) => {
+//                 console.error('로그아웃 실패', error);
+//             });
+//     };
+
+// const isTokenExpired = (token: string): boolean => {
+//     try {
+//         const decodedToken: any = JSON.parse(atob(token.split('.')[1]));
+//         const currentTime = Date.now() / 1000;
+//         return decodedToken.exp && currentTime > decodedToken.exp;
+//     } catch (error) {
+//         return true;
+//     }
+// };
+
+// const users = useSelector((state: RootState) => state.data.users);
+// const memberId = sessionStorage.getItem('memberid');
+// const user = memberId ? users?.[memberId] : undefined;
+// const token = sessionStorage.getItem('jwt');
+
+// const [isLogin, setIsLogin] = useState<boolean>(() => {
+//     return token ? !isTokenExpired(token) : false;
+// });
+
+// console.log('Member ID:', memberId);
+// console.log('User Data:', user);
+
+// function onClickLogout() {
+//     setIsLogin(false);
+//     try {
+//         sessionStorage.removeItem('memberid');
+//         sessionStorage.removeItem('jwt');
+//         sessionStorage.removeItem('membername');
+//         sessionStorage.removeItem('membermail');
+//         navigate('/');
+//         console.log('로그아웃 성공');
+//     } catch (error) {
+//         console.log('로그아웃 실패', error);
+//     }
+// }
+
 // const [sessionUser, setSessionUser] = useState<any>(null); //받아오는 데이타의 세션유저이름
 
 // useEffect(() => {
-//     axios
-//         .get(`${lastUrl}/check-session`)
+//     apiCall({
+//         method: 'GET',
+//         url: 'host/check-session', // membership/signin - 우리 엔드포인트 // login - json 엔드포인트 host/signin 우리 새로운 엔드포인트
+//     })
 //         .then((response) => {
-//             if (response.data.isLogin) {
-//                 setIsLogin(true);
-//                 setSessionUser(response.data.sessionUser);
+//             if (response.data === true) {
+//                 dispatch(updateLogin(true));
+//             } else {
+//                 dispatch(updateLogin(false));
 //             }
 //         })
 //         .catch((error) => {
 //             console.error('로그인 상태 확인 중 오류 발생:', error);
 //         });
+// }, []);
+
+// function getCookie(name: string): string | null | undefined {
+//     const value = `; ${document.cookie}`;
+//     const parts = value.split(`; ${name}=`);
+//     if (parts.length === 2) return parts.pop()!.split(';').shift();
+//     return null;
+// }
+
+// useEffect(() => {
+//     const sessionId = getCookie('SESSION_COOKIE_NAME');
+//     if (sessionId) {
+//         console.log('세션아이디 쿠키존재여부', sessionId);
+//     }
 // }, []);
 
 // const onClickLogout = () => {
@@ -197,19 +287,49 @@ const TempStyle = styled.div`
 //             if (response.data.success) {
 //                 setIsLogin(false);
 //                 setSessionUser(null);
-//                 console.log('Successfully logged out');
+//                 sessionStorage.removeItem('memberid');
+//                 sessionStorage.removeItem('jwt');
+//                 sessionStorage.removeItem('membername');
+//                 sessionStorage.removeItem('membermail');
+//                 navigate('/');
+//                 console.log('로그아웃 성공');
 //             }
 //         })
 //         .catch((error) => {
-//             console.error('Error during logout:', error);
+//             console.error('로그아웃 실패', error);
 //         });
 // };
+
+// function onClickLogout() {
+//     try {
+//         const storedUsersJSON = sessionStorage.getItem('users');
+//         const storedUsers = storedUsersJSON ? JSON.parse(storedUsersJSON) : [];
+
+//         const existingUser = storedUsers.find((user: any) => user.email === globalmail);
+
+//         if (existingUser) {
+//             existingUser.islogin = false;
+//             sessionStorage.setItem('users', JSON.stringify(storedUsers));
+//         }
+//         dispatch(updateLogin(false));
+//         sessionStorage.removeItem('memberid');
+//         sessionStorage.removeItem('membername');
+//         sessionStorage.removeItem('memberemail');
+//         sessionStorage.removeItem('memberpassword');
+//         // navigate('/');
+//         console.log('로그아웃 성공');
+//     } catch (error) {
+//         console.log('로그아웃 실패', error);
+//     }
+// }
 
 function Header() {
     const dispatch: AppDispatch = useDispatch();
     const navigate = useNavigate();
+    const isLogin = useSelector((state: { data: DataState }) => state.data.isLogin);
     const [isMagnifierClicked, setisMagnifierClicked] = useState<boolean>(false);
     const globalName = useSelector((state: { data: DataState }) => state.data.globalname);
+    const globalmail = useSelector((state: { data: DataState }) => state.data.globalmail);
 
     const isTokenExpired = (token: string): boolean => {
         try {
@@ -226,12 +346,31 @@ function Header() {
     const user = memberId ? users?.[memberId] : undefined;
     const token = sessionStorage.getItem('jwt');
 
-    const [isLogin, setIsLogin] = useState<boolean>(() => {
-        return token ? !isTokenExpired(token) : false;
-    });
+    useEffect(() => {
+        if (token) {
+            const tokenValid = !isTokenExpired(token);
+            dispatch(updateLogin(tokenValid));
+        } else {
+            dispatch(updateLogin(false));
+        }
+    }, [token, dispatch]);
 
     console.log('Member ID:', memberId);
     console.log('User Data:', user);
+
+    function onClickLogout() {
+        try {
+            dispatch(updateLogin(false));
+            sessionStorage.removeItem('memberid');
+            sessionStorage.removeItem('jwt');
+            sessionStorage.removeItem('membername');
+            sessionStorage.removeItem('membermail');
+            navigate('/');
+            console.log('로그아웃 성공');
+        } catch (error) {
+            console.log('로그아웃 실패', error);
+        }
+    }
 
     function handleMagnifierClick() {
         setisMagnifierClicked(!isMagnifierClicked);
@@ -263,20 +402,6 @@ function Header() {
         }
     }
 
-    function onClickLogout() {
-        setIsLogin(false);
-        try {
-            sessionStorage.removeItem('memberid');
-            sessionStorage.removeItem('jwt');
-            sessionStorage.removeItem('membername');
-            sessionStorage.removeItem('membermail');
-            navigate('/');
-            console.log('로그아웃 성공');
-        } catch (error) {
-            console.log('로그아웃 실패', error);
-        }
-    }
-
     const [query, setQuery] = useState<string>('');
     const [searchData, setSearchData] = useState<string[]>([
         '오펜하이머',
@@ -298,12 +423,15 @@ function Header() {
         return item.toLowerCase().includes(query.toLowerCase());
     });
 
-    useEffect(() => {
-        const memberName = sessionStorage.getItem('membername');
-        if (memberName) {
-            dispatch(updateName(memberName));
-        }
-    }, []);
+    // useEffect(() => {
+    //     const memberName = sessionStorage.getItem('membername');
+    //     const memberMail = sessionStorage.getItem('memberemail');
+    //     if (memberName && memberMail) {
+    //         dispatch(updateName(memberName));
+    //         dispatch(updateMail(memberMail));
+    //         dispatch(updateLogin(true));
+    //     }
+    // }, []);
 
     return (
         <>
@@ -361,16 +489,12 @@ function Header() {
             </HeaderStyle>
             {isLoginModal && (
                 <LoginPage
-                    isLogin={isLogin}
-                    setIsLogin={setIsLogin}
                     onClickToggleModal={onClickToggleModal}
                     onClickToggleSignupModal={onClickToggleSignupModal}
                 ></LoginPage>
             )}
             {isSignupModal && (
                 <SignupPage
-                    isLogin={isLogin}
-                    setIsLogin={setIsLogin}
                     onClickToggleModal={onClickToggleModal}
                     onClickToggleSignupModal={onClickToggleSignupModal}
                 ></SignupPage>

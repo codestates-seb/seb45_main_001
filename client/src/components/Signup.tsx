@@ -1,16 +1,15 @@
 import { styled, css } from 'styled-components';
 import { useState } from 'react';
 import { apiCall } from '../api/authapi';
+import bcrypt from 'bcryptjs';
 
 interface LoginPageProps {
     onClickToggleModal?: () => void;
     onClickToggleSignupModal?: () => void;
-    isLogin: boolean;
-    setIsLogin: React.Dispatch<React.SetStateAction<boolean>>;
     children?: React.ReactNode;
 }
 
-function SignupPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, setIsLogin }: LoginPageProps) {
+function SignupPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPageProps) {
     const [nickName, setNickName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -79,14 +78,53 @@ function SignupPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, set
 
     const handleSubmit = () => {
         const myId = {
-            nickName,
+            userName: nickName,
             email,
             password,
         };
         console.log('회원가입 data 슛', myId);
+
+        // try {
+
+        //     const passwordWithPepper = myId.password + pepper;
+        //     const salt = bcrypt.genSaltSync(10);
+        //     const hashedPassword = bcrypt.hashSync(passwordWithPepper, salt);
+
+        //     const storedUsersJSON = sessionStorage.getItem('users');
+        //     const storedUsers = storedUsersJSON ? JSON.parse(storedUsersJSON) : [];
+
+        //     const userId = storedUsers.length + 1;
+
+        //     const user = {
+        //         id: userId,
+        //         nickname: myId.nickname,
+        //         email: myId.email,
+        //         hashedPassword,
+        //         islogin: false,
+        //     };
+
+        //     const existingUser = storedUsers.find(
+        //         (user: any) => user.email === myId.email || user.nickname === myId.nickname,
+        //     );
+
+        //     if (existingUser) {
+        //         console.error('이메일 또는 닉네임이 이미 존재합니다.');
+        //         alert('이메일 또는 닉네임이 이미 존재합니다.');
+        //         return;
+        //     }
+
+        //     storedUsers.push(user);
+        //     sessionStorage.setItem('users', JSON.stringify(storedUsers));
+
+        //     onClickToggleSignupModal?.();
+        //     handlelogintosignup?.();
+        //     console.log('회원가입 성공', myId.nickname, myId.email);
+        // } catch (error) {
+        //     console.error('회원가입 에러', error);
+        // }
         apiCall({
             method: 'POST',
-            url: 'host/signup',
+            url: 'users/signup',  // users/signup
             data: myId,
         })
             .then((response) => {
@@ -250,11 +288,13 @@ const LoginModalbuttonin = styled.button<{ $isValid: boolean }>`
     height: 42px;
     cursor: pointer;
 
-    ${({ $isValid }) => $isValid && css`
-        &:hover {
-            background-color: #95ffa0;
-        }
-    `}
+    ${({ $isValid }) =>
+        $isValid &&
+        css`
+            &:hover {
+                background-color: #95ffa0;
+            }
+        `}
 `;
 
 const LoginModalbuttonup = styled.button`

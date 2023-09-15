@@ -2,17 +2,16 @@ import { styled, css } from 'styled-components';
 import { useState } from 'react';
 import { apiCall } from '../api/authapi';
 import { useSelector, useDispatch } from 'react-redux';
-import { DataState, updateName, updateMail } from '../slice/authslice';
+import { DataState, updateName, updateMail, updateLogin } from '../slice/authslice';
+import bcrypt from 'bcryptjs';
 
 interface LoginPageProps {
     onClickToggleModal?: () => void;
     onClickToggleSignupModal?: () => void;
-    isLogin: boolean;
-    setIsLogin: React.Dispatch<React.SetStateAction<boolean>>;
     children?: React.ReactNode;
 }
 
-function LoginPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, setIsLogin }: LoginPageProps) {
+function LoginPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPageProps) {
     const dispatch = useDispatch();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -69,22 +68,68 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal, isLogin, setI
             email,
             password,
         };
+
         console.log('로그인 data 슛', myId);
+
+        // try {
+        //     const storedUsersJSON = sessionStorage.getItem('users');
+        //     const storedUsers = storedUsersJSON ? JSON.parse(storedUsersJSON) : [];
+
+        //     const existingUser = storedUsers.find((user: any) => user.email === myId.email);
+
+        //     if (!existingUser) {
+        //         console.error('로그인 실패: 이메일이 존재하지 않음');
+        //         alert('로그인 할 수 없습니다. 이메일을 확인해주세요.');
+        //         return;
+        //     }
+
+        //     const passwordWithPepper = myId.password + 'pepper';
+        //     if (bcrypt.compareSync(passwordWithPepper, existingUser.hashedPassword)) {
+        //         // 로그인 성공
+        //         existingUser.islogin = true;
+        //         sessionStorage.setItem('users', JSON.stringify(storedUsers));
+        //         dispatch(updateLogin(true));
+        //         dispatch(updateName(existingUser.nickname));
+        //         dispatch(updateMail(existingUser.email));
+        //         onClickToggleModal?.();
+        //         console.log('로그인 성공', myId.email);
+        //     } else {
+        //         console.error('로그인 실패: 비밀번호 불일치');
+        //         alert('로그인 할 수 없습니다. 비밀번호를 확인해주세요.');
+        //     }
+        // } catch (error) {
+        //     console.error('로그인 실패', error);
+        // }
+
         apiCall({
             method: 'POST',
-            url: 'login', // host/signin - 우리 엔드포인트 // login - json 엔드포인트
+            url: 'auth/login', // login - json 엔드포인트
             data: myId,
         })
             .then((response) => {
-                setIsLogin(true);
+                dispatch(updateLogin(true));
+                sessionStorage.setItem('jwt', response.data.accessToken);
+                localStorage.setItem('jwtrefresh', response.data.refreshToken);
+                return apiCall({
+                    method: 'GET',
+                    url: 'users/get', // user info endpoint
+                });
+            })
+            .then((res) => {
+                console.log("res data",res.data)
+                console.log("User Name:", res.data.userName);
+                console.log("typeof data",typeof res.data, res.data)
+                console.log("object data",Object.keys(res.data))
+                sessionStorage.setItem('userName', res.data.data.userName);
+                sessionStorage.setItem('email', res.data.data.email);
+                sessionStorage.setItem('memberId', res.data.data.memberId);
+
+                dispatch(updateName(res.data.data.userName));
+                dispatch(updateMail(res.data.data.email));
+
                 onClickToggleModal?.();
-                console.log('로그인 성공', response);
-                sessionStorage.setItem('memberid', response.data.user.id);
-                sessionStorage.setItem('membername', response.data.user.nickname);
-                sessionStorage.setItem('membermail', response.data.user.email);
-                sessionStorage.setItem('jwt', response.data.accessToken)
-                dispatch(updateName(response.data.user.nickname));
-                dispatch(updateMail(response.data.user.email));
+
+                console.log('로그인 및 유저 정보 가져오기 성공');
             })
             .catch((error) => {
                 if (error.response && error.response.status === 400) {
@@ -241,12 +286,13 @@ const LoginModalbuttonin = styled.button<{ $isValid: boolean }>`
     height: 42px;
     cursor: pointer;
 
-    ${({ $isValid }) => $isValid && css`
-        &:hover {
-            background-color: #fff9b4;
-        }
-    `}
-
+    ${({ $isValid }) =>
+        $isValid &&
+        css`
+            &:hover {
+                background-color: #fff9b4;
+            }
+        `}
 `;
 
 const LoginModalbuttonup = styled.button`

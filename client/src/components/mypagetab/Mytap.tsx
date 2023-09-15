@@ -2,6 +2,7 @@ import { styled, css } from 'styled-components';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateName, updateMail, DataState } from '../../slice/authslice';
+import { apiCall } from '../../api/authapi';
 
 const FlexCentercss = css`
     align-items: center;
@@ -90,8 +91,19 @@ function Mymytap() {
     const [tempName, setTempName] = useState(globalName);
 
     const handleMailUpdate = () => {
-        dispatch(updateMail(tempEmail));
-        setIsEmailEditing(false);
+        // const sendEmail = {
+        //     email: tempEmail,
+        // };
+        // apiCall({
+        //     method: 'PATCH',
+        //     url: 'users/patch', // users/patch
+        //     data: sendEmail,
+        // }).then((response) => {
+        //     dispatch(updateLogin(true));
+        //     console.log('내가 뭘 보냄?', sendEmail);
+        //     dispatch(updateMail(tempEmail));
+        //     setIsEmailEditing(false);
+        // });
     };
 
     const handleNameUpdate = () => {
