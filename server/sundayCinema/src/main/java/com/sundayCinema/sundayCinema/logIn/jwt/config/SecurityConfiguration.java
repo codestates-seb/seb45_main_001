@@ -10,6 +10,7 @@ import com.sundayCinema.sundayCinema.logIn.jwt.handler.MemberAuthenticationSucce
 import com.sundayCinema.sundayCinema.logIn.jwt.jwt.JwtTokenizer;
 import com.sundayCinema.sundayCinema.logIn.utils.CustomAuthorityUtils;
 import com.sundayCinema.sundayCinema.logIn.utils.UserAuthService;
+import com.sundayCinema.sundayCinema.member.MemberRepository;
 import com.sundayCinema.sundayCinema.member.MemberService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,14 +42,17 @@ public class SecurityConfiguration {
     private final JwtTokenizer jwtTokenizer;
     private final CustomAuthorityUtils authorityUtils;
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     private final UserAuthService userAuthService;
 
-    public SecurityConfiguration(JwtTokenizer jwtTokenizer, CustomAuthorityUtils authorityUtils,
-                                 MemberService memberService, UserAuthService userAuthService) {
+
+    public SecurityConfiguration(JwtTokenizer jwtTokenizer, CustomAuthorityUtils authorityUtils, MemberService memberService,
+                                 MemberRepository memberRepository, UserAuthService userAuthService) {
         this.jwtTokenizer = jwtTokenizer;
         this.authorityUtils = authorityUtils;
         this.memberService = memberService;
+        this.memberRepository = memberRepository;
         this.userAuthService = userAuthService;
     }
 
@@ -84,7 +88,7 @@ public class SecurityConfiguration {
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
 
-            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtTokenizer);
+            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtTokenizer, memberRepository);
             jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
             jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler());
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new MemberAuthenticationFailureHandler());
@@ -109,10 +113,10 @@ public class SecurityConfiguration {
             HttpServletResponse response = (HttpServletResponse) servletResponse;
 
             // Set CORS headers for every request
-            response.setHeader("Access-Control-Allow-Origin", "http://pre-project-deploy.s3-website.ap-northeast-2.amazonaws.com");
-            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
             response.setHeader("Access-Control-Allow-Headers", "*");
-            response.setHeader("Access-Control-Allow-Credentials", "true");
+//            response.setHeader("Access-Control-Allow-Credentials", "true");
 
             if (CorsUtils.isPreFlightRequest(request)) {
                 // Handle Preflight request

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sundayCinema.sundayCinema.logIn.jwt.dto.LoginDto;
 import com.sundayCinema.sundayCinema.logIn.jwt.jwt.JwtTokenizer;
 import com.sundayCinema.sundayCinema.member.Member;
+import com.sundayCinema.sundayCinema.member.MemberRepository;
 import lombok.SneakyThrows;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,11 +33,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
      */
     private final AuthenticationManager authenticationManager;
     private final JwtTokenizer jwtTokenizer;
+    private final MemberRepository memberRepository;
 
     // (2)
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenizer jwtTokenizer) {
+
+
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenizer jwtTokenizer, MemberRepository memberRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenizer = jwtTokenizer;
+        this.memberRepository = memberRepository;
     }
 
     // (3)
@@ -68,6 +73,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("accessToken", "Bearer " + accessToken);
         responseBody.put("refreshToken", refreshToken);
+
+
 
         response.setContentType("application/json");
         PrintWriter writer = response.getWriter();

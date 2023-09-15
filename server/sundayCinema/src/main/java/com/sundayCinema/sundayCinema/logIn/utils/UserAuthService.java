@@ -19,8 +19,11 @@ public class UserAuthService {
     }
 
     public String getSignedInUserEmail(HttpServletRequest request) {
-
+        if(request.getHeader("Authorization")==null){
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_SIGNED_IN);
+        }
         String jws = request.getHeader("Authorization");
+
         if (jws.startsWith("Bearer ")) {
             jws = jws.substring(7);
         }
