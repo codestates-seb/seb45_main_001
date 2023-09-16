@@ -1,22 +1,22 @@
 package com.sundayCinema.sundayCinema.movie.api.ApiRepoService;
 
 
-import com.sundayCinema.sundayCinema.movie.Service.BoxOfficeService;
-import com.sundayCinema.sundayCinema.movie.api.KMDB.KdmbService;
+import com.sundayCinema.sundayCinema.movie.Service.BoxOfficeSwitchService;
 import com.sundayCinema.sundayCinema.movie.api.KOBIS.KobisService;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.*;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.BoxOfficeMovieRepository;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.ForeignBoxOfficeRepository;
-import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.GenreBoxOfficeRepository;
 import com.sundayCinema.sundayCinema.movie.repository.boxOfficeRepo.KoreaBoxOfficeRepository;
 import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class KobisRepoService {
 
     private final MovieRepository movieRepository;
@@ -25,25 +25,18 @@ public class KobisRepoService {
     private final MovieAuditRepository movieAuditRepository;
     private final NationRepository nationRepository;
     private final GenreRepository genreRepository;
-
     private final BoxOfficeMovieRepository boxOfficeMovieRepository;
     private final KoreaBoxOfficeRepository koreaBoxOfficeRepository;
     private final ForeignBoxOfficeRepository foreignBoxOfficeRepository;
-
-    private final KdmbService kdmbService;
-
     private final KobisService kobisService;
-
-    private final GenreBoxOfficeRepository genreBoxOfficeRepository;
-
-    private final BoxOfficeService boxOfficeService;
+    private final BoxOfficeSwitchService boxOfficeSwitchService;
 
     public KobisRepoService(MovieRepository movieRepository, ActorRepository actorRepository,
                             DirectorRepository directorRepository, MovieAuditRepository movieAuditRepository,
                             NationRepository nationRepository, GenreRepository genreRepository,
                             BoxOfficeMovieRepository boxOfficeMovieRepository, KoreaBoxOfficeRepository koreaBoxOfficeRepository,
-                            ForeignBoxOfficeRepository foreignBoxOfficeRepository, KdmbService kdmbService, KobisService kobisService,
-                            GenreBoxOfficeRepository genreBoxOfficeRepository, BoxOfficeService boxOfficeService) {
+                            ForeignBoxOfficeRepository foreignBoxOfficeRepository, KobisService kobisService
+            , BoxOfficeSwitchService boxOfficeSwitchService) {
         this.movieRepository = movieRepository;
         this.actorRepository = actorRepository;
         this.directorRepository = directorRepository;
@@ -53,75 +46,58 @@ public class KobisRepoService {
         this.boxOfficeMovieRepository = boxOfficeMovieRepository;
         this.koreaBoxOfficeRepository = koreaBoxOfficeRepository;
         this.foreignBoxOfficeRepository = foreignBoxOfficeRepository;
-        this.kdmbService = kdmbService;
         this.kobisService = kobisService;
-        this.genreBoxOfficeRepository = genreBoxOfficeRepository;
-        this.boxOfficeService = boxOfficeService;
+        this.boxOfficeSwitchService = boxOfficeSwitchService;
+    }
+
+    public List<BoxOfficeMovie> searchAndSaveBoxOfficeByNationCd(String repNationCd) throws Exception {
+        List<BoxOfficeMovie> returnBoxList = new ArrayList<>();
+        List<BoxOfficeMovie> boxOfficeList = kobisService.searchingTop10BoxOffice(repNationCd); //검색
+        saveMovieDetails(boxOfficeList);
+        switch (repNationCd) {                                                                  //기존 자료 삭제
+            case "":
+                boxOfficeMovieRepository.deleteAll();
+                break;
+            case "K":
+                koreaBoxOfficeRepository.deleteAll();
+                break;
+            case "F":
+                foreignBoxOfficeRepository.deleteAll();
+                break;
+            default:
+                // 지원하지 않는 타입
+                throw new IllegalArgumentException("Unsupported box office type: " + repNationCd);
+        }
+
+        for (BoxOfficeMovie boxOfficeMovie : boxOfficeList) {
+            Movie movie = movieRepository.findByMovieCd(boxOfficeMovie.getMovieCd());
+            boxOfficeMovie.setMovie(movie);
+            returnBoxList.add(boxOfficeMovie);
+            boxOfficeSwitchService.saveBoxOfficeByNationCd(repNationCd, boxOfficeMovie); // 저장
+        }
+        log.info("returnBoxList :" + returnBoxList.get(0) + returnBoxList.get(1) + returnBoxList.get(2) + returnBoxList.get(3));
+        return returnBoxList;
     }
 
     public List<BoxOfficeMovie> saveGenreBox(String targetDt) throws Exception {
-        List<BoxOfficeMovie> returnBoxList = new ArrayList<>();
-        List<BoxOfficeMovie> genreBoxList = kobisService.searchingGenreBoxOffice(targetDt);
-        saveMovieDetails(genreBoxList);
-        for (int i = 0; i < genreBoxList.size(); i++) {
-            BoxOfficeMovie boxOfficeMovie = genreBoxList.get(i);
-            Movie movie= movieRepository.findByMovieCd(boxOfficeMovie.getMovieCd());
-            boxOfficeMovie.setMovie(movie);
-            returnBoxList.add(boxOfficeMovie);
-            boxOfficeService.saveBoxOffice("G", boxOfficeMovie); //박스 오피스 타입을 변환해서 저장
+        List<BoxOfficeMovie> searchingGenreBoxList = kobisService.searchingGenreBoxOffice(targetDt); //장르별 영화용 박스오피스 검색
+        List<BoxOfficeMovie> notDuplicationGenreList = new ArrayList<>();
+        for (BoxOfficeMovie genreMovie : searchingGenreBoxList) {
+            String genreMovieCd = genreMovie.getMovieCd();
+            if (!verifyExistMovie(genreMovieCd)) {// 중복 검사를 통과한 리스트
+                notDuplicationGenreList.add(genreMovie);
+            }
         }
-        return returnBoxList;
-    }
+        saveMovieDetails(notDuplicationGenreList);
+        for (BoxOfficeMovie notDuplicationMovie : notDuplicationGenreList) {
 
-    public List<BoxOfficeMovie>  saveTop10Box() throws Exception {
-
-        boxOfficeMovieRepository.deleteAll();
-        List<BoxOfficeMovie> returnBoxList = new ArrayList<>();
-        List<BoxOfficeMovie> dailyList = kobisService.searchingTop10BoxOffice("");
-        saveMovieDetails(dailyList);
-        for (int i = 0; i < dailyList.size(); i++) {
-            BoxOfficeMovie boxOfficeMovie = dailyList.get(i);
-            Movie movie= movieRepository.findByMovieCd(boxOfficeMovie.getMovieCd());
-            boxOfficeMovie.setMovie(movie);
-            returnBoxList.add(boxOfficeMovie);
-            boxOfficeService.saveBoxOffice("", boxOfficeMovie);
+            Movie movie = movieRepository.findByMovieCd(notDuplicationMovie.getMovieCd());
+            notDuplicationMovie.setMovie(movie);
+            boxOfficeSwitchService.saveBoxOfficeByNationCd("G", notDuplicationMovie);
         }
-        return returnBoxList;
-    }
+        return notDuplicationGenreList;
+}
 
-    public List<BoxOfficeMovie> saveKoreaTop10Box() throws Exception {
-
-        koreaBoxOfficeRepository.deleteAll();
-        List<BoxOfficeMovie> returnBoxList = new ArrayList<>();
-        List<BoxOfficeMovie> kList = kobisService.searchingTop10BoxOffice("K");
-        saveMovieDetails(kList);
-        for (int i = 0; i < kList.size(); i++) {
-            BoxOfficeMovie boxOfficeMovie = kList.get(i);
-            Movie movie= movieRepository.findByMovieCd(boxOfficeMovie.getMovieCd());
-            boxOfficeMovie.setMovie(movie);
-            returnBoxList.add(boxOfficeMovie);
-            boxOfficeService.saveBoxOffice("K", boxOfficeMovie);
-        }
-        return returnBoxList;
-    }
-
-    public List<BoxOfficeMovie> saveForeignTop10Box() throws Exception {
-
-        foreignBoxOfficeRepository.deleteAll();
-        List<BoxOfficeMovie> returnBoxList = new ArrayList<>();
-        List<BoxOfficeMovie> fList = kobisService.searchingTop10BoxOffice("F");
-        saveMovieDetails(fList);
-        for (int i = 0; i < fList.size(); i++) {
-            BoxOfficeMovie boxOfficeMovie = fList.get(i);
-            Movie movie= movieRepository.findByMovieCd(boxOfficeMovie.getMovieCd());
-            boxOfficeMovie.setMovie(movie);
-            returnBoxList.add(boxOfficeMovie);
-            boxOfficeService.saveBoxOffice("F", boxOfficeMovie);
-        }
-        return returnBoxList;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //영화 세부 정보 저장
     public void saveMovieDetails(List<BoxOfficeMovie> boxList) throws Exception {
@@ -238,5 +214,4 @@ public class KobisRepoService {
             }
         }
     }
-
 }

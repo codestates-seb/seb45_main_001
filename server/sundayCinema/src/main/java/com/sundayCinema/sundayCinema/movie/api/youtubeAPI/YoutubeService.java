@@ -55,64 +55,17 @@ public class YoutubeService {
         return searchResults;
     }
 
-    public String extractYoutube(List<SearchResult> searchResults) {
-        List<String> resultList = new ArrayList<>();
-        if (searchResults != null && !searchResults.isEmpty()) {
-            int maxResults = Math.min(3, searchResults.size()); // 최대 3개 영상 가져오도록 설정
-
-            for (int i = 0; i < maxResults; i++) {
-                SearchResult searchResult = searchResults.get(i);
-
-                String videoId = searchResult.getId().getVideoId();
-                String thumbnailUrl = searchResult.getSnippet().getThumbnails().getDefault().getUrl();
-                String channelId = searchResult.getSnippet().getChannelId();
-                String videoInfo = videoId + "|" + thumbnailUrl + "|" + channelId;
-                resultList.add(videoInfo);
-            }
-        }
-        // 각각의 정보를 "|"로 구분하여 하나의 문자열로 결합
-        return String.join(",", resultList);
-    }
-
-    public void saveYoutube(String findYoutubeResult, String movieNm) {
-        String[] splitResults = findYoutubeResult.split(",");
-        for (String result : splitResults) {
-            String[] splitResult = result.split("\\|");
-            if (splitResult.length < 2) {
-                String videoId = splitResult[0];
+    public void saveYoutube(List<SearchResult> findYoutubeResult, String movieNm) {
 
                 YoutubeReview review = new YoutubeReview();
-                if (youtubeReviewRepository.findMaxReviewId() == null) {
-                    review.setReviewId(0);
-
-                } else {
-                    long youtubeId = youtubeReviewRepository.findMaxReviewId();
-                    review.setReviewId(youtubeId + 1);
+                if(findYoutubeResult.get(0).getId().getVideoId()==null){
+                    review.setYoutubeReview_url("mXZZvpTvtIQ");
+                }else {
+                    review.setYoutubeReview_url(findYoutubeResult.get(0).getId().getVideoId());
                 }
-                review.setYoutubeReview_url("https://www.youtube.com/watch?v=" + videoId);
+
                 review.setMovie(movieRepository.findByMovieNm(movieNm));
                 youtubeReviewRepository.save(review);
-            }
-            else {
-                String videoId = splitResult[0];
-                String channelId = splitResult[1];
-                String thumbnailUrl = splitResult[2];
-
-                YoutubeReview review = new YoutubeReview();
-                if (youtubeReviewRepository.findMaxReviewId() == null) {
-                    review.setReviewId(0);
-
-                } else {
-                    long youtubeId = youtubeReviewRepository.findMaxReviewId();
-                    review.setReviewId(youtubeId + 1);
-                }
-                review.setYoutubeReview_url("https://www.youtube.com/watch?v=" + videoId);
-                review.setYoutubeChannel("https://www.youtube.com/channel/" + channelId);
-                review.setThumbnail(thumbnailUrl);
-                review.setMovie(movieRepository.findByMovieNm(movieNm));
-                youtubeReviewRepository.save(review);
-            }
-        }
     }
 
     private YouTube getService() throws GeneralSecurityException, IOException {

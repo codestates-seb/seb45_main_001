@@ -1,7 +1,7 @@
 package com.sundayCinema.sundayCinema.movie.mapper;
 
-import com.sundayCinema.sundayCinema.movie.dto.GenreMovieDto;
-import com.sundayCinema.sundayCinema.movie.dto.StillCutDto;
+import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.GenreMovieDto;
+import com.sundayCinema.sundayCinema.movie.dto.detaiPagelDto.StillCutDto;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
 import com.sundayCinema.sundayCinema.movie.entity.movieMedia.StillCut;
 import lombok.extern.slf4j.Slf4j;

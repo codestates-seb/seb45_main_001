@@ -10,4 +10,5 @@ public interface BackDropRepository extends JpaRepository<BackDrop, Long> {
     @Query("SELECT MAX(e.backDropId) FROM BackDrop e")
     Long findMaxBackDropId();
     boolean existsByMovie(Movie movie);
+    BackDrop findByMovie(Movie movie);
 }

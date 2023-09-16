@@ -1,11 +1,10 @@
 package com.sundayCinema.sundayCinema.movie.mapper;
 
-import com.sundayCinema.sundayCinema.movie.dto.*;
+import com.sundayCinema.sundayCinema.movie.dto.detaiPagelDto.*;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Actor;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
 import com.sundayCinema.sundayCinema.movie.entity.movieMedia.StillCut;
-import com.sundayCinema.sundayCinema.movie.entity.movieMedia.Trailer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -74,20 +73,16 @@ public class MovieDetailsMapper {
 
     public DetailsMediaInfo detailsMediaInfoResponseDto(Movie movie) {
         DetailsMediaInfo detailsMediaInfo = new DetailsMediaInfo();
-        List<String> stillCutList = new ArrayList<>();
-        List<String> youtubeReviewList = new ArrayList<>();
+        ArrayList<StillCutDto> stillCutDtos=new ArrayList<>();
 
-            for (int i = 0; i < movie.getStillCuts().size(); i++) {
-            stillCutList.add(movie.getStillCuts().get(i).getStillCut_url());
-            log.info("stillCutList :" + movie.getStillCuts().get(i).getStillCut_url());
+        for (int i = 0; i < movie.getStillCuts().size(); i++) {
+            StillCutDto stillCutDto = new StillCutDto();
+            StillCut stillCut = movie.getStillCuts().get(i);
+            stillCutDto.setStillCut_url(stillCut.getStillCut_url());
+            stillCutDtos.add(stillCutDto);
         }
-            for (int i = 0; i < movie.getYoutubeReviews().size(); i++) {
-            youtubeReviewList.add(movie.getYoutubeReviews().get(i).getYoutubeReview_url());
-            log.info("youtubeList : "+ movie.getYoutubeReviews().get(i).getYoutubeReview_url());
-        }
-
-        detailsMediaInfo.stillCuts = stillCutList;
-        detailsMediaInfo.youtubeReviews = youtubeReviewList;
+        detailsMediaInfo.stillCuts = stillCutDtos;
+        detailsMediaInfo.youtubeReviews = movie.getYoutubeReviews().get(0).getYoutubeReview_url();
         detailsMediaInfo.trailers = movie.getTrailers().get(0).getTrailer_url();
 
         return detailsMediaInfo;
