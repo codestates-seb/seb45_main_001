@@ -5,7 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import Mypage from './pages/Mypage';
 import './css/App.css';
-import Authguard from './components/Authguard';
+import Authguard from './components/auth/Authguard';
 import KoreaPage from './pages/KoreaPage';
 import ForeignPage from './pages/ForeignPage';
 
