@@ -1,19 +1,21 @@
 import React from 'react';
 import Header from '../components/Header';
-import Banner from '../components/Banner';
-import Row from '../components/Row';
-import requests from '../api/requests';
+import Banners from '../components/Banners';
+import TopRow from '../components/Row/TopRow';
+import GenreRow from '../components/Row/GenreRow';
 
 const HomePage = () => {
   return (
     <>
       <Header />
-      <Banner />
-      <Row title="Top Rated" id="TR" fetchURl={requests.fetchTopRated} isLargeRow />
-      <Row title="Trending Now" id="TN" fetchURl={requests.fetchTrending} isLargeRow={false} />
-      <Row title ="NETFLIX ORIGINALS"id="NO" fetchURl={requests.fetchNetflixOriginals} isLargeRow={false} /> 
-      <Row title="Action Movies" id="AM" fetchURl={requests.fetchActionMovies} isLargeRow={false} />
-      <Row title="Comedy Movies" id="CM" fetchURl={requests.fetchComedyMovies} isLargeRow={false} />
+      <Banners />
+      <TopRow title="Top 10 Movies" id="top10"isLargeRow={true} />
+      <GenreRow title="애니메이션" id="animation" genre="애니메이션" isLargeRow={true}/>
+      <GenreRow title="액션" id="action" genre="액션" isLargeRow={true}/>
+      <GenreRow title="판타지" id="fantasy" genre="판타지" isLargeRow={true}/>
+      <GenreRow title="로맨스" id="romance" genre="멜로/로맨스" isLargeRow={true}/>
+      <GenreRow title="공포" id="scary" genre="공포(호러)" isLargeRow={true}/>
+    
     </>
   );  
 };
