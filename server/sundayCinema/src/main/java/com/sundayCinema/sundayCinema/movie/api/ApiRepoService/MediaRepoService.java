@@ -219,31 +219,39 @@ public class MediaRepoService {
     }
 
     //예외 필터 트레일러 메서드
-    public void trailerSaveFilter(BoxOfficeMovie boxOfficeMovie, MovieDetails movieDetails) throws IOException, GeneralSecurityException {
+    public void trailerSaveFilter(BoxOfficeMovie boxOfficeMovie, MovieDetails movieDetails)
+            throws IOException, GeneralSecurityException {
         Trailer trailer = new Trailer();
         trailer.setTrailer_url(movieDetails.getKey());
         trailer.setMovie(boxOfficeMovie.getMovie());
         if (movieDetails.getTitle().equals(boxOfficeMovie.getMovieNm())) { // 입력한 영화 제목 == 검색 결과 영화제목
             if (movieDetails.getTitle().equals("기본값")) { //TMDB가 제대로 된 검색을 못 했을 때
                 //youtube 검색
-                String youtubeVodId = youtubeService.searchYoutube(boxOfficeMovie.getMovieNm(), "공식 예고편")
-                        .get(0).getId().getVideoId();
-                trailer.setTrailer_url(youtubeVodId);
-                trailerRepository.save(trailer);
-            } else {
-                // TMDB 저장 메서드 호출
+                List<SearchResult> findYoutubeResult = youtubeService.searchYoutube(boxOfficeMovie.getMovieNm(), "공식 예고편");
+                if (findYoutubeResult != null && !findYoutubeResult.isEmpty() &&
+                        findYoutubeResult.get(0).getId() != null && findYoutubeResult.get(0).getId().getVideoId() != null) {
+
+                    String youtubeVodId = findYoutubeResult.get(0).getId().getVideoId();
+                    trailer.setTrailer_url(youtubeVodId);
+
+                } else {
+                    trailer.setTrailer_url("mXZZvpTvtIQ");
+                }
                 trailerRepository.save(trailer);
             }
         } else {
             //youtube 검색
-            String youtubeVodId = youtubeService.searchYoutube(boxOfficeMovie.getMovieNm(), "공식 예고편")
-                    .get(0).getId().getVideoId();
-            if (youtubeVodId == null) {
-                trailer.setTrailer_url("mXZZvpTvtIQ");
-            } else {
+            List<SearchResult> findYoutubeResult = youtubeService.searchYoutube(boxOfficeMovie.getMovieNm(), "공식 예고편");
+            if (findYoutubeResult != null && !findYoutubeResult.isEmpty() &&
+                    findYoutubeResult.get(0).getId() != null && findYoutubeResult.get(0).getId().getVideoId() != null) {
+
+                String youtubeVodId = findYoutubeResult.get(0).getId().getVideoId();
                 trailer.setTrailer_url(youtubeVodId);
-            }
-            trailerRepository.save(trailer);
+
+            } else
+                trailer.setTrailer_url("mXZZvpTvtIQ");
         }
+        trailerRepository.save(trailer);
     }
-}
+    }
+

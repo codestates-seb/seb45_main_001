@@ -7,6 +7,7 @@ public enum ExceptionCode {
     MEMBER_EXISTS(409, "Member exists"),
     MEMBER_NOT_SIGNED_IN(401, "Member not signed in"),
     MOVIE_NOT_FOUND(404, "Movie not found"),
+    COMMENT_NOT_FOUND(404, "Comment not found"),
     CANNOT_CHANGE_COMMENT(403, "Comment cannot change"),
     NOT_IMPLEMENTATION(501, "Not Implementation"),
     INVALID_MEMBER_STATUS(400, "Invalid member status");

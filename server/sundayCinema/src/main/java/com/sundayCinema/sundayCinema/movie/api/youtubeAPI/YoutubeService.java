@@ -1,6 +1,7 @@
 package com.sundayCinema.sundayCinema.movie.api.youtubeAPI;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
@@ -37,35 +38,47 @@ public class YoutubeService {
 
     public List<SearchResult> searchYoutube(String movieNm, String keyword) throws GeneralSecurityException, IOException {
         YouTube youtubeService = getService();
+        List<SearchResult> searchResults = new ArrayList<>();
 
-        YouTube.Search.List searchRequest = youtubeService.search().list(Collections.singletonList("id, snippet"));
-        searchRequest.setKey(youtubeApiKey);
-        String query = movieNm + " " + keyword;
-        searchRequest.setQ(query);  // 검색어 설정
-        searchRequest.setRegionCode("KR");
-        searchRequest.setTopicId("/m/02vxn");
-        searchRequest.setType(Collections.singletonList("video"));
-//        searchRequest.setVideoDuration("medium");
-        searchRequest.setVideoEmbeddable("true");
-        searchRequest.setOrder("relevance");//관련성 높은 순
-        log.info(query);
-        SearchListResponse response = searchRequest.execute();
-        List<SearchResult> searchResults = response.getItems();
+        try {
+            YouTube.Search.List searchRequest = youtubeService.search().list(Collections.singletonList("id, snippet"));
+            searchRequest.setKey(youtubeApiKey);
+            String query = movieNm + " " + keyword;
+            searchRequest.setQ(query);  // 검색어 설정
+            searchRequest.setRegionCode("KR");
+            searchRequest.setTopicId("/m/02vxn");
+            searchRequest.setType(Collections.singletonList("video"));
+            searchRequest.setVideoDuration("medium");
+            searchRequest.setVideoEmbeddable("true");
+            searchRequest.setOrder("relevance"); // 관련성 높은 순
+            log.info(query);
+            SearchListResponse response = searchRequest.execute();
+            searchResults = response.getItems();
+        } catch (GoogleJsonResponseException e) {
+            // API 접근이 차단되었을 때 처리
+            if (e.getStatusCode() == 403) {
+                log.error("YouTube API 접근이 차단되었습니다.");
+            } else {
+                throw e;
+            }
+        }
 
         return searchResults;
     }
 
+
     public void saveYoutube(List<SearchResult> findYoutubeResult, String movieNm) {
 
-                YoutubeReview review = new YoutubeReview();
-                if(findYoutubeResult.get(0).getId().getVideoId()==null){
-                    review.setYoutubeReview_url("mXZZvpTvtIQ");
-                }else {
-                    review.setYoutubeReview_url(findYoutubeResult.get(0).getId().getVideoId());
-                }
+        YoutubeReview review = new YoutubeReview();
+        if (findYoutubeResult != null && !findYoutubeResult.isEmpty() &&
+                findYoutubeResult.get(0).getId() != null && findYoutubeResult.get(0).getId().getVideoId() != null) {
+            review.setYoutubeReview_url(findYoutubeResult.get(0).getId().getVideoId());
+        } else {
+            review.setYoutubeReview_url("mXZZvpTvtIQ");
+        }
 
-                review.setMovie(movieRepository.findByMovieNm(movieNm));
-                youtubeReviewRepository.save(review);
+        review.setMovie(movieRepository.findByMovieNm(movieNm));
+        youtubeReviewRepository.save(review);
     }
 
     private YouTube getService() throws GeneralSecurityException, IOException {

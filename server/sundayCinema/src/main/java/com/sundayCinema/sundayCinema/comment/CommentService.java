@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommentService {
@@ -101,7 +102,7 @@ public class CommentService {
     }
 
     // Get comments for a movie
-    public List<CommentDto.CommentResponseDto> getCommentsForMovie(long movieId, long memberId, HttpServletRequest request) {
+    public CommentDto.CommentResponseDto getCommentsForMovie(long movieId, long memberId, HttpServletRequest request) {
         // 사용자와 영화 정보 가져오기
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
@@ -115,6 +116,32 @@ public class CommentService {
         if (!signedInUserEmail.equals(member.getEmail())) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_SIGNED_IN);
         }
+
+        // 영화에 대한 댓글 가져오기
+        Optional<Comment> commentOptional = commentRepository.findByMovieMovieIdAndMemberMemberId(movieId,memberId);
+
+        if (commentOptional.isPresent()) {
+            Comment comment = commentOptional.get();
+            return commentMapper.commentToCommentResponseDto(comment);
+            // 이제 comment 변수에 해당하는 Comment 객체를 사용할 수 있습니다.
+        } else { throw new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND);
+            // 해당하는 Comment 객체가 없는 경우 처리할 내용을 여기에 작성합니다.
+        }
+
+        // Comment 객체를 CommentResponseDto로 변환하여 반환
+
+    }
+    public List<CommentDto.CommentResponseDto> getAllCommentsForMovie(long movieId) {
+        // 사용자와 영화 정보 가져오기
+
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MOVIE_NOT_FOUND));
+
+        // 현재 로그인한 사용자의 이메일 가져오기
+
+
+        // 현재 로그인한 사용자의 이메일과 회원의 이메일 비교
+
 
         // 영화에 대한 댓글 가져오기
         List<Comment> comments = commentRepository.findByMovieMovieId(movieId);
@@ -152,22 +179,19 @@ public class CommentService {
     }
 
     // Calculate average rating for a movie
-    public double calculateAverageRatingForMovie(Long movieId, Long memberId, HttpServletRequest request) {
+    public double calculateAverageRatingForMovie(Long movieId) {
         // memberId가 null이면 Bad Request로 처리
 
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MOVIE_NOT_FOUND));
 
         // 현재 로그인한 사용자의 이메일 가져오기
-        String signedInUserEmail = userAuthService.getSignedInUserEmail(request);
+
 
         // 현재 로그인한 사용자의 이메일과 회원의 이메일 비교
-        if (!signedInUserEmail.equals(member.getEmail())) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_SIGNED_IN);
-        }
+
         List<Comment> comments = commentRepository.findByMovieMovieId(movieId);
         if (comments.isEmpty()) {
             return 0.0;

@@ -13,7 +13,7 @@ spring:
     password: 9397wkdwjd
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: off
   security:
     oauth2:
