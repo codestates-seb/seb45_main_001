@@ -1,6 +1,6 @@
 import { styled, css } from 'styled-components';
 import { useState } from 'react';
-import { apiCall } from '../api/authapi';
+import { apiCall } from '../../api/authapi';
 import bcrypt from 'bcryptjs';
 
 interface LoginPageProps {
@@ -18,7 +18,7 @@ function SignupPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPageP
     const [emailError, setEmailError] = useState<string>('');
 
     function isNameValid(name: string): boolean {
-        const regex = /^[가-힣]{2,8}$/;
+        const regex = /^[가-힣a-zA-Z0-9]{2,8}$/;
         return regex.test(name);
     }
 
@@ -58,7 +58,7 @@ function SignupPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPageP
             if (value === '') {
                 setNameError('');
             } else if (!isNameValid(value)) {
-                setNameError('2~8글자의 한글이어야 합니다.');
+                setNameError('2~8글자의 한글,영어,숫자이어야 합니다.');
             } else {
                 setNameError('');
             }

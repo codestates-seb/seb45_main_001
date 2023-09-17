@@ -8,45 +8,29 @@ export const jsonUrl = `http://localhost:5002`;
 
 export const lastUrl = `${apiUrl}`;
 
-function getToken() {
-    return sessionStorage.getItem('jwt');
-}
-
-
 type ApiConfig<D> = {
     method: Method;
     url: string;
     data?: D;
+    headers?: Record<string, string>;
 };
 
-
-
-export function apiCall<T = any, D = any>(config: ApiConfig<D>): Promise<AxiosResponse<T>> {
-
-    const token = getToken();
-
-    const headers = {
-        // "Session-Id": `${token}`,
-        Authorization: `${token}`,
-        // 'Cookie': `sessionId=${token}`
-        // withCredentials: true,
-    };
-
-    const fullUrl = `${lastUrl}/${config.url}`;
+export function apiCall<T = any, D = any>(config: ApiConfig<D>,usePrefix = true): Promise<AxiosResponse<T>> {
+    const fullUrl = usePrefix ? `${lastUrl}/${config.url}` : config.url;
     console.log('api:', fullUrl);
     console.log('origin', location.origin);
-    console.log('Request Headers:', headers);
+    // console.log('Request Headers:', headers);
 
     return axios({
         method: config.method,
         url: fullUrl,
         data: config.data,
-        headers,
+        headers: config.headers,
         // withCredentials: true,
     })
         .then((response: AxiosResponse<T>) => {
-            console.log('Response Data:', response.data);
-            console.log('Response received:', response);
+            // console.log('Response Data:', response.data);
+            // console.log('Response received:', response);
             return response;
         })
         .catch((error: AxiosError) => {
@@ -69,3 +53,21 @@ export function apiCall<T = any, D = any>(config: ApiConfig<D>): Promise<AxiosRe
 //     url: 'another_endpoint',
 //     data: { email: 'test@example.com', password: 'password123' },
 // });
+
+// apiCall({
+//     method: 'GET',
+//     url: 'some/endpoint',
+//     headers: {
+//       'Authorization': 'Bearer some-token',
+//       'Another-Header': 'header-value'
+//     }
+//   }).then(response => {
+//     // Do something with the response
+//   });
+
+// const headers = {
+//     // "Session-Id": `${token}`,
+//     Authorization: `${token}`,
+//     // 'Cookie': `sessionId=${token}`
+//     // withCredentials: true,
+// };

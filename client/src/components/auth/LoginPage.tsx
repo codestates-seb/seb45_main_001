@@ -1,8 +1,9 @@
 import { styled, css } from 'styled-components';
 import { useState } from 'react';
-import { apiCall } from '../api/authapi';
+import { apiCall } from '../../api/authapi';
+import OauthGoogle from './OauthGoogle';
 import { useSelector, useDispatch } from 'react-redux';
-import { DataState, updateName, updateMail, updateLogin } from '../slice/authslice';
+import { DataState, updateName, updateMail, updateLogin } from '../../slice/authslice';
 import bcrypt from 'bcryptjs';
 
 interface LoginPageProps {
@@ -107,8 +108,11 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPagePr
             data: myId,
         })
             .then((response) => {
+                if (!response.data || Object.keys(response.data).length === 0) {
+                    throw new Error('empty');
+                }
                 dispatch(updateLogin(true));
-                sessionStorage.setItem('jwt', response.data.accessToken);
+                localStorage.setItem('jwt', response.data.accessToken);
                 localStorage.setItem('jwtrefresh', response.data.refreshToken);
                 return apiCall({
                     method: 'GET',
@@ -116,14 +120,9 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPagePr
                 });
             })
             .then((res) => {
-                console.log("res data",res.data)
-                console.log("User Name:", res.data.userName);
-                console.log("typeof data",typeof res.data, res.data)
-                console.log("object data",Object.keys(res.data))
                 sessionStorage.setItem('userName', res.data.data.userName);
                 sessionStorage.setItem('email', res.data.data.email);
                 sessionStorage.setItem('memberId', res.data.data.memberId);
-
                 dispatch(updateName(res.data.data.userName));
                 dispatch(updateMail(res.data.data.email));
 
@@ -137,6 +136,9 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPagePr
                     alert('로그인 할 수 없습니다. 비밀번호나 이메일을 확인해주세요.');
                 } else if (error.message && error.message.includes('Network Error')) {
                     console.error('서버 안열림');
+                } else if (error.message && error.message.includes('empty')) {
+                    console.error('로그인 실패: 빈 데이터 반환 = 회원정보가 없음');
+                    alert('로그인 할 수 없습니다. 비밀번호나 이메일을 확인해주세요.');
                 } else {
                     console.error('로그인 에러', error);
                 }
@@ -180,7 +182,9 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPagePr
                             <LoginModalline></LoginModalline>
                         </LoginModalorwrap>
                         <LoginModaloauthwrap>
-                            <LoginModaloauth>Oauth</LoginModaloauth>
+                            <LoginModaloauth>
+                                <OauthGoogle></OauthGoogle>
+                            </LoginModaloauth>
                         </LoginModaloauthwrap>
                     </LoginModalmain_low>
                 </LoginModalmain>
@@ -344,7 +348,7 @@ const LoginModalline = styled.div`
 `;
 
 const LoginModaloauthwrap = styled.div`
-    margin-top: 28px;
+    margin-top: 20px;
 `;
 
 const LoginModaloauth = styled.div``;

@@ -1,25 +1,36 @@
 import { styled, css } from 'styled-components';
 import { useState, useEffect } from 'react';
-import LoginPage from './LoginPage';
-import SignupPage from './Signup';
+import LoginPage from './auth/LoginPage';
+import SignupPage from './auth/Signup';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserById, DataState, updateName, updateLogin, updateMail } from '../slice/authslice';
-import { RootState } from '../store/authstore';
+import { DataState, updateName, updateLogin, updateMail } from '../slice/authslice';
 import type { AppDispatch } from '../store/authstore';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { lastUrl, apiCall } from '../api/authapi';
+import { apiCall } from '../api/authapi';
 
-const HeaderStyle = styled.header`
-    /* width: 100%;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    z-index: 1001;
-    background-color: #1d1d1d;
-    background-color: transparent;
-    백그라운드는 나중에 투명으로 바꿀 것
-    position: fixed; */
+// const HeaderStyle = styled.header`
+//     /* width: 100%;
+//     height: 56px;
+//     display: flex;
+//     align-items: center;
+//     z-index: 1001;
+//     background-color: #1d1d1d;
+//     background-color: transparent;
+//     백그라운드는 나중에 투명으로 바꿀 것
+//     position: fixed; */
+//     position: fixed;
+//     top: 0;
+//     width: 100%;
+//     height: 56px;
+//     z-index: 1001;
+//     padding: 20px;
+//     display: flex;
+//     align-items: center;
+//     transition: all 0.5s;
+//     font-size: 1rem;
+// `;
+
+const HeaderStyle = styled.header<{ $scrolled: boolean }>`
     position: fixed;
     top: 0;
     width: 100%;
@@ -29,6 +40,8 @@ const HeaderStyle = styled.header`
     display: flex;
     align-items: center;
     transition: all 0.5s;
+    font-size: 1rem;
+    background-color: ${(props) => (props.$scrolled ? '#1d1d1d' : 'transparent')};
 `;
 
 const Headerwrap = styled.div`
@@ -59,12 +72,20 @@ const LogoStyle = styled(FlexCenter)`
     padding-right: 6px;
     color: #d6a701;
     font-weight: 600;
+    min-width: 80px;
+    min-height: 24px;
 `;
 
 const CountryStyle = styled(FlexCenter)`
     margin-left: 10px;
     margin-right: 20px;
+    min-width: 130px;
+    min-height: 24px;
     gap: 6px;
+
+    @media (max-width: 680px) {
+        min-width: 55px;
+    }
 `;
 
 const DomesticStyle = styled(FlexCenter)`
@@ -99,7 +120,7 @@ const SearchinputStyle = styled.input`
     border-radius: 3px;
     padding: 3px;
     padding-left: 6px;
-    font-size: 14px;
+    font-size: 0.875rem;
 `;
 
 const SearchfilterStyle = styled.ul`
@@ -131,11 +152,22 @@ const SearchbarStyle = styled.form<{ $isOpen: boolean }>`
     margin-left: 10px;
     margin-right: 10px;
     display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
+
+    @media (max-width: 680px) {
+        position: absolute;
+        width: 300px;
+        top: 56px;
+        left: 150px;
+        right: auto;
+    }
 `;
 
 const LogSignStyle = styled.nav`
     ${FlexCentercss}
     margin-left: auto;
+    height: 100%;
+    min-width: 110px;
+    min-height: 24px;
     gap: 6px;
 `;
 
@@ -169,6 +201,9 @@ const TempStyle = styled.div`
         > ${Templink} {
             display: flex;
         }
+    }
+    @media (max-width: 680px) {
+        display: none;
     }
 `;
 
@@ -329,42 +364,60 @@ function Header() {
     const isLogin = useSelector((state: { data: DataState }) => state.data.isLogin);
     const [isMagnifierClicked, setisMagnifierClicked] = useState<boolean>(false);
     const globalName = useSelector((state: { data: DataState }) => state.data.globalname);
-    const globalmail = useSelector((state: { data: DataState }) => state.data.globalmail);
 
-    const isTokenExpired = (token: string): boolean => {
-        try {
-            const decodedToken: any = JSON.parse(atob(token.split('.')[1]));
-            const currentTime = Date.now() / 1000;
-            return decodedToken.exp && currentTime > decodedToken.exp;
-        } catch (error) {
-            return true;
-        }
-    };
-
-    const users = useSelector((state: RootState) => state.data.users);
-    const memberId = sessionStorage.getItem('memberid');
-    const user = memberId ? users?.[memberId] : undefined;
-    const token = sessionStorage.getItem('jwt');
+    const token = localStorage.getItem('jwt');
 
     useEffect(() => {
         if (token) {
-            const tokenValid = !isTokenExpired(token);
-            dispatch(updateLogin(tokenValid));
+            if (!isLogin && token) {
+                console.log('자동로그인 시도');
+                apiCall({
+                    method: 'GET',
+                    url: 'users/get', // user info endpoint
+                    headers: { Authorization: `${localStorage.getItem('jwt')}` },
+                })
+                    .then((res) => {
+                        dispatch(updateLogin(true));
+                        sessionStorage.setItem('userName', res.data.data.userName);
+                        sessionStorage.setItem('email', res.data.data.email);
+                        sessionStorage.setItem('memberId', res.data.data.memberId);
+                        dispatch(updateName(res.data.data.userName));
+                        dispatch(updateMail(res.data.data.email));
+                        console.log('로그인 및 유저 정보 가져오기 성공');
+                    })
+                    .catch((error) => {
+                        if (error.response && error.response.status === 400) {
+                            console.error('로그인 실패 400에러');
+                        } else if (error.message && error.message.includes('Network Error')) {
+                            console.error('서버 안열림');
+                        } else {
+                            console.error('로그인 에러', error);
+                        }
+                    });
+            }
         } else {
-            dispatch(updateLogin(false));
+            if (isLogin) {
+                console.log('헤더 로그아웃 강제 작동');
+                dispatch(updateLogin(false));
+                sessionStorage.removeItem('userName');
+                sessionStorage.removeItem('email');
+                sessionStorage.removeItem('memberId');
+                localStorage.removeItem('jwt');
+                localStorage.removeItem('jwtrefresh');
+            }
         }
-    }, [token, dispatch]);
-
-    console.log('Member ID:', memberId);
-    console.log('User Data:', user);
+    }, []);
 
     function onClickLogout() {
         try {
             dispatch(updateLogin(false));
-            sessionStorage.removeItem('memberid');
+            sessionStorage.removeItem('memberId');
             sessionStorage.removeItem('jwt');
-            sessionStorage.removeItem('membername');
-            sessionStorage.removeItem('membermail');
+            sessionStorage.removeItem('userName');
+            sessionStorage.removeItem('email');
+            sessionStorage.removeItem('password');
+            localStorage.removeItem('jwtrefresh');
+            localStorage.removeItem('jwt');
             navigate('/');
             console.log('로그아웃 성공');
         } catch (error) {
@@ -423,19 +476,27 @@ function Header() {
         return item.toLowerCase().includes(query.toLowerCase());
     });
 
-    // useEffect(() => {
-    //     const memberName = sessionStorage.getItem('membername');
-    //     const memberMail = sessionStorage.getItem('memberemail');
-    //     if (memberName && memberMail) {
-    //         dispatch(updateName(memberName));
-    //         dispatch(updateMail(memberMail));
-    //         dispatch(updateLogin(true));
-    //     }
-    // }, []);
+    const [scrolled, setScrolled] = useState(false);
+
+    const handleScroll = () => {
+        const offset = window.scrollY;
+        if (offset > 20) {
+            setScrolled(true);
+        } else {
+            setScrolled(false);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
 
     return (
         <>
-            <HeaderStyle>
+            <HeaderStyle $scrolled={scrolled}>
                 <Headerwrap>
                     <LogoStyle>
                         <Link to="/">
