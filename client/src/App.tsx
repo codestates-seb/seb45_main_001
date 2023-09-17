@@ -19,8 +19,7 @@ function App() {
                 <Route path="/foreign" element={<ForeignPage />} />
                 <Route path="/submain" element={<Submain />} />
                 <Route path="/mypage" element={<Authguard />}>
-                
-                
+                    <Route index element={<Mypage />} />
                 </Route>
             </Routes>
             <Footer />
