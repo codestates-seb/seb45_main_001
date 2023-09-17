@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -41,7 +42,9 @@ public class CommentController {
     public ResponseEntity<CommentDto.CommentResponseDto> updateComment(
             @PathVariable("commentId") long commentId,
             @Valid @RequestBody CommentDto.CommentPatchDto commentPatchDto,
-            long memberId, long movieId, HttpServletRequest request) {
+            @RequestParam(name = "memberId", required = true, defaultValue = "0") long memberId,
+            @RequestParam(name = "movieId", required = true, defaultValue = "0") long movieId,
+            HttpServletRequest request) {
         commentPatchDto.setCommentId(commentId);
 
         CommentDto.CommentResponseDto response = commentService.updateComment(commentPatchDto, memberId, movieId, request);
@@ -51,15 +54,30 @@ public class CommentController {
         return ResponseEntity.notFound().build();
     }
 
+
     @GetMapping("/movie/{movieId}")
-    public ResponseEntity<List<CommentDto.CommentResponseDto>> getCommentsForMovie(@PathVariable("movieId") long movieId,
-                                                                                   long memberId, HttpServletRequest request) {
+    public ResponseEntity<?> getCommentsForMovie(
+            @PathVariable("movieId") Long movieId,
+            @RequestParam(name = "memberId", required = false) Long memberId,
+            HttpServletRequest request) {
+
+        // movieId와 memberId가 null이면 BadRequest로 처리
+        if (movieId == null || memberId == null) {
+            return ResponseEntity.badRequest().body("movieId and memberId must not be null.");
+        }
+
         List<CommentDto.CommentResponseDto> comments = commentService.getCommentsForMovie(movieId, memberId, request);
         return ResponseEntity.ok(comments);
     }
 
+
+
+
+
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable("commentId") long commentId, long memberId, long movieId, HttpServletRequest request) {
+    public ResponseEntity<Void> deleteComment(@PathVariable("commentId") long commentId,
+                                              @RequestParam(name = "memberId", required = true, defaultValue = "0") long memberId,
+                                              @RequestParam(name = "movieId", required = true, defaultValue = "0") long movieId, HttpServletRequest request) {
         if (commentService.deleteComment(commentId, memberId, movieId, request)) {
             return ResponseEntity.noContent().build();
         }
@@ -67,8 +85,17 @@ public class CommentController {
     }
 
     @GetMapping("/movie/{movieId}/average-rating")
-    public ResponseEntity<Double> getAverageRatingForMovie(@PathVariable("movieId") long movieId) {
-        double averageRating = commentService.calculateAverageRatingForMovie(movieId);
+    public ResponseEntity<Double> getAverageRatingForMovie(@PathVariable("movieId") Long movieId,
+                                                           @RequestParam(name = "memberId", required = false)
+                                                           Long memberId, HttpServletRequest request) {
+        // movieId와 memberId가 null이면 Bad Request로 처리
+        if (movieId == null || memberId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        double averageRating = commentService.calculateAverageRatingForMovie(movieId, memberId, request);
         return ResponseEntity.ok(averageRating);
     }
+
+
 }
