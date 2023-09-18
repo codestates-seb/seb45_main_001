@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
+import { useParams } from 'react-router-dom'; // react-router-dom에서 useParams를 가져옵니다.
 
 const Subdiv = styled.div`
   width: 100%;
@@ -92,12 +93,12 @@ const Subinformation: FC = () => {
   const [movieInfo, setMovieInfo] = useState<MovieInfo | null>(null);
   const [top10Movies, setTop10Movies] = useState<Movie[]>([]);
   const [startIndex, setStartIndex] = useState(0);
-
+  const { movieId } = useParams(); // URL 파라미터인 'movieId'를 읽어옵니다.
   useEffect(() => {
     // 영화 개요 정보 가져오기
     const fetchMovieOverview = async () => {
       try {
-        const response = await axios.get('http://13.209.157.148:8080/details/1');
+        const response = await axios.get(`http://13.209.157.148:8080/details/${movieId}`);
         const movieData = response.data;
         const overview = movieData.detailsList.plot;
         setMovieInfo({ id: 3, overview });

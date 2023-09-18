@@ -5,6 +5,7 @@ import Subinformation from './Subinformation';
 import SubMovie from './SubMovie';
 import SubComment from './SubComment';
 import axios from 'axios';
+import { useParams } from 'react-router-dom'; // react-router-dom에서 useParams를 가져옵니다.
 
 // Styles and components
 
@@ -167,6 +168,7 @@ const Desc = styled.div`
 
 interface MovieData {
   detailsList: {
+    movieId: number;
     openDt: string;
     rank: number;
     movieNm: string;
@@ -201,6 +203,9 @@ const Submain: FC = () => {
   const [posterImageUrl2, setPosterImageUrl2] = useState<string>("");
   const [currentTab, setCurrentTab] = useState<number>(0);
   const [movieInfo, setMovieInfo] = useState<MovieInfo | null>(null);
+
+  const { movieId } = useParams(); // URL 파라미터인 'movieId'를 읽어옵니다.
+
   const menuArr = [
     { name: '주요 정보', content: <Subinformation /> },
     { name: '영상/포토', content: <SubMovie /> },
@@ -215,7 +220,7 @@ const Submain: FC = () => {
     // Fetch movie data
     const fetchMovieData = async () => {
       try {
-        const response = await axios.get<MovieData>('http://13.209.157.148:8080/details/1'); // Change the URL to the desired endpoint
+        const response = await axios.get<MovieData>(`http://13.209.157.148:8080/details/${movieId}`); // Change the URL to the desired endpoint
         const movieData = response.data.detailsList;
 
         // Convert genre data to a string if it's an array
@@ -226,7 +231,7 @@ const Submain: FC = () => {
 
         // Update state to match the new movie data structure
         setMovieInfo({
-          id:1,
+          id:  movieData.movieId,
           title: movieData.movieNm,
           original_title: movieData.movieNmEn,
           release_date: movieData.openDt,
@@ -251,7 +256,7 @@ const Submain: FC = () => {
     if (movieInfo === null) {
       fetchMovieData();
     }
-  }, []); // Add an empty dependency array to run this effect only once
+  }, [movieId]); // Add an empty dependency array to run this effect only once
 
   return (
     <>
