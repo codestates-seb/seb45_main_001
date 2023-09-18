@@ -120,7 +120,7 @@ const KoreaGenreRow = ({isLargeRow, title, id, genre}: KoreaGenreRowProps) => {
   }
 
   const navigateTo = () => {
-    navigate('/submain');
+    navigate('/Submain');
   };
 
   return (

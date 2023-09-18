@@ -120,7 +120,7 @@ const ForeignGenreRow = ({isLargeRow, title, id, genre}: ForeignGenreRowProps) =
   }
 
   const navigateTo = () => {
-    navigate('/submain');
+    navigate('/Submain');
   };
 
   return (

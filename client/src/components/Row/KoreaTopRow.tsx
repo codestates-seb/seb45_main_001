@@ -112,7 +112,7 @@ const KoreaTopRow = ({isLargeRow, title, id}: KoreaTopRowProps) => {
   }
 
   const navigateTo = () => {
-    navigate('/submain');
+    navigate('/Submain');
   };
 
   return (

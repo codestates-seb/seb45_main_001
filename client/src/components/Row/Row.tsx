@@ -183,7 +183,7 @@ const Row = ({isLargeRow, title, id, fetchURl}: RowProps) => {
   }
 
   const navigateTo = () => {
-    navigate('/submain');
+    navigate('/Submain');
   };
 
   return (
