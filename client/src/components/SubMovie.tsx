@@ -95,7 +95,7 @@ const SubMovie: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<ApiResponse>('http://13.209.157.148:8080/details/13/mediaInfo');
+        const response = await axios.get<ApiResponse>('http://13.209.157.148:8080/details/52/mediaInfo');
         const data = response.data.detailsList;
 
         setStillCuts(data.stillCuts);
