@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-
+import { useParams } from 'react-router-dom'; // react-router-dom에서 useParams를 가져옵니다.
 
 const Moviform = styled.div`
   display: flex;
@@ -91,11 +91,11 @@ const SubMovie: React.FC = () => {
   const [trailers, setTrailers] = useState<string>('');
   const [startIndex, setStartIndex] = useState(0);
   const [youtube, setYoutube] = useState<string>('');
-
+  const { movieId } = useParams(); // URL 파라미터인 'movieId'를 읽어옵니다.
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<ApiResponse>('http://13.209.157.148:8080/details/52/mediaInfo');
+        const response = await axios.get<ApiResponse>(`http://13.209.157.148:8080/details/${movieId}/mediaInfo`);
         const data = response.data.detailsList;
 
         setStillCuts(data.stillCuts);
@@ -108,7 +108,6 @@ const SubMovie: React.FC = () => {
 
     fetchData();
   }, []);
-
   const prevSlide = () => {
     if (startIndex > 0) {
       setStartIndex(startIndex - 1);
