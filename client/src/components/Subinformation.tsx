@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom'; // react-router-dom에서 useParams를 가져옵니다.
+import { useNavigate } from 'react-router-dom';
 
 const Subdiv = styled.div`
   width: 100%;
@@ -54,6 +55,7 @@ const SubinforImg = styled.img`
   margin: 10px;
   object-fit: cover;
   transition: transform 0.3s ease;
+  cursor: pointer;
 
   &:hover {
     transform: scale(1.1);
@@ -93,6 +95,7 @@ const Subinformation: FC = () => {
   const [movieInfo, setMovieInfo] = useState<MovieInfo | null>(null);
   const [top10Movies, setTop10Movies] = useState<Movie[]>([]);
   const [startIndex, setStartIndex] = useState(0);
+  const [clickedMovieId, setClickedMovieId] = useState<number | null>(null); // 클릭한 영화의 ID 저장
   const { movieId } = useParams(); // URL 파라미터인 'movieId'를 읽어옵니다.
   useEffect(() => {
     // 영화 개요 정보 가져오기
@@ -136,9 +139,15 @@ const Subinformation: FC = () => {
       setStartIndex(startIndex + 1);
     }
   };
+  const navigate = useNavigate();
+  const navigateTo = (movieId: number) => {
+    setClickedMovieId(movieId);
+    navigate(`/Submain/${movieId}`);
+    location.reload();
+  };
 
   return (
-    <Subdiv>
+    <Subdiv  key={clickedMovieId}>
       <SubTextform>
         <SubText1>{movieInfo?.overview}</SubText1>
       </SubTextform>
@@ -147,7 +156,7 @@ const Subinformation: FC = () => {
         <SliderButton onClick={prevSlide}>{'<'}</SliderButton>
         <Imgform>
           {top10Movies.slice(startIndex, startIndex + 5).map((movie) => (
-            <SubinforImg key={movie.movieId} src={movie.posterUrl} alt={movie.movieNm} />
+            <SubinforImg key={movie.movieId} src={movie.posterUrl} alt={movie.movieNm} onClick={() => navigateTo(movie.movieId)}/>
           ))}
         </Imgform>
         <SliderButton onClick={nextSlide}>{'>'}</SliderButton>
