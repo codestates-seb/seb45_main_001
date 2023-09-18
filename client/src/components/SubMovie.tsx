@@ -74,6 +74,43 @@ const VideoContainer = styled.div`
   align-items: center;
 `;
 
+const Modal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalContent = styled.div`
+  background-color: transparent;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+`;
+
+const ModalImage = styled.img`
+  width: 800px;
+  height: 600px;
+  object-fit: contain;
+`;
+
+
 interface StillCut {
   stillCut_url: string;
 }
@@ -92,6 +129,7 @@ const SubMovie: React.FC = () => {
   const [startIndex, setStartIndex] = useState(0);
   const [youtube, setYoutube] = useState<string>('');
   const { movieId } = useParams(); // URL 파라미터인 'movieId'를 읽어옵니다.
+  const [modalImage, setModalImage] = useState<string | null>(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -117,6 +155,20 @@ const SubMovie: React.FC = () => {
   const nextSlide = () => {
     if (startIndex < stillCuts.length - 4) {
       setStartIndex(startIndex + 1);
+    }
+  };
+
+  const openModal = (imageUrl: string) => {
+    setModalImage(imageUrl);
+  };
+
+  const closeModal = () => {
+    setModalImage(null);
+  };
+
+  const closeModalOutside = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      closeModal();
     }
   };
 
@@ -154,7 +206,9 @@ const SubMovie: React.FC = () => {
           {stillCuts.slice(startIndex, startIndex + 4).map((stillCut, index) => (
             <GalleryItem
               key={index}
-              src={stillCut.stillCut_url}
+              src={stillCut.stillCut_url} // stillCut 객체에서 이미지 URL을 추출하여 사용
+              alt={`Still Cut ${index}`}
+              onClick={() => openModal(stillCut.stillCut_url)} // 스틸컷 클릭 시 모달 열기
             />
           ))}
         </GalleryContainer>
@@ -162,6 +216,14 @@ const SubMovie: React.FC = () => {
           <FaChevronRight />
         </ArrowButton>
       </Gallery>
+      {modalImage && (
+        <Modal onClick={closeModalOutside}>
+          <ModalContent>
+            <CloseButton onClick={closeModal}>닫기</CloseButton>
+            <ModalImage src={modalImage} alt="큰 이미지" />
+          </ModalContent>
+        </Modal>
+      )}
     </Moviform>
   );
 };

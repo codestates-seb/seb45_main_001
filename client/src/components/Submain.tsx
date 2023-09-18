@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import Header from './Header';
 import Subinformation from './Subinformation';
@@ -6,7 +6,6 @@ import SubMovie from './SubMovie';
 import SubComment from './SubComment';
 import axios from 'axios';
 import { useParams } from 'react-router-dom'; // react-router-dom에서 useParams를 가져옵니다.
-
 // Styles and components
 
 const SubcontainerStyle = styled.div`
@@ -203,9 +202,7 @@ const Submain: FC = () => {
   const [posterImageUrl2, setPosterImageUrl2] = useState<string>("");
   const [currentTab, setCurrentTab] = useState<number>(0);
   const [movieInfo, setMovieInfo] = useState<MovieInfo | null>(null);
-
   const { movieId } = useParams(); // URL 파라미터인 'movieId'를 읽어옵니다.
-
   const menuArr = [
     { name: '주요 정보', content: <Subinformation /> },
     { name: '영상/포토', content: <SubMovie /> },
@@ -244,10 +241,10 @@ const Submain: FC = () => {
           poster_path: movieData.poster,
           banner: movieData.backDrop 
         });
-
         // Set poster image URL
         setPosterImageUrl(movieData.poster);
         setPosterImageUrl2(movieData.backDrop);
+
       } catch (error) {
         console.error('Error fetching movie data:', error);
       }
