@@ -3,7 +3,7 @@ import Submain from './components/Submain';
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import Mypage from './pages/Mypage';
-import Authguard from './components/Authguard';
+import Authguard from './components/auth/Authguard';
 import KoreaPage from './pages/KoreaPage';
 import ForeignPage from './pages/ForeignPage';
 import './css/App.css';
