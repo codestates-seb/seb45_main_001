@@ -52,7 +52,6 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPagePr
             }
         }
 
-        // console.log('타자', e.target.value);
     };
 
     const handlelogintosignup = () => {
@@ -72,36 +71,6 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPagePr
 
         console.log('로그인 data 슛', myId);
 
-        // try {
-        //     const storedUsersJSON = sessionStorage.getItem('users');
-        //     const storedUsers = storedUsersJSON ? JSON.parse(storedUsersJSON) : [];
-
-        //     const existingUser = storedUsers.find((user: any) => user.email === myId.email);
-
-        //     if (!existingUser) {
-        //         console.error('로그인 실패: 이메일이 존재하지 않음');
-        //         alert('로그인 할 수 없습니다. 이메일을 확인해주세요.');
-        //         return;
-        //     }
-
-        //     const passwordWithPepper = myId.password + 'pepper';
-        //     if (bcrypt.compareSync(passwordWithPepper, existingUser.hashedPassword)) {
-        //         // 로그인 성공
-        //         existingUser.islogin = true;
-        //         sessionStorage.setItem('users', JSON.stringify(storedUsers));
-        //         dispatch(updateLogin(true));
-        //         dispatch(updateName(existingUser.nickname));
-        //         dispatch(updateMail(existingUser.email));
-        //         onClickToggleModal?.();
-        //         console.log('로그인 성공', myId.email);
-        //     } else {
-        //         console.error('로그인 실패: 비밀번호 불일치');
-        //         alert('로그인 할 수 없습니다. 비밀번호를 확인해주세요.');
-        //     }
-        // } catch (error) {
-        //     console.error('로그인 실패', error);
-        // }
-
         apiCall({
             method: 'POST',
             url: 'auth/login', // login - json 엔드포인트
@@ -117,6 +86,7 @@ function LoginPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPagePr
                 return apiCall({
                     method: 'GET',
                     url: 'users/get', // user info endpoint
+                    headers: { Authorization: `${localStorage.getItem('jwt')}` }
                 });
             })
             .then((res) => {
