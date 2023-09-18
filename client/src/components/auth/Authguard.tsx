@@ -15,11 +15,11 @@ const Authguard = () => {
     //     }
     // }, [navigate]);
 
-    // useEffect(() => {
-    //     if (!isLogin) {
-    //         navigate('/');
-    //     }
-    // }, [navigate]);
+    useEffect(() => {
+        if (!isLogin) {
+            navigate('/');
+        }
+    }, [navigate]);
 
     return <Outlet />;
 

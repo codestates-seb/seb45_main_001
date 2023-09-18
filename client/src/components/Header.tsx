@@ -1,5 +1,5 @@
 import { styled, css } from 'styled-components';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import LoginPage from './auth/LoginPage';
 import SignupPage from './auth/Signup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -79,7 +79,7 @@ const LogoStyle = styled(FlexCenter)`
 const CountryStyle = styled(FlexCenter)`
     margin-left: 10px;
     margin-right: 20px;
-    min-width: 130px;
+    min-width: 65px;
     min-height: 24px;
     gap: 6px;
 
@@ -144,7 +144,7 @@ const SearchfilterliStyle = styled.ul`
 const MagnifierStyle = styled.div`
     width: 21px;
     height: 21px;
-    border: 1px solid gray;
+    /* border: 1px solid gray; */
     cursor: pointer;
 `;
 
@@ -430,6 +430,7 @@ function Header() {
     function handleMagnifierClick() {
         setisMagnifierClicked(!isMagnifierClicked);
         if (!isMagnifierClicked) {
+            setQuery('');
             console.log('검색바 열림!');
         } else {
             console.log('검색바 닫힘!');
@@ -476,43 +477,43 @@ function Header() {
     }
 
     // 검색기능
-    // useEffect(() => {
-    //     apiCall(
-    //         {
-    //             method: 'GET',
-    //             url: 'http://13.209.157.148:8080/top10',
-    //         },
-    //         false,
-    //     )
-    //         .then((response) => {
-    //             console.log('검색 리스폰스', response);
-    //             const boxofficeList =
-    //                 response.data.boxofficeList?.map((item: any) => ({
-    //                     movieNm: item.movieNm,
-    //                     movieId: item.movieId,
-    //                 })) || [];
+    useEffect(() => {
+        apiCall(
+            {
+                method: 'GET',
+                url: 'http://13.209.157.148:8080/top10',
+            },
+            false,
+        )
+            .then((response) => {
+                console.log('검색 리스폰스', response);
+                const boxofficeList =
+                    response.data.boxofficeList?.map((item: any) => ({
+                        movieNm: item.movieNm,
+                        movieId: item.movieId,
+                    })) || [];
 
-    //             const genreMovieList =
-    //                 response.data.genreMovieList?.map((item: any) => ({
-    //                     movieNm: item.movieNm,
-    //                     movieId: item.movieId,
-    //                 })) || [];
+                const genreMovieList =
+                    response.data.genreMovieList?.map((item: any) => ({
+                        movieNm: item.movieNm,
+                        movieId: item.movieId,
+                    })) || [];
 
-    //             const combinedList = [...boxofficeList, ...genreMovieList];
+                const combinedList = [...boxofficeList, ...genreMovieList];
 
-    //             const uniqueList = combinedList.reduce((acc: any[], cur: any) => {
-    //                 const isDuplicate = acc.some((item: any) => item.movieId === cur.movieId);
-    //                 if (!isDuplicate) {
-    //                     acc.push(cur);
-    //                 }
-    //                 return acc;
-    //             }, []);
-    //             setSearchData(uniqueList);
-    //         })
-    //         .catch((error) => {
-    //             console.error('응답실패', error);
-    //         });
-    // }, []);
+                const uniqueList = combinedList.reduce((acc: any[], cur: any) => {
+                    const isDuplicate = acc.some((item: any) => item.movieId === cur.movieId);
+                    if (!isDuplicate) {
+                        acc.push(cur);
+                    }
+                    return acc;
+                }, []);
+                setSearchData(uniqueList);
+            })
+            .catch((error) => {
+                console.error('응답실패', error);
+            });
+    }, []);
 
     const filteredData = searchData.filter((item) => {
         if (query.trim() === '') {
@@ -536,6 +537,21 @@ function Header() {
         window.addEventListener('scroll', handleScroll);
         return () => {
             window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+    const searchContainerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+                setisMagnifierClicked(false);
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
 
@@ -567,7 +583,7 @@ function Header() {
                         <img src="/Magnifier_white.png" alt="" style={{ width: '100%', height: '100%' }} />
                     </MagnifierStyle>
                     <SearchbarStyle $isOpen={isMagnifierClicked}>
-                        <Relative>
+                        <Relative ref={searchContainerRef}>
                             <SearchinputStyle
                                 aria-label=""
                                 placeholder="검색..."
@@ -577,7 +593,15 @@ function Header() {
                             <SearchfilterStyle>
                                 {filteredData.map((item: { movieNm: string; movieId: string }, index: number) => (
                                     <SearchfilterliStyle key={index}>
-                                        <Link to={`/submain/${item.movieId}`}>{item.movieNm}</Link>
+                                        <Link
+                                            to={`/submain/${item.movieId}`}
+                                            onClick={() => {
+                                                setisMagnifierClicked(false);
+                                                setQuery('');
+                                            }}
+                                        >
+                                            {item.movieNm}
+                                        </Link>
                                     </SearchfilterliStyle>
                                 ))}
                             </SearchfilterStyle>
