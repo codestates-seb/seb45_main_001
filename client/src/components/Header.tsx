@@ -459,14 +459,14 @@ function Header() {
 
     const [query, setQuery] = useState<string>('');
     const [searchData, setSearchData] = useState<Array<{ movieNm: string; movieId: string }>>([
-        { movieNm : '1번영화', movieId : '1'},
-        { movieNm : '2번영화', movieId : '2'},
-        { movieNm : '3번영화', movieId : '3'},
-        { movieNm : '4번영화', movieId : '4'},
-        { movieNm : '5번영화', movieId : '5'},
-        { movieNm : '6번영화', movieId : '6'},
-        { movieNm : '7번영화', movieId : '7'},
-        { movieNm : '8번영화', movieId : '8'}
+        { movieNm: '1번영화', movieId: '1' },
+        { movieNm: '2번영화', movieId: '2' },
+        { movieNm: '3번영화', movieId: '3' },
+        { movieNm: '4번영화', movieId: '4' },
+        { movieNm: '5번영화', movieId: '5' },
+        { movieNm: '6번영화', movieId: '6' },
+        { movieNm: '7번영화', movieId: '7' },
+        { movieNm: '8번영화', movieId: '8' },
     ]);
 
     interface MovieItem {
@@ -549,15 +549,19 @@ function Header() {
                         </Link>
                     </LogoStyle>
                     <CountryStyle>
-                        <DomesticStyle>국내</DomesticStyle>
-                        <OverseasStyle>해외</OverseasStyle>
-                        <TempStyle>
+                        <DomesticStyle>
+                            <Link to="/korea">국내</Link>
+                        </DomesticStyle>
+                        <OverseasStyle>
+                            <Link to="/foreign">해외</Link>
+                        </OverseasStyle>
+                        {/* <TempStyle>
                             임시링크
                             <Templink>
                                 <Link to="/submain">toSub</Link>
                                 <Link to="/mypage">toMypage</Link>
                             </Templink>
-                        </TempStyle>
+                        </TempStyle> */}
                     </CountryStyle>
                     <MagnifierStyle onClick={handleMagnifierClick}>
                         <img src="/Magnifier_white.png" alt="" style={{ width: '100%', height: '100%' }} />
@@ -588,9 +592,10 @@ function Header() {
                         )}
                         {isLogin && (
                             <>
-                                <GeneralStyle>Hello,
+                                <GeneralStyle>
+                                    Hello,
                                     <Link to="/mypage">{globalName}!</Link>
-                                    </GeneralStyle>
+                                </GeneralStyle>
                                 <LoginbuttonStyle onClick={onClickLogout}>로그아웃</LoginbuttonStyle>
                             </>
                         )}
