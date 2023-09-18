@@ -191,7 +191,6 @@ interface MovieInfo {
   genres: string;
   production_countries: string;
   certification: string;
-  vote_average: number;
   vote_count: string;
   poster_path: string;
   banner:string;
@@ -202,7 +201,8 @@ const Submain: FC = () => {
   const [posterImageUrl2, setPosterImageUrl2] = useState<string>("");
   const [currentTab, setCurrentTab] = useState<number>(0);
   const [movieInfo, setMovieInfo] = useState<MovieInfo | null>(null);
-  const { movieId } = useParams(); // URL 파라미터인 'movieId'를 읽어옵니다.
+  const [averageRating, setAverageRating] = useState<number | null>(null); // New state for average rating
+  const { movieId } = useParams();
   const menuArr = [
     { name: '주요 정보', content: <Subinformation /> },
     { name: '영상/포토', content: <SubMovie /> },
@@ -214,21 +214,15 @@ const Submain: FC = () => {
   };
 
   useEffect(() => {
-    // Fetch movie data
     const fetchMovieData = async () => {
       try {
-        const response = await axios.get<MovieData>(`http://13.209.157.148:8080/details/${movieId}`); // Change the URL to the desired endpoint
+        const response = await axios.get<MovieData>(`http://13.209.157.148:8080/details/${movieId}`);
         const movieData = response.data.detailsList;
-
-        // Convert genre data to a string if it's an array
         const genres = Array.isArray(movieData.genre) ? movieData.genre.join(', ') : movieData.genre;
-
-        // Convert nation data to a string if it's an array
         const production_countries = Array.isArray(movieData.nation) ? movieData.nation.join(', ') : movieData.nation;
 
-        // Update state to match the new movie data structure
         setMovieInfo({
-          id:  movieData.movieId,
+          id: movieData.movieId,
           title: movieData.movieNm,
           original_title: movieData.movieNmEn,
           release_date: movieData.openDt,
@@ -236,15 +230,13 @@ const Submain: FC = () => {
           genres,
           production_countries,
           certification: movieData.watchGradeNm,
-          vote_average: 0,
           vote_count: movieData.audiAcc,
           poster_path: movieData.poster,
           banner: movieData.backDrop 
         });
-        // Set poster image URL
+
         setPosterImageUrl(movieData.poster);
         setPosterImageUrl2(movieData.backDrop);
-
       } catch (error) {
         console.error('Error fetching movie data:', error);
       }
@@ -253,12 +245,29 @@ const Submain: FC = () => {
     if (movieInfo === null) {
       fetchMovieData();
     }
-  }, [movieId]); // Add an empty dependency array to run this effect only once
+  }, [movieId]);
+
+  // Fetch average rating when movieInfo.id changes
+  useEffect(() => {
+    const fetchAverageRating = async () => {
+      try {
+        const response = await axios.get<number>(`http://13.209.157.148:8080/api/comments/movie/${movieInfo?.id}/average-rating`);
+        const avgRating = response.data;
+
+        setAverageRating(avgRating);
+      } catch (error) {
+        console.error('Error fetching average rating:', error);
+      }
+    };
+
+    if (movieInfo?.id) {
+      fetchAverageRating();
+    }
+  }, [movieInfo?.id]);
 
   return (
     <>
       <SubcontainerStyle>
-        {/* Use the first still cut image as the background image */}
         <PosterStyle backgroundImage={posterImageUrl2}>
           <Header />
         </PosterStyle>
@@ -280,7 +289,7 @@ const Submain: FC = () => {
                   <Text5>등급 : {movieInfo?.certification}</Text5>
                 </Textdetail1>
                 <Textdetail1>
-                  <Text5>평점 : {movieInfo?.vote_average}</Text5>
+                <Text5>평점 : {averageRating !== null ? averageRating.toFixed(1) : 'N/A'}</Text5>
                   <Text5>누적관객 : {movieInfo?.vote_count}명</Text5>
                   <Text5>박스오피스 : {movieInfo?.rank}위</Text5>
                 </Textdetail1>

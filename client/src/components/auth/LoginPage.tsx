@@ -4,7 +4,7 @@ import { apiCall } from '../../api/authapi';
 import OauthGoogle from './OauthGoogle';
 import { useSelector, useDispatch } from 'react-redux';
 import { DataState, updateName, updateMail, updateLogin } from '../../slice/authslice';
-import bcrypt from 'bcryptjs';
+
 
 interface LoginPageProps {
     onClickToggleModal?: () => void;
