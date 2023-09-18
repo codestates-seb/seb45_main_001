@@ -28,8 +28,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-api
-axios.tsx
+axios.ts
 requetsts.ts
 tmdb.ts
-authapi.tsx
+Row.tsx
