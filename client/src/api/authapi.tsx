@@ -34,40 +34,14 @@ export function apiCall<T = any, D = any>(config: ApiConfig<D>,usePrefix = true)
             return response;
         })
         .catch((error: AxiosError) => {
-            console.log('Error occurred:', error);
+            console.log('Error', error);
             throw error;
         });
 }
 
-// GET 예시
+// 사용예시
 
 // apiCall<{ id: number; name: string }>({
 //     method: 'GET',
 //     url: 'endpoint',
-// });
-
-// POST 예시
-
-// apiCall<{ id: number }, { email: string; password: string }>({
-//     method: 'POST',
-//     url: 'another_endpoint',
-//     data: { email: 'test@example.com', password: 'password123' },
-// });
-
-// apiCall({
-//     method: 'GET',
-//     url: 'some/endpoint',
-//     headers: {
-//       'Authorization': 'Bearer some-token',
-//       'Another-Header': 'header-value'
-//     }
-//   }).then(response => {
-//     // Do something with the response
-//   });
-
-// const headers = {
-//     // "Session-Id": `${token}`,
-//     Authorization: `${token}`,
-//     // 'Cookie': `sessionId=${token}`
-//     // withCredentials: true,
-// };
+// }, false false가 입력되었을 경우 url 초기화);

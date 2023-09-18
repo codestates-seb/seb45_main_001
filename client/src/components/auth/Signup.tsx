@@ -1,7 +1,6 @@
 import { styled, css } from 'styled-components';
 import { useState } from 'react';
 import { apiCall } from '../../api/authapi';
-import bcrypt from 'bcryptjs';
 
 interface LoginPageProps {
     onClickToggleModal?: () => void;

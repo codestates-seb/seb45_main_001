@@ -1,5 +1,5 @@
 import Header from '../components/Header';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { styled, css } from 'styled-components';
 import Mymytap from '../components/mypagetab/Mytap';
 import Mycommenttap from '../components/mypagetab/Mycommenttap';

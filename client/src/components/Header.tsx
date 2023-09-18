@@ -130,6 +130,8 @@ const SearchfilterStyle = styled.ul`
     top: 29px;
     background-color: white;
     border-radius: 5px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
     text-align: left;
 `;
 
@@ -456,24 +458,67 @@ function Header() {
     }
 
     const [query, setQuery] = useState<string>('');
-    const [searchData, setSearchData] = useState<string[]>([
-        '오펜하이머',
-        '범죄도시',
-        '범죄도시2',
-        '범죄도시3',
-        '범죄도시4',
-        '범죄도시5',
-        '기생충',
-        '에브리씽 에브리웨어 올 엣 원스',
-        '퓨리',
-        '풀 메탈 재킷',
+    const [searchData, setSearchData] = useState<Array<{ movieNm: string; movieId: string }>>([
+        { movieNm : '1번영화', movieId : '1'},
+        { movieNm : '2번영화', movieId : '2'},
+        { movieNm : '3번영화', movieId : '3'},
+        { movieNm : '4번영화', movieId : '4'},
+        { movieNm : '5번영화', movieId : '5'},
+        { movieNm : '6번영화', movieId : '6'},
+        { movieNm : '7번영화', movieId : '7'},
+        { movieNm : '8번영화', movieId : '8'}
     ]);
+
+    interface MovieItem {
+        movieNm: string;
+        movieId: string;
+        [key: string]: any;
+    }
+
+    // 검색기능
+    // useEffect(() => {
+    //     apiCall(
+    //         {
+    //             method: 'GET',
+    //             url: 'http://13.209.157.148:8080/top10',
+    //         },
+    //         false,
+    //     )
+    //         .then((response) => {
+    //             console.log('검색 리스폰스', response);
+    //             const boxofficeList =
+    //                 response.data.boxofficeList?.map((item: any) => ({
+    //                     movieNm: item.movieNm,
+    //                     movieId: item.movieId,
+    //                 })) || [];
+
+    //             const genreMovieList =
+    //                 response.data.genreMovieList?.map((item: any) => ({
+    //                     movieNm: item.movieNm,
+    //                     movieId: item.movieId,
+    //                 })) || [];
+
+    //             const combinedList = [...boxofficeList, ...genreMovieList];
+
+    //             const uniqueList = combinedList.reduce((acc: any[], cur: any) => {
+    //                 const isDuplicate = acc.some((item: any) => item.movieId === cur.movieId);
+    //                 if (!isDuplicate) {
+    //                     acc.push(cur);
+    //                 }
+    //                 return acc;
+    //             }, []);
+    //             setSearchData(uniqueList);
+    //         })
+    //         .catch((error) => {
+    //             console.error('응답실패', error);
+    //         });
+    // }, []);
 
     const filteredData = searchData.filter((item) => {
         if (query.trim() === '') {
             return false;
         }
-        return item.toLowerCase().includes(query.toLowerCase());
+        return item.movieNm.toLowerCase().includes(query.toLowerCase());
     });
 
     const [scrolled, setScrolled] = useState(false);
@@ -504,12 +549,8 @@ function Header() {
                         </Link>
                     </LogoStyle>
                     <CountryStyle>
-                        <DomesticStyle>
-                            <Link to="/korea">국내</Link>
-                        </DomesticStyle>
-                        <OverseasStyle>
-                            <Link to="/foreign">해외</Link>
-                        </OverseasStyle>
+                        <DomesticStyle>국내</DomesticStyle>
+                        <OverseasStyle>해외</OverseasStyle>
                         <TempStyle>
                             임시링크
                             <Templink>
@@ -530,8 +571,10 @@ function Header() {
                                 onChange={(e) => setQuery(e.target.value)}
                             ></SearchinputStyle>
                             <SearchfilterStyle>
-                                {filteredData.map((item, index) => (
-                                    <SearchfilterliStyle key={index}>{item}</SearchfilterliStyle>
+                                {filteredData.map((item: { movieNm: string; movieId: string }, index: number) => (
+                                    <SearchfilterliStyle key={index}>
+                                        <Link to={`/submain/${item.movieId}`}>{item.movieNm}</Link>
+                                    </SearchfilterliStyle>
                                 ))}
                             </SearchfilterStyle>
                         </Relative>
