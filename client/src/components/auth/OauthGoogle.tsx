@@ -29,25 +29,56 @@ import { styled } from 'styled-components';
 
 //     // const handleGoogleLogin = () => {
 //     //     try {
-//     //         setAttemptedLogin(true);
-//     //         window.location.href = authUrl;
+//     //         apiCall({
+//     //             method: 'GET',
+//     //             url: 'oauth2/authorization/google', // 백엔드 엔드포인트
+//     //             // data: { code },
+//     //         })
+//     //             .then((response) => {
+//     //                 console.log("오오쓰 리스폰스", response)
+//     //                 localStorage.setItem('jwt', response.data.accessToken);
+//     //                 localStorage.setItem('jwtrefresh', response.data.refreshToken);
+//     //                 dispatch(updateName(response.data.userName));
+//     //                 dispatch(updateMail(response.data.email));
+//     //                 dispatch(updateLogin(true));
+//     //                 setAttemptedLogin(false);
+//     //             })
+//     //             .catch((error) => {
+//     //                 console.error('Error:', error);
+//     //             });
 //     //     } catch (error) {
 //     //         console.error('구글 접속 실패', error);
 //     //     }
 //     // };
 
-//     async function handleGoogleLogin() {
-//         try {
-//             const response = await apiCall({
-//                             method: 'GET',
-//                             url: 'oauth2/authorization/google', // 백엔드 엔드포인트
-//                             headers: { "Content-type" : "", Authorization : "" }
-//                         });
-//             console.log(response.data); // 서버에서 받은 데이터 또는 성공 여부를 확인하는 로직을 작성합니다.
-//         } catch (error) {
-//             console.error('OAuth2 로그인 실패:', error);
-//         }
-//     }
+//     // const handleGoogleLogin = () => {
+//     //     try {
+//     //         setAttemptedLogin(true);
+//     //         window.location.href = 'http://ec2-13-209-157-148.ap-northeast-2.compute.amazonaws.com:8080/oauth2/authorization/google';
+//     //     } catch (error) {
+//     //         console.error('구글 접속 실패', error);
+//     //     }
+//     // };
+
+//     // function handleGoogleLogin() {
+//     //     apiCall({
+//     //                     method: 'GET',
+//     //                     url: 'http://ec2-13-209-157-148.ap-northeast-2.compute.amazonaws.com:8080/oauth2/authorization/google', // 백엔드 엔드포인트
+//     //                     // data: { code },
+//     //                 }, false)
+//     //                     .then((response) => {
+//     //                         console.log("오오쓰 리스폰스", response)
+//     //                         // localStorage.setItem('jwt', response.data.accessToken);
+//     //                         // localStorage.setItem('jwtrefresh', response.data.refreshToken);
+//     //                         // dispatch(updateName(response.data.userName));
+//     //                         // dispatch(updateMail(response.data.email));
+//     //                         // dispatch(updateLogin(true));
+//     //                         // setAttemptedLogin(false);
+//     //                     })
+//     //                     .catch((error) => {
+//     //                         console.error('Error:', error);
+//     //                     });
+//     // }
 
 //     // 로그인 버튼을 클릭하면 OAuth2 로그인 요청을 보냅니다.
 
@@ -56,13 +87,14 @@ import { styled } from 'styled-components';
 
 //     //     const params = new URL(document.location.toString()).searchParams;
 //     //     const code = params.get('code');
+//     //     console.log("코드",code)
 
 //     //     if (code) {
 //     //         // 전달받은 `code`를 백엔드로 POST 요청
 //     //         apiCall({
 //     //             method: 'GET',
 //     //             url: 'oauth2/authorization/google', // 백엔드 엔드포인트
-//     //             // data: { code },
+//     //             data: { code },
 //     //         })
 //     //             .then((response) => {
 //     //                 console.log("오오쓰 리스폰스", response)
@@ -129,11 +161,14 @@ import { styled } from 'styled-components';
 //     return (
 //         <>
 //             <OauthGooglewrap>
+//                 {/* <a href='http://13.209.157.148:8080/oauth2/authorization/google'> */}
 //                 <OauthGoogleimg src="/google.png" alt="google oauth logo" onClick={handleGoogleLogin}></OauthGoogleimg>
+//                 {/* </a> */}
 //             </OauthGooglewrap>
 //         </>
 //     );
-// }
+//     }
+
 
 // export default OauthGoogle;
 
