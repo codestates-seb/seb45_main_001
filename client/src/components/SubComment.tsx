@@ -3,6 +3,11 @@ import { styled } from 'styled-components';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
+interface Comment {
+  score: number;
+  content: string;
+}
+
 const Textform = styled.div`
   display: flex;
   flex-direction: column;
@@ -36,7 +41,7 @@ const Starbox = styled.div`
   margin-left: 10px;
   justify-content: center;
   align-items: center;
-`
+`;
 
 const Text1 = styled.span<{ active: boolean }>`
   color: ${props => (props.active ? 'red' : 'rgb(255, 255, 255)')};
@@ -100,12 +105,13 @@ const TextListli = styled.li`
   text-align: start;
 `;
 
-const SubComment = () => {
+const SubComment: React.FC = () => {
   const starRatings: number[] = [1, 2, 3, 4, 5];
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [comment, setComment] = useState<string>('');
-  const { movieId } = useParams(); // URL 파라미터인 'movieId'를 읽어옵니다.
-  const [commentsList, setCommentsList] = useState<{ starRating: number; comment: string }[]>([]);
+  const { movieId } = useParams<{ movieId: string }>(); // URL 파라미터인 'movieId'를 읽어옵니다.
+  const [commentsList, setCommentsList] = useState<Comment[]>([]);
+  const [memberId, setMemberId] = useState<string | null>(null);
 
   const handleStarRating = (rating: number) => {
     setSelectedRating(rating);
@@ -115,68 +121,81 @@ const SubComment = () => {
     setComment(e.target.value);
   };
 
-  
+  const fetchCommentsAndStarRatings = async () => {
+    try {
+      const response = await axios.get(`http://13.209.157.148:8080/api/comments/movie/${movieId}`);
+      const commentsData = response.data;
+
+      // commentsData가 댓글 객체의 배열이라고 가정합니다.
+      setCommentsList(commentsData);
+      console.log('댓글목록 가져오기:', commentsData);
+    } catch (error) {
+      console.error('댓글을 가져오는 중 오류 발생:', error);
+    }
+  };
 
   const handleCommentSubmit = async () => {
     if (selectedRating !== null) {
       const now = new Date();
       const timestamp = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-      const newComment = {
-        starRating: selectedRating,
-        comment: `${comment} - ${timestamp}`,
+      const newComment: Comment = {
+        score: selectedRating,
+        content: `${comment} - ${timestamp}`,
       };
-  
 
-      // 인증 토큰을 가져오기
-      const authToken = localStorage.getItem("jwt");
-  
-      // 인증 토큰을 헤더에 추가
-      const config = {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      };
-  
-      // API 엔드포인트 및 데이터 전송
-      try {
-        await axios.post(
-          `http://localhost:8080/api/comments/${movieId}=1&userId=1`,
-          newComment,
-          config
-        );
-  
-        // 성공적으로 댓글이 추가되었을 때 처리
-        console.log('댓글이 성공적으로 추가되었습니다.');
-  
-        // 댓글 목록 업데이트 등의 작업 수행
-        setCommentsList(prevComments => [...prevComments, newComment]);
-        setComment('');
-        setSelectedRating(null);
-      } catch (error) {
-        console.error('댓글 추가 중 오류 발생:', error);
-        // 오류 처리
+      // 댓글 목록 업데이트 등의 작업 수행
+      setCommentsList(prevComments => [...prevComments, newComment]);
+      setComment('');
+      setSelectedRating(null);
+
+      // memberId와 movieId를 사용하여 POST 요청을 보냅니다.
+      if (memberId) {
+        try {
+          const jwtToken = localStorage.getItem('jwt');
+          const response = await axios.post(
+            `http://13.209.157.148:8080/api/comments?memberId=${memberId}&movieId=${movieId}`,
+            {
+              content: newComment.content, // 댓글 내용
+              score: newComment.score, // 별점
+            },
+            {
+              headers: {
+                Authorization: `${jwtToken}`,
+              },
+            }
+          );
+          console.log('POST 요청 응답:', response.data);
+        } catch (error) {
+          console.error('POST 요청 오류:', error);
+        }
       }
     }
   };
 
-  // 컴포넌트가 처음 렌더링될 때 댓글을 가져오는 useEffect
   useEffect(() => {
-    // 댓글을 가져오는 API 엔드포인트 주소
-    const apiUrl = `http://13.209.157.148:8080/api/comments/movie/${movieId}`;
+    // JWT 토큰을 얻어온다고 가정
 
-    // API 요청 보내기
-    axios.get(apiUrl)
-      .then(response => {
-        // 성공적으로 댓글을 가져왔을 때 댓글 목록 업데이트
-        setCommentsList(response.data);
+    // 컴포넌트가 마운트될 때 서버에서 memberId를 가져오도록 합니다.
+    const jwtToken = localStorage.getItem('jwt');
+
+    axios
+      .get<{ data: { memberId: string } }>('http://13.209.157.148:8080/users/get', {
+        headers: {
+          Authorization: `${jwtToken}`,
+        },
       })
-      .catch(error => {
-        console.error('댓글 가져오기 오류:', error);
-        // 오류 처리
+      .then((response) => {
+        // memberId가 응답 데이터에 있는 것으로 가정하고 가져옵니다.
+        const memberIdFromServer = response.data.data.memberId;
+        setMemberId(memberIdFromServer);
+        console.log('멤버스 ID:', memberIdFromServer);
+      })
+      .catch((error) => {
+        // 요청 중 발생한 모든 오류를 처리합니다.
+        console.error('memberId 가져오기 오류:', error);
       });
-  }, [movieId]); // movieId가 변경될 때마다 useEffect가 다시 실행됨
-
-  // 나머지 함수들은 이전과 동일하게 유지
+      fetchCommentsAndStarRatings();
+  }, []);
 
   return (
     <>
@@ -204,14 +223,13 @@ const SubComment = () => {
           />
         </TextBox>
         <TextBox3>
-          {commentsList.map((item, index) => (
-            <TextList key={index}>
-              <TextListli>
-                <p>별점: {item.starRating}</p>
-                <p>댓글: {item.comment}</p>
+          <TextList>
+            {commentsList.map((commentData, index) => (
+              <TextListli key={index}>
+                {commentData.content} - 별점: {commentData.score}
               </TextListli>
-            </TextList>
-          ))}
+            ))}
+          </TextList>
         </TextBox3>
       </Textform>
     </>
