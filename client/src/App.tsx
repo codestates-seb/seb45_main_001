@@ -14,7 +14,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/korea" element={<KoreaPage />} />
                 <Route path="/foreign" element={<ForeignPage />} />
-                <Route path="/Submain:/movieId" element={<Submain />} />
+                <Route path="/Submain/:movieId" element={<Submain />} />
                 <Route path="/mypage" element={<Authguard />}>
                 
                 
