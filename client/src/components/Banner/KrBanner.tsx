@@ -52,7 +52,7 @@ const BannerButtonBox = styled.div`
     font-size: 1rem;
     font-weight: 700;
     border-radius: 0.2vw;
-    padding: 0.4rem 1.8rem 0.4rem 1rem;
+    padding: 0.4rem 1rem 0.4rem 1rem;
     margin-right: 1rem;
     background-color: white;
     color: black;
