@@ -97,7 +97,7 @@ const Subinformation: FC = () => {
     // 영화 개요 정보 가져오기
     const fetchMovieOverview = async () => {
       try {
-        const response = await axios.get('http://13.209.157.148:8080/details/8/mainInfo');
+        const response = await axios.get('http://13.209.157.148:8080/details/1');
         const movieData = response.data;
         const overview = movieData.detailsList.plot;
         setMovieInfo({ id: 3, overview });
@@ -109,7 +109,7 @@ const Subinformation: FC = () => {
     // Top 10 영화 가져오기
     const fetchTop10Movies = async () => {
       try {
-        const response = await axios.get('http://13.209.157.148:8080/top10');
+        const response = await axios.get('http://13.209.157.148:8080/top10Korean');
         const top10MovieData = response.data.boxofficeList;
         setTop10Movies(top10MovieData);
       } catch (error) {
