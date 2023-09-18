@@ -2,6 +2,7 @@ package com.sundayCinema.sundayCinema.movie.Controller;
 
 import com.sundayCinema.sundayCinema.movie.Service.BoxOfficeSwitchService;
 import com.sundayCinema.sundayCinema.movie.Service.MovieService;
+import com.sundayCinema.sundayCinema.movie.api.ApiRepoService.MediaRepoService;
 import com.sundayCinema.sundayCinema.movie.dto.detaiPagelDto.*;
 import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.BoxOfficeMovieDto;
 import com.sundayCinema.sundayCinema.movie.dto.mainPageDto.GenreMovieDto;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 @RestController
@@ -29,15 +32,17 @@ public class MovieController {
     private final MovieRepository movieRepository;
     private final MovieDetailsMapper movieDetailsMapper;
     private final BoxOfficeSwitchService boxOfficeSwitchService;
+    private final MediaRepoService mediaRepoService;
 
     public MovieController(MovieService movieService, BoxOfficeMovieRepository boxOfficeMovieRepository,
-                           MovieRepository movieRepository,
-                           MovieDetailsMapper movieDetailsMapper, BoxOfficeSwitchService boxOfficeSwitchService) {
+                           MovieRepository movieRepository, MovieDetailsMapper movieDetailsMapper,
+                           BoxOfficeSwitchService boxOfficeSwitchService, MediaRepoService mediaRepoService) {
         this.movieService = movieService;
         this.boxOfficeMovieRepository = boxOfficeMovieRepository;
         this.movieRepository = movieRepository;
         this.movieDetailsMapper = movieDetailsMapper;
         this.boxOfficeSwitchService = boxOfficeSwitchService;
+        this.mediaRepoService = mediaRepoService;
     }
 
     @GetMapping("/saveGenre/{date}")
@@ -82,9 +87,9 @@ public class MovieController {
     public ResponseEntity getMovieDetails(@PathVariable long movieId){
 
         Movie findMovie = movieRepository.findByMovieId(movieId);
-        String movieCd = findMovie.getMovieCd();
-        BoxOfficeMovie boxOfficeMovie = boxOfficeMovieRepository.findByMovieCd(movieCd);
-        DetailsBasicInfo basicInfo = movieDetailsMapper.detailsBasicResponseDto(boxOfficeMovie, findMovie);
+//        String movieCd = findMovie.getMovieCd();
+//        BoxOfficeMovie boxOfficeMovie = boxOfficeMovieRepository.findByMovieCd(movieCd);
+        DetailsBasicInfo basicInfo = movieDetailsMapper.detailsBasicResponseDto(findMovie);
         DetailPageDto<DetailsBasicInfo> detailPageDto = new DetailPageDto<>();
         detailPageDto.setDetailsList(basicInfo);
         return new ResponseEntity(detailPageDto,HttpStatus.OK);
@@ -108,5 +113,10 @@ public class MovieController {
         detailPageDto.setDetailsList(detailsMediaInfo);
         return new ResponseEntity(detailPageDto,HttpStatus.OK);
     }
-
+    // 유튜브 복구용
+    @GetMapping("/yotubeReview")
+    public void saveYoutubeReview() throws GeneralSecurityException, IOException {
+        List<Movie> movieList =movieRepository.findAll();
+        mediaRepoService.saveReview(movieList);
+    }
 }

@@ -6,6 +6,7 @@ import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Actor;
 import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
 import com.sundayCinema.sundayCinema.movie.entity.movieMedia.StillCut;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Instanceof;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
 @Component
 @Slf4j
 public class MovieDetailsMapper {
-    public DetailsBasicInfo detailsBasicResponseDto(BoxOfficeMovie boxOfficeMovie, Movie movie) {
+    public DetailsBasicInfo detailsBasicResponseDto(Movie movie) {
         DetailsBasicInfo detailsBasicInfo = new DetailsBasicInfo();
 
         List<String> nationList = new ArrayList<>();
@@ -34,11 +35,43 @@ public class MovieDetailsMapper {
             stillCutDto.setStillCut_url(stillCut.getStillCut_url());
             stillCutDtos.add(stillCutDto);
         }
-        detailsBasicInfo.movieNm = boxOfficeMovie.getMovieNm();
+        /*
+        무비 -> 얘가 어떤 박스 오피스에 있는가?
+
+        찾은 박스오피스 객체에서 값을 가져온다.
+         */
+        String audiAcc="";
+        String openDt="";
+        String rank="";
+
+        if(movie.getBoxOfficeMovie() != null){
+            audiAcc=movie.getBoxOfficeMovie().getAudiAcc();
+            openDt=movie.getBoxOfficeMovie().getOpenDt();
+            rank=movie.getBoxOfficeMovie().getRank();
+        }else if(movie.getKoreaBoxOfficeMovie() !=null){
+            audiAcc=movie.getKoreaBoxOfficeMovie().getAudiAcc();
+            openDt=movie.getKoreaBoxOfficeMovie().getOpenDt();
+            rank=movie.getKoreaBoxOfficeMovie().getRank();
+        }else if(movie.getForeignBoxOffice() !=null){
+            audiAcc=movie.getForeignBoxOffice().getAudiAcc();
+            openDt=movie.getForeignBoxOffice().getOpenDt();
+            rank=movie.getForeignBoxOffice().getRank();
+        }else if(movie.getGenreBoxOfficeMovie() !=null){
+            audiAcc=movie.getGenreBoxOfficeMovie().getAudiAcc();
+            openDt=movie.getGenreBoxOfficeMovie().getOpenDt();
+            rank=movie.getGenreBoxOfficeMovie().getRank();
+        }else {
+            audiAcc="...";
+            openDt="...";
+            rank="...";
+        }
+
+        detailsBasicInfo.movieId = movie.getMovieId();
+        detailsBasicInfo.movieNm = movie.getMovieNm();
         detailsBasicInfo.movieNmEn = movie.getMovieNmEn();
-        detailsBasicInfo.audiAcc = boxOfficeMovie.getAudiAcc();
-        detailsBasicInfo.openDt = boxOfficeMovie.getOpenDt();
-        detailsBasicInfo.rank = boxOfficeMovie.getRank();
+        detailsBasicInfo.audiAcc = audiAcc;
+        detailsBasicInfo.openDt = openDt;
+        detailsBasicInfo.rank = rank;
         detailsBasicInfo.watchGradeNm = movie.getAudits().get(0).getWatchGradeNm();
         detailsBasicInfo.nation = nationList;
         detailsBasicInfo.genre = genreList;

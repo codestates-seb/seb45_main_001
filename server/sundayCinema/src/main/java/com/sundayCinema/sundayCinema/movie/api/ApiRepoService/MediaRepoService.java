@@ -7,6 +7,7 @@ import com.sundayCinema.sundayCinema.movie.api.TMDB.MovieDetails;
 import com.sundayCinema.sundayCinema.movie.api.TMDB.TmdbService;
 import com.sundayCinema.sundayCinema.movie.api.youtubeAPI.YoutubeService;
 import com.sundayCinema.sundayCinema.movie.entity.boxOffice.BoxOfficeMovie;
+import com.sundayCinema.sundayCinema.movie.entity.movieInfo.Movie;
 import com.sundayCinema.sundayCinema.movie.entity.movieMedia.*;
 import com.sundayCinema.sundayCinema.movie.repository.movieInfoRepo.MovieRepository;
 import com.sundayCinema.sundayCinema.movie.repository.movieMediaRepo.*;
@@ -31,13 +32,12 @@ public class MediaRepoService {
     private final YoutubeReviewRepository youtubeReviewRepository;
     private final StillCutRepository stillCutRepository;
 
-    private final MovieRepository movieRepository;
 
     public MediaRepoService(TmdbService tmdbService, KdmbService kdmbService, YoutubeService youtubeService,
                             PosterRepository posterRepository, PlotRepository plotRepository,
                             TrailerRepository trailerRepository, BackDropRepository backDropRepository,
                             YoutubeReviewRepository youtubeReviewRepository,
-                            StillCutRepository stillCutRepository, MovieRepository movieRepository) {
+                            StillCutRepository stillCutRepository) {
         this.tmdbService = tmdbService;
         this.kdmbService = kdmbService;
         this.youtubeService = youtubeService;
@@ -47,7 +47,6 @@ public class MediaRepoService {
         this.backDropRepository = backDropRepository;
         this.youtubeReviewRepository = youtubeReviewRepository;
         this.stillCutRepository = stillCutRepository;
-        this.movieRepository = movieRepository;
     }
 
     //배경화면 저장
@@ -146,18 +145,30 @@ public class MediaRepoService {
             }
         }
     }
-
+    public void saveReview(List<Movie> movieList) throws GeneralSecurityException, IOException {
+        for (int i = 0; i < movieList.size(); i++) {
+            if (youtubeReviewRepository.existsByMovie(movieList.get(i))) {
+            } else {
+                String movieName = movieList.get(i).getMovieNm();
+                List<SearchResult> searchReview = youtubeService.searchYoutube(movieName, "리뷰");
+                youtubeService.saveYoutube(searchReview, movieName);
+            }
+        }
+    }
     public void saveKmdbPoster(KdmbResponse kdmbResponse, Poster poster) {
         if (kdmbResponse != null && kdmbResponse.getData() != null
                 && !kdmbResponse.getData().isEmpty() && kdmbResponse.getData().get(0).getResult() != null
                 && !kdmbResponse.getData().get(0).getResult().isEmpty()) {
-            String posterUrls = kdmbResponse.getData().get(0).getResult().get(0).getPosters(); // 포스터 주소 추출
+                String posterUrls = kdmbResponse.getData().get(0).getResult().get(0).getPosters(); // 포스터 주소 추출
             if (posterUrls != null) {
                 String[] posterArray = posterUrls.split("\\|");
                 String posterImageUrl = posterArray[0];
                 poster.setPoster_image_url(posterImageUrl);
                 posterRepository.save(poster);
             }
+        }else{
+            poster.setPoster_image_url("https://call.nts.go.kr/images/ap/cm/img_coming.png");
+            posterRepository.save(poster);
         }
     }
 
@@ -171,8 +182,10 @@ public class MediaRepoService {
 
             String plotText = kdmbResponse.getData().get(0).getResult().get(0).getPlots().getPlot().get(0).getPlotText();
 
-
             plot.setPlotText(plotText);
+            plotRepository.save(plot);
+        }else {
+            plot.setPlotText("준비중입니다");
             plotRepository.save(plot);
         }
     }

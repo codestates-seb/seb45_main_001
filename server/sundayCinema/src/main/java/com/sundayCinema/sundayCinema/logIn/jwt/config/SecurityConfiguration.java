@@ -42,18 +42,13 @@ public class SecurityConfiguration {
     private final JwtTokenizer jwtTokenizer;
     private final CustomAuthorityUtils authorityUtils;
     private final MemberService memberService;
-
-    private final UserAuthService userAuthService;
-
     private final MemberRepository memberRepository;
 
     public SecurityConfiguration(JwtTokenizer jwtTokenizer, CustomAuthorityUtils authorityUtils,
-                                 MemberService memberService, UserAuthService userAuthService,
-                                 MemberRepository memberRepository) {
+                                 MemberService memberService, MemberRepository memberRepository) {
         this.jwtTokenizer = jwtTokenizer;
         this.authorityUtils = authorityUtils;
         this.memberService = memberService;
-        this.userAuthService = userAuthService;
         this.memberRepository = memberRepository;
     }
 
@@ -114,15 +109,16 @@ public class SecurityConfiguration {
             HttpServletResponse response = (HttpServletResponse) servletResponse;
 
             // Set CORS headers for every request
-            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
             response.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
             response.setHeader("Access-Control-Allow-Headers", "*");
 //            response.setHeader("Access-Control-Allow-Credentials", "true");
 
-            if (CorsUtils.isPreFlightRequest(request)) {
+            // Check if it's a preflight request
+            if ("OPTIONS".equalsIgnoreCase(request.getMethod()) &&
+                    request.getHeader("Origin") != null) {
                 // Handle Preflight request
-                response.getWriter().println("OK");
-                response.getWriter().flush();
+                response.setStatus(HttpServletResponse.SC_OK);
             } else {
                 // Continue with regular request
                 chain.doFilter(servletRequest, servletResponse);
