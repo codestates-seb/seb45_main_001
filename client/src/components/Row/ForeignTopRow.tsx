@@ -112,7 +112,7 @@ const ForeignTopRow = ({isLargeRow, title, id}: ForeignTopRowProps) => {
   }
 
   const navigateTo = () => {
-    navigate('/submain');
+    navigate('/Submain');
   };
 
   return (
