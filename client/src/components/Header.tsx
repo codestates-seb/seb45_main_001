@@ -1,25 +1,36 @@
 import { styled, css } from 'styled-components';
 import { useState, useEffect } from 'react';
-import LoginPage from './LoginPage';
-import SignupPage from './Signup';
+import LoginPage from './auth/LoginPage';
+import SignupPage from './auth/Signup';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserById, DataState, updateName } from '../slice/authslice';
-import { RootState } from '../store/authstore';
+import { DataState, updateName, updateLogin, updateMail } from '../slice/authslice';
 import type { AppDispatch } from '../store/authstore';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { lastUrl } from '../api/authapi';
+import { apiCall } from '../api/authapi';
 
-const HeaderStyle = styled.header`
-    /* width: 100%;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    z-index: 1001;
-    background-color: #1d1d1d;
-    background-color: transparent;
-    백그라운드는 나중에 투명으로 바꿀 것
-    position: fixed; */
+// const HeaderStyle = styled.header`
+//     /* width: 100%;
+//     height: 56px;
+//     display: flex;
+//     align-items: center;
+//     z-index: 1001;
+//     background-color: #1d1d1d;
+//     background-color: transparent;
+//     백그라운드는 나중에 투명으로 바꿀 것
+//     position: fixed; */
+//     position: fixed;
+//     top: 0;
+//     width: 100%;
+//     height: 56px;
+//     z-index: 1001;
+//     padding: 20px;
+//     display: flex;
+//     align-items: center;
+//     transition: all 0.5s;
+//     font-size: 1rem;
+// `;
+
+const HeaderStyle = styled.header<{ $scrolled: boolean }>`
     position: fixed;
     top: 0;
     width: 100%;
@@ -29,6 +40,8 @@ const HeaderStyle = styled.header`
     display: flex;
     align-items: center;
     transition: all 0.5s;
+    font-size: 1rem;
+    background-color: ${(props) => (props.$scrolled ? '#1d1d1d' : 'transparent')};
 `;
 
 const Headerwrap = styled.div`
@@ -59,12 +72,20 @@ const LogoStyle = styled(FlexCenter)`
     padding-right: 6px;
     color: #d6a701;
     font-weight: 600;
+    min-width: 80px;
+    min-height: 24px;
 `;
 
 const CountryStyle = styled(FlexCenter)`
     margin-left: 10px;
     margin-right: 20px;
+    min-width: 130px;
+    min-height: 24px;
     gap: 6px;
+
+    @media (max-width: 680px) {
+        min-width: 55px;
+    }
 `;
 
 const DomesticStyle = styled(FlexCenter)`
@@ -99,7 +120,7 @@ const SearchinputStyle = styled.input`
     border-radius: 3px;
     padding: 3px;
     padding-left: 6px;
-    font-size: 14px;
+    font-size: 0.875rem;
 `;
 
 const SearchfilterStyle = styled.ul`
@@ -109,6 +130,8 @@ const SearchfilterStyle = styled.ul`
     top: 29px;
     background-color: white;
     border-radius: 5px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
     text-align: left;
 `;
 
@@ -131,11 +154,22 @@ const SearchbarStyle = styled.form<{ $isOpen: boolean }>`
     margin-left: 10px;
     margin-right: 10px;
     display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
+
+    @media (max-width: 680px) {
+        position: absolute;
+        width: 300px;
+        top: 56px;
+        left: 150px;
+        right: auto;
+    }
 `;
 
 const LogSignStyle = styled.nav`
     ${FlexCentercss}
     margin-left: auto;
+    height: 100%;
+    min-width: 110px;
+    min-height: 24px;
     gap: 6px;
 `;
 
@@ -170,23 +204,116 @@ const TempStyle = styled.div`
             display: flex;
         }
     }
+    @media (max-width: 680px) {
+        display: none;
+    }
 `;
 
 // const [isLogin, setIsLogin] = useState<boolean>(false);
+//     const [sessionUser, setSessionUser] = useState<any>(null); //받아오는 데이타의 세션유저이름
+
+//     useEffect(() => {
+//         axios
+//             .get(`${lastUrl}/check-session`)
+//             .then((response) => {
+//                 if (response.data.isLogin) {
+//                     setIsLogin(true);
+//                     setSessionUser(response.data.sessionUser);
+//                 }
+//             })
+//             .catch((error) => {
+//                 console.error('로그인 상태 확인 중 오류 발생:', error);
+//             });
+//     }, []);
+
+//     const onClickLogout = () => {
+//         // 서버에 로그아웃 요청을 보냅니다.
+//         axios
+//             .post(`${lastUrl}/api/logout`)
+//             .then((response) => {
+//                 if (response.data.success) {
+//                     setIsLogin(false);
+//                     setSessionUser(null);
+//                     sessionStorage.removeItem('memberid');
+//                     sessionStorage.removeItem('jwt');
+//                     sessionStorage.removeItem('membername');
+//                     sessionStorage.removeItem('membermail');
+//                     navigate('/');
+//                     console.log('로그아웃 성공');
+//                 }
+//             })
+//             .catch((error) => {
+//                 console.error('로그아웃 실패', error);
+//             });
+//     };
+
+// const isTokenExpired = (token: string): boolean => {
+//     try {
+//         const decodedToken: any = JSON.parse(atob(token.split('.')[1]));
+//         const currentTime = Date.now() / 1000;
+//         return decodedToken.exp && currentTime > decodedToken.exp;
+//     } catch (error) {
+//         return true;
+//     }
+// };
+
+// const users = useSelector((state: RootState) => state.data.users);
+// const memberId = sessionStorage.getItem('memberid');
+// const user = memberId ? users?.[memberId] : undefined;
+// const token = sessionStorage.getItem('jwt');
+
+// const [isLogin, setIsLogin] = useState<boolean>(() => {
+//     return token ? !isTokenExpired(token) : false;
+// });
+
+// console.log('Member ID:', memberId);
+// console.log('User Data:', user);
+
+// function onClickLogout() {
+//     setIsLogin(false);
+//     try {
+//         sessionStorage.removeItem('memberid');
+//         sessionStorage.removeItem('jwt');
+//         sessionStorage.removeItem('membername');
+//         sessionStorage.removeItem('membermail');
+//         navigate('/');
+//         console.log('로그아웃 성공');
+//     } catch (error) {
+//         console.log('로그아웃 실패', error);
+//     }
+// }
+
 // const [sessionUser, setSessionUser] = useState<any>(null); //받아오는 데이타의 세션유저이름
 
 // useEffect(() => {
-//     axios
-//         .get(`${lastUrl}/check-session`)
+//     apiCall({
+//         method: 'GET',
+//         url: 'host/check-session', // membership/signin - 우리 엔드포인트 // login - json 엔드포인트 host/signin 우리 새로운 엔드포인트
+//     })
 //         .then((response) => {
-//             if (response.data.isLogin) {
-//                 setIsLogin(true);
-//                 setSessionUser(response.data.sessionUser);
+//             if (response.data === true) {
+//                 dispatch(updateLogin(true));
+//             } else {
+//                 dispatch(updateLogin(false));
 //             }
 //         })
 //         .catch((error) => {
 //             console.error('로그인 상태 확인 중 오류 발생:', error);
 //         });
+// }, []);
+
+// function getCookie(name: string): string | null | undefined {
+//     const value = `; ${document.cookie}`;
+//     const parts = value.split(`; ${name}=`);
+//     if (parts.length === 2) return parts.pop()!.split(';').shift();
+//     return null;
+// }
+
+// useEffect(() => {
+//     const sessionId = getCookie('SESSION_COOKIE_NAME');
+//     if (sessionId) {
+//         console.log('세션아이디 쿠키존재여부', sessionId);
+//     }
 // }, []);
 
 // const onClickLogout = () => {
@@ -197,41 +324,108 @@ const TempStyle = styled.div`
 //             if (response.data.success) {
 //                 setIsLogin(false);
 //                 setSessionUser(null);
-//                 console.log('Successfully logged out');
+//                 sessionStorage.removeItem('memberid');
+//                 sessionStorage.removeItem('jwt');
+//                 sessionStorage.removeItem('membername');
+//                 sessionStorage.removeItem('membermail');
+//                 navigate('/');
+//                 console.log('로그아웃 성공');
 //             }
 //         })
 //         .catch((error) => {
-//             console.error('Error during logout:', error);
+//             console.error('로그아웃 실패', error);
 //         });
 // };
+
+// function onClickLogout() {
+//     try {
+//         const storedUsersJSON = sessionStorage.getItem('users');
+//         const storedUsers = storedUsersJSON ? JSON.parse(storedUsersJSON) : [];
+
+//         const existingUser = storedUsers.find((user: any) => user.email === globalmail);
+
+//         if (existingUser) {
+//             existingUser.islogin = false;
+//             sessionStorage.setItem('users', JSON.stringify(storedUsers));
+//         }
+//         dispatch(updateLogin(false));
+//         sessionStorage.removeItem('memberid');
+//         sessionStorage.removeItem('membername');
+//         sessionStorage.removeItem('memberemail');
+//         sessionStorage.removeItem('memberpassword');
+//         // navigate('/');
+//         console.log('로그아웃 성공');
+//     } catch (error) {
+//         console.log('로그아웃 실패', error);
+//     }
+// }
 
 function Header() {
     const dispatch: AppDispatch = useDispatch();
     const navigate = useNavigate();
+    const isLogin = useSelector((state: { data: DataState }) => state.data.isLogin);
     const [isMagnifierClicked, setisMagnifierClicked] = useState<boolean>(false);
     const globalName = useSelector((state: { data: DataState }) => state.data.globalname);
 
-    const isTokenExpired = (token: string): boolean => {
-        try {
-            const decodedToken: any = JSON.parse(atob(token.split('.')[1]));
-            const currentTime = Date.now() / 1000;
-            return decodedToken.exp && currentTime > decodedToken.exp;
-        } catch (error) {
-            return true;
+    const token = localStorage.getItem('jwt');
+
+    useEffect(() => {
+        if (token) {
+            if (!isLogin && token) {
+                console.log('자동로그인 시도');
+                apiCall({
+                    method: 'GET',
+                    url: 'users/get', // user info endpoint
+                    headers: { Authorization: `${localStorage.getItem('jwt')}` },
+                })
+                    .then((res) => {
+                        dispatch(updateLogin(true));
+                        sessionStorage.setItem('userName', res.data.data.userName);
+                        sessionStorage.setItem('email', res.data.data.email);
+                        sessionStorage.setItem('memberId', res.data.data.memberId);
+                        dispatch(updateName(res.data.data.userName));
+                        dispatch(updateMail(res.data.data.email));
+                        console.log('로그인 및 유저 정보 가져오기 성공');
+                    })
+                    .catch((error) => {
+                        if (error.response && error.response.status === 400) {
+                            console.error('로그인 실패 400에러');
+                        } else if (error.message && error.message.includes('Network Error')) {
+                            console.error('서버 안열림');
+                        } else {
+                            console.error('로그인 에러', error);
+                        }
+                    });
+            }
+        } else {
+            if (isLogin) {
+                console.log('헤더 로그아웃 강제 작동');
+                dispatch(updateLogin(false));
+                sessionStorage.removeItem('userName');
+                sessionStorage.removeItem('email');
+                sessionStorage.removeItem('memberId');
+                localStorage.removeItem('jwt');
+                localStorage.removeItem('jwtrefresh');
+            }
         }
-    };
+    }, []);
 
-    const users = useSelector((state: RootState) => state.data.users);
-    const memberId = sessionStorage.getItem('memberid');
-    const user = memberId ? users?.[memberId] : undefined;
-    const token = sessionStorage.getItem('jwt');
-
-    const [isLogin, setIsLogin] = useState<boolean>(() => {
-        return token ? !isTokenExpired(token) : false;
-    });
-
-    console.log('Member ID:', memberId);
-    console.log('User Data:', user);
+    function onClickLogout() {
+        try {
+            dispatch(updateLogin(false));
+            sessionStorage.removeItem('memberId');
+            sessionStorage.removeItem('jwt');
+            sessionStorage.removeItem('userName');
+            sessionStorage.removeItem('email');
+            sessionStorage.removeItem('password');
+            localStorage.removeItem('jwtrefresh');
+            localStorage.removeItem('jwt');
+            navigate('/');
+            console.log('로그아웃 성공');
+        } catch (error) {
+            console.log('로그아웃 실패', error);
+        }
+    }
 
     function handleMagnifierClick() {
         setisMagnifierClicked(!isMagnifierClicked);
@@ -263,51 +457,91 @@ function Header() {
         }
     }
 
-    function onClickLogout() {
-        setIsLogin(false);
-        try {
-            sessionStorage.removeItem('memberid');
-            sessionStorage.removeItem('jwt');
-            sessionStorage.removeItem('membername');
-            sessionStorage.removeItem('membermail');
-            navigate('/');
-            console.log('로그아웃 성공');
-        } catch (error) {
-            console.log('로그아웃 실패', error);
-        }
+    const [query, setQuery] = useState<string>('');
+    const [searchData, setSearchData] = useState<Array<{ movieNm: string; movieId: string }>>([
+        { movieNm : '1번영화', movieId : '1'},
+        { movieNm : '2번영화', movieId : '2'},
+        { movieNm : '3번영화', movieId : '3'},
+        { movieNm : '4번영화', movieId : '4'},
+        { movieNm : '5번영화', movieId : '5'},
+        { movieNm : '6번영화', movieId : '6'},
+        { movieNm : '7번영화', movieId : '7'},
+        { movieNm : '8번영화', movieId : '8'}
+    ]);
+
+    interface MovieItem {
+        movieNm: string;
+        movieId: string;
+        [key: string]: any;
     }
 
-    const [query, setQuery] = useState<string>('');
-    const [searchData, setSearchData] = useState<string[]>([
-        '오펜하이머',
-        '범죄도시',
-        '범죄도시2',
-        '범죄도시3',
-        '범죄도시4',
-        '범죄도시5',
-        '기생충',
-        '에브리씽 에브리웨어 올 엣 원스',
-        '퓨리',
-        '풀 메탈 재킷',
-    ]);
+    // 검색기능
+    // useEffect(() => {
+    //     apiCall(
+    //         {
+    //             method: 'GET',
+    //             url: 'http://13.209.157.148:8080/top10',
+    //         },
+    //         false,
+    //     )
+    //         .then((response) => {
+    //             console.log('검색 리스폰스', response);
+    //             const boxofficeList =
+    //                 response.data.boxofficeList?.map((item: any) => ({
+    //                     movieNm: item.movieNm,
+    //                     movieId: item.movieId,
+    //                 })) || [];
+
+    //             const genreMovieList =
+    //                 response.data.genreMovieList?.map((item: any) => ({
+    //                     movieNm: item.movieNm,
+    //                     movieId: item.movieId,
+    //                 })) || [];
+
+    //             const combinedList = [...boxofficeList, ...genreMovieList];
+
+    //             const uniqueList = combinedList.reduce((acc: any[], cur: any) => {
+    //                 const isDuplicate = acc.some((item: any) => item.movieId === cur.movieId);
+    //                 if (!isDuplicate) {
+    //                     acc.push(cur);
+    //                 }
+    //                 return acc;
+    //             }, []);
+    //             setSearchData(uniqueList);
+    //         })
+    //         .catch((error) => {
+    //             console.error('응답실패', error);
+    //         });
+    // }, []);
 
     const filteredData = searchData.filter((item) => {
         if (query.trim() === '') {
             return false;
         }
-        return item.toLowerCase().includes(query.toLowerCase());
+        return item.movieNm.toLowerCase().includes(query.toLowerCase());
     });
 
-    useEffect(() => {
-        const memberName = sessionStorage.getItem('membername');
-        if (memberName) {
-            dispatch(updateName(memberName));
+    const [scrolled, setScrolled] = useState(false);
+
+    const handleScroll = () => {
+        const offset = window.scrollY;
+        if (offset > 20) {
+            setScrolled(true);
+        } else {
+            setScrolled(false);
         }
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
     }, []);
 
     return (
         <>
-            <HeaderStyle>
+            <HeaderStyle $scrolled={scrolled}>
                 <Headerwrap>
                     <LogoStyle>
                         <Link to="/">
@@ -315,12 +549,8 @@ function Header() {
                         </Link>
                     </LogoStyle>
                     <CountryStyle>
-                        <DomesticStyle>
-                            <Link to="/korea">국내</Link>
-                        </DomesticStyle>
-                        <OverseasStyle>
-                            <Link to="/foreign">해외</Link>
-                        </OverseasStyle>
+                        <DomesticStyle>국내</DomesticStyle>
+                        <OverseasStyle>해외</OverseasStyle>
                         <TempStyle>
                             임시링크
                             <Templink>
@@ -341,8 +571,10 @@ function Header() {
                                 onChange={(e) => setQuery(e.target.value)}
                             ></SearchinputStyle>
                             <SearchfilterStyle>
-                                {filteredData.map((item, index) => (
-                                    <SearchfilterliStyle key={index}>{item}</SearchfilterliStyle>
+                                {filteredData.map((item: { movieNm: string; movieId: string }, index: number) => (
+                                    <SearchfilterliStyle key={index}>
+                                        <Link to={`/submain/${item.movieId}`}>{item.movieNm}</Link>
+                                    </SearchfilterliStyle>
                                 ))}
                             </SearchfilterStyle>
                         </Relative>
@@ -365,16 +597,12 @@ function Header() {
             </HeaderStyle>
             {isLoginModal && (
                 <LoginPage
-                    isLogin={isLogin}
-                    setIsLogin={setIsLogin}
                     onClickToggleModal={onClickToggleModal}
                     onClickToggleSignupModal={onClickToggleSignupModal}
                 ></LoginPage>
             )}
             {isSignupModal && (
                 <SignupPage
-                    isLogin={isLogin}
-                    setIsLogin={setIsLogin}
                     onClickToggleModal={onClickToggleModal}
                     onClickToggleSignupModal={onClickToggleSignupModal}
                 ></SignupPage>
