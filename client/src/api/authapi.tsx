@@ -26,7 +26,6 @@ export function apiCall<T = any, D = any>(config: ApiConfig<D>,usePrefix = true)
         url: fullUrl,
         data: config.data,
         headers: config.headers,
-        withCredentials: true,
     })
         .then((response: AxiosResponse<T>) => {
             // console.log('Response Data:', response.data);
