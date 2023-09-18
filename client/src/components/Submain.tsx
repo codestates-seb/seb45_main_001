@@ -16,11 +16,12 @@ const SubcontainerStyle = styled.div`
   background-color: #1d1d1d;
 `;
 
-const PosterStyle = styled.div`
+const PosterStyle = styled.div<{ backgroundImage: string }>`
   display: flex;
   height: 550px;
   background-size: cover;
   background-position: center 45%;
+  background-image: url(${(props) => props.backgroundImage});
 `;
 
 const MainStyle = styled.div`
@@ -78,7 +79,7 @@ const Buttondiv = styled.span`
   bottom: 8px;
   border: 1px solid #e92130;
   border-radius: 28px;
-  font-weight: 28px;
+  font-weight: bold;
   font-size: 13px;
   color: #fff;
   text-align: center;
@@ -144,7 +145,7 @@ const Litap = styled.li`
     border: 1px solid white;
     border-radius: 30px;
     color: black;
-    font-weight: 600;
+    font-weight: bold;
   }
 
   &.active {
@@ -152,7 +153,7 @@ const Litap = styled.li`
     border: 1px solid white;
     border-radius: 30px;
     color: black;
-    font-weight: 600;
+    font-weight: bold;
   }
   @media (max-width: 780px) {
     width: 100px;
@@ -171,10 +172,12 @@ interface MovieData {
     movieNm: string;
     movieNmEn: string;
     audiAcc: string;
-    poster: string[];
+    poster: string;
     genre: string[];
     nation: string[];
     watchGradeNm: string;
+    backDrop: string; 
+
   };
 }
 
@@ -190,12 +193,13 @@ interface MovieInfo {
   vote_average: number;
   vote_count: string;
   poster_path: string;
+  banner:string;
 }
 
 const Submain: FC = () => {
-  const [posterImageUrl, setPosterImageUrl] = useState("");
-  const [currentTab, clickTab] = useState(0);
-  const [stillCuts, setStillCuts] = useState<string[]>([]);
+  const [posterImageUrl, setPosterImageUrl] = useState<string>("");
+  const [posterImageUrl2, setPosterImageUrl2] = useState<string>("");
+  const [currentTab, setCurrentTab] = useState<number>(0);
   const [movieInfo, setMovieInfo] = useState<MovieInfo | null>(null);
   const menuArr = [
     { name: '주요 정보', content: <Subinformation /> },
@@ -204,14 +208,14 @@ const Submain: FC = () => {
   ];
 
   const selectMenuHandler = (index: number) => {
-    clickTab(index);
+    setCurrentTab(index);
   };
 
   useEffect(() => {
     // Fetch movie data
     const fetchMovieData = async () => {
       try {
-        const response = await axios.get<MovieData>('http://13.209.157.148:8080/details/8');
+        const response = await axios.get<MovieData>('http://13.209.157.148:8080/details/1'); // Change the URL to the desired endpoint
         const movieData = response.data.detailsList;
 
         // Convert genre data to a string if it's an array
@@ -222,7 +226,7 @@ const Submain: FC = () => {
 
         // Update state to match the new movie data structure
         setMovieInfo({
-          id: 3,
+          id:1,
           title: movieData.movieNm,
           original_title: movieData.movieNmEn,
           release_date: movieData.openDt,
@@ -232,42 +236,33 @@ const Submain: FC = () => {
           certification: movieData.watchGradeNm,
           vote_average: 0,
           vote_count: movieData.audiAcc,
-          poster_path: movieData.poster[0]
+          poster_path: movieData.poster,
+          banner: movieData.backDrop 
         });
 
         // Set poster image URL
-        setPosterImageUrl(movieData.poster[0]);
+        setPosterImageUrl(movieData.poster);
+        setPosterImageUrl2(movieData.backDrop);
       } catch (error) {
-        console.error("Error fetching movie data:", error);
+        console.error('Error fetching movie data:', error);
       }
     };
 
     if (movieInfo === null) {
       fetchMovieData();
     }
-
-    // Fetch still cuts
-    axios
-      .get('http://13.209.157.148:8080/top10/58')
-      .then((response) => {
-        const { backDrop } = response.data.genreMovieList;
-        setStillCuts(backDrop);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }, [movieInfo]);
+  }, []); // Add an empty dependency array to run this effect only once
 
   return (
     <>
       <SubcontainerStyle>
         {/* Use the first still cut image as the background image */}
-        <PosterStyle style={{ backgroundImage: `url(${stillCuts[1]})` }}>
+        <PosterStyle backgroundImage={posterImageUrl2}>
           <Header />
         </PosterStyle>
         <MainStyle>
           <Moivetextform>
-            <MoivePoster2 src={posterImageUrl}></MoivePoster2>
+            <MoivePoster2 src={posterImageUrl} alt="Movie Poster" />
             <Movidetail>
               <TextForm>
                 <Texth3>
@@ -293,8 +288,13 @@ const Submain: FC = () => {
           <Ulform>
             <Ultap>
               {menuArr.map((el, index) => (
-                <Litap key={index} className={index === currentTab ? 'active' : ''}
-                  onClick={() => selectMenuHandler(index)}>{el.name}</Litap>
+                <Litap
+                  key={index}
+                  className={index === currentTab ? 'active' : ''}
+                  onClick={() => selectMenuHandler(index)}
+                >
+                  {el.name}
+                </Litap>
               ))}
             </Ultap>
             <Desc>

@@ -1,16 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-
-type MediaInfoResponse = {
-  detailsList: {
-    stillCuts: string[];
-    trailers: { vodClass: string; trailer_url: string }[];
-    youtubeReviews: string[];
-  };
-};
 
 const Moviform = styled.div`
   display: flex;
@@ -21,11 +13,6 @@ const Moviform = styled.div`
   align-items: center;
 `;
 
-const SubMovieElement = styled.video`
-  width: 780px;
-  height: 400px;
-  margin-bottom: 50px;
-`;
 
 const Labeldiv = styled.div`
   background-color: #1D1D1D;
@@ -33,13 +20,9 @@ const Labeldiv = styled.div`
   font-size: 23px;
   font-weight: 500;
   margin-bottom: 15px;
+  margin-top: 15px;
   text-align: center;
 `;
-
-const TrailerDiv = styled.div`
-  display: flex;
-  flex-direction: row;
-`
 
 const Gallery = styled.div`
   display: flex;
@@ -91,73 +74,39 @@ const VideoContainer = styled.div`
   align-items: center;
 `;
 
-const Modal = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+interface StillCut {
+  stillCut_url: string;
+}
 
-const ModalContent = styled.div`
-  background-color: transparent;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  position: relative;
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-`;
-
-const ModalImage = styled.img`
-  width: 800px;
-  height: 600px;
-  object-fit: contain;
-`;
-
-const YoutubeReviewThumbnail = styled.img`
-  width: 255px;
-  height: 150px;
-  object-fit: cover;
-  margin-right: 10px;
-  cursor: pointer;
-`;
-
-const API_URL = 'http://13.209.157.148:8080/details/8/mediaInfo';
+interface ApiResponse {
+  detailsList: {
+    stillCuts: StillCut[];
+    trailers: string;
+    youtubeReviews: string;
+  };
+}
 
 const SubMovie: React.FC = () => {
-  const [stillCuts, setStillCuts] = useState<string[]>([]);
-  const [trailers, setTrailers] = useState<{ vodClass: string; trailer_url: string }[]>([]);
-  const [youtubeReviews, setYoutubeReviews] = useState<string[]>([]);
+  const [stillCuts, setStillCuts] = useState<StillCut[]>([]);
+  const [trailers, setTrailers] = useState<string>('');
   const [startIndex, setStartIndex] = useState(0);
-  const [modalImage, setModalImage] = useState<string | null>(null);
-
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [youtube, setYoutube] = useState<string>('');
 
   useEffect(() => {
-    axios
-      .get<MediaInfoResponse>(API_URL)
-      .then((response) => {
-        const { stillCuts, trailers, youtubeReviews } = response.data.detailsList;
-        setStillCuts(stillCuts);
-        setTrailers(trailers);
-        setYoutubeReviews(youtubeReviews);
-      })
-      .catch((error) => {
-        console.error('데이터를 가져오는 동안 오류 발생:', error);
-      });
+    const fetchData = async () => {
+      try {
+        const response = await axios.get<ApiResponse>('http://13.209.157.148:8080/details/13/mediaInfo');
+        const data = response.data.detailsList;
+
+        setStillCuts(data.stillCuts);
+        setTrailers(data.trailers);
+        setYoutube(data.youtubeReviews);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const prevSlide = () => {
@@ -172,41 +121,30 @@ const SubMovie: React.FC = () => {
     }
   };
 
-  const openModal = (imageUrl: string) => {
-    setModalImage(imageUrl);
-  };
-
-  const closeModal = () => {
-    setModalImage(null);
-  };
-
-  const closeModalOutside = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      closeModal();
-    }
-  };
-
-  const extractVideoId = (url: string) => {
-    const videoIdMatch = url.match(/v=([^&]+)/);
-    return videoIdMatch ? videoIdMatch[1] : null;
-  };
-
   return (
     <Moviform>
       <VideoContainer>
-        {trailers.length > 0 && (
-          <SubMovieElement
-            ref={videoRef}
-            controls
-            autoPlay
-            muted
-            loop
-            width="100%"
-            height="100%"
-          >
-            Your browser does not support the video tag.
-          </SubMovieElement>
-        )}
+        {/* Embed YouTube video using an iframe */}
+        <iframe
+          width="850"
+          height="500"
+          src={`https://www.youtube.com/embed/${trailers}`}
+          title="YouTube video player"
+          frameBorder="0"
+          allowFullScreen
+        ></iframe>
+      </VideoContainer>
+      <Labeldiv>유튜브 리뷰</Labeldiv>
+      <VideoContainer>
+        {/* Embed YouTube video using an iframe */}
+        <iframe
+          width="850"
+          height="500"
+          src={`https://www.youtube.com/embed/${youtube}`}
+          title="YouTube video player"
+          frameBorder="0"
+          allowFullScreen
+        ></iframe>
       </VideoContainer>
       <Labeldiv>포토</Labeldiv>
       <Gallery>
@@ -214,12 +152,10 @@ const SubMovie: React.FC = () => {
           <FaChevronLeft />
         </ArrowButton>
         <GalleryContainer>
-          {stillCuts.slice(startIndex, startIndex + 4).map((imageUrl, index) => (
+          {stillCuts.slice(startIndex, startIndex + 4).map((stillCut, index) => (
             <GalleryItem
               key={index}
-              src={imageUrl}
-              alt={`Still Cut ${index}`}
-              onClick={() => openModal(imageUrl)}
+              src={stillCut.stillCut_url}
             />
           ))}
         </GalleryContainer>
@@ -227,35 +163,6 @@ const SubMovie: React.FC = () => {
           <FaChevronRight />
         </ArrowButton>
       </Gallery>
-      {modalImage && (
-        <Modal onClick={closeModalOutside}>
-          <ModalContent>
-            <CloseButton onClick={closeModal}>닫기</CloseButton>
-            <ModalImage src={modalImage} alt="큰 이미지" />
-          </ModalContent>
-        </Modal>
-      )}
-      <Labeldiv>유튜브 리뷰</Labeldiv>
-      <TrailerDiv>
-        {youtubeReviews.slice(0, 3).map((review, index) => {
-          const videoId = extractVideoId(review);
-          const thumbnailUrl = videoId
-            ? `https://img.youtube.com/vi/${videoId}/0.jpg`
-            : '';
-
-          return (
-            <div key={index}>
-              <a href={review} target="_blank" rel="noopener noreferrer">
-                <YoutubeReviewThumbnail
-                  src={thumbnailUrl}
-                  alt={`리뷰 섬네일 ${index}`}
-                  onClick={() => window.open(review, '_blank')}
-                />
-              </a>
-            </div>
-          );
-        })}
-      </TrailerDiv>
     </Moviform>
   );
 };

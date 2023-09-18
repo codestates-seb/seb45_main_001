@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent } from 'react';
 import { styled } from 'styled-components';
 
+
 const Textform = styled.div`
   display: flex;
   flex-direction: column;
@@ -26,13 +27,20 @@ const TextBox2 = styled.div`
   justify-content: space-between;
   border: 1px solid white;
   width: 780px;
-  height: 120px;
+  height: 55px;
 `;
 
-const Text1 = styled.span`
-  color: rgb(255, 255, 255);
+const Starbox = styled.div`
+  display: flex;
   margin-left: 10px;
+  justify-content: center;
+  align-items: center;
+`
+
+const Text1 = styled.span<{ active: boolean }>`
+  color: ${props => (props.active ? 'red' : 'rgb(255, 255, 255)')};
   font-size: 28px;
+  margin-left: 3px;
   cursor: pointer;
   &:hover {
     color: red;
@@ -41,25 +49,29 @@ const Text1 = styled.span`
 
 const Text2 = styled.button`
   color: rgb(255, 255, 255);
-  margin-right: 10px;
   background-color: #727171;
   border: 1px solid white;
   border-radius: 30px;
   font-size: 15px;
   width: 80px;
   height: 40px;
+  margin-top: 5px;
+  margin-left: 10px;
+  margin-right: 10px;
   cursor: pointer;
   margin-top: 5px;
 `;
 
 const TextInput = styled.input`
-  height: 60px;
+  height: 135px;
   padding: 5px;
   background-color: #1d1d1d;
   font-size: 15px;
   color: white;
   border: none;
   outline: none;
+  display: flex;
+  justify-content: flex-start;
 `;
 
 const TextBox3 = styled.div`
@@ -88,12 +100,12 @@ const TextListli = styled.li`
 `;
 
 const SubComment = () => {
-  const [starRating, setStarRating] = useState<number>(0);
+  const starRatings: number[] = [1, 2, 3, 4, 5]; // 별점 옵션 배열
+  const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [comment, setComment] = useState<string>('');
-  const [commentsList, setCommentsList] = useState<{ starRating: number; comment: string }[]>([]);
 
   const handleStarRating = (rating: number) => {
-    setStarRating(rating);
+    setSelectedRating(rating);
   };
 
   const handleCommentInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -101,20 +113,37 @@ const SubComment = () => {
   };
 
   const handleCommentSubmit = () => {
-    const newComment = {
-      starRating,
-      comment,
-    };
-    setCommentsList([...commentsList, newComment]);
-    setComment('');
+    if (selectedRating !== null) {
+      const now = new Date();
+      const timestamp = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+      const newComment = {
+        starRating: selectedRating,
+        comment: `${comment} - ${timestamp}`, // 댓글과 시간을 결합하여 저장
+      };
+      setCommentsList(prevComments => [...prevComments, newComment]);
+      setComment('');
+      setSelectedRating(null);
+    }
   };
+
+  const [commentsList, setCommentsList] = useState<{ starRating: number; comment: string }[]>([]);
 
   return (
     <>
       <Textform>
         <TextBox>
           <TextBox2>
-            <Text1 onClick={() => handleStarRating(5)}>☆☆☆☆☆</Text1>
+            <Starbox>
+            {starRatings.map((rating, index) => (
+              <Text1
+                key={index}
+                onClick={() => handleStarRating(rating)}
+                active={rating <= (selectedRating ?? 0)} // null 별점 처리
+              >
+                ☆
+              </Text1>
+            ))}
+            </Starbox>
             <Text2 onClick={handleCommentSubmit}>댓글등록</Text2>
           </TextBox2>
           <TextInput
