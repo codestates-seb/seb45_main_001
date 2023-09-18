@@ -588,7 +588,9 @@ function Header() {
                         )}
                         {isLogin && (
                             <>
-                                <GeneralStyle>Hello,{globalName}!</GeneralStyle>
+                                <GeneralStyle>Hello,
+                                    <Link to="/mypage">{globalName}!</Link>
+                                    </GeneralStyle>
                                 <LoginbuttonStyle onClick={onClickLogout}>로그아웃</LoginbuttonStyle>
                             </>
                         )}
