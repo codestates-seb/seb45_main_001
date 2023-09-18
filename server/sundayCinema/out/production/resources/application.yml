@@ -1,16 +1,11 @@
 spring:
-  application:
-    name: your-application-name
   main:
-    banner-mode: "off" # 배너 출력 끄기 (선택 사항)
-  logging:
-    level:
-      com.sundayCinema.sundayCinema.movie.api.TMDB: DEBUG
+    allow-bean-definition-overriding: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/test?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: 9397wkdwjd
+    url: ${RDS_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -25,7 +20,6 @@ spring:
   youtubeApiKey: ${YOUTUBE_API_KEY}
   KdmbApiKey: ${KDMB_API_KEY}
   KobisApiKEY: ${KOBIS_API_KEY}
-#  tmdbKey : ${TMDB_API_KEY}
 jwt:
   key:
     secret: ${JWT_SECRET_KEY}
