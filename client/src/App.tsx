@@ -1,6 +1,6 @@
 // import Header from './components/Header';
 import Footer from './components/Footer';
-import Submain from './components/Submain';
+// import Submain from './components/Submain';
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import Mypage from './pages/Mypage';
@@ -17,7 +17,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/korea" element={<KoreaPage />} />
                 <Route path="/foreign" element={<ForeignPage />} />
-                <Route path="/submain" element={<Submain />} />
+                {/* <Route path="/submain" element={<Submain />} /> */}
                 <Route path="/mypage" element={<Authguard />}>
                 
                 
