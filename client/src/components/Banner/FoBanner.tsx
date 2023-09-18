@@ -1,6 +1,5 @@
-import axios from '../api/axios';
+import axios from 'axios';
 import {useEffect, useState} from 'react'
-import requests from '../api/requests';
 import {styled} from "styled-components";
 
 const BannerLayout = styled.header`
@@ -142,49 +141,49 @@ const HomeContainer = styled.div`
 `;
 
 interface Movie {
-  backdrop_path: string;
-  title?: string;
-  name?: string;
-  original_name?: string;
-  overview: string;
-  videos: {
-    results: {
-      key?: string;
-    }[];
-  };
+  backDrop: string;
+  movieNm? : string;
+  posterUrl?: string;
+  plot: string;
+  trailerUrl: string;
+  // trailerUrl: {
+  //   key?: string;
+  //   };
+  movieId: number;
+  stillCuts: {
+    stillCut_url: string;   
+  }[];
 }
 
-const Banners = () => {
+const FoBanner = () => {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [isClicked, setIsClicked] = useState(false);
+  const url = process.env.REACT_APP_API_URL;
+  // const key = process.env.REACT_APP_KDMB_API_KEY;
 
   useEffect(() => {
     fetchData()
   }, []);
 
   const fetchData = async () => {
-    
-    // 현재 상영중인 영화 정보를 가져오기(여러 영화)
-    const request = await axios.get(requests.fetchTrending);
-    // 여러 영화 중 영화 하나의 ID를 가져오기
-    const movieId = request.data.results[Math.floor(Math.random() * request.data.results.length)
-    ].id;
+    try {
+    const response = await axios.get(`${url}/top10Foreign`);
 
-    // 특정 영화의 더 상세한 정보 가져오기(비디오)
-    const { data : movieDetail } = await axios.get(`movie/${movieId}`, {
-      params: { append_to_response: "videos"},
-    });
-    console.log("request", request);
-    setMovie(movieDetail);
-    
+    const movieList = response.data.boxofficeList;
+    console.log('movieList', movieList);
+    const randomIndex = Math.floor(Math.random() * movieList.length);
+    const movies = movieList[randomIndex];
+    console.log('movies', movies);
+    setMovie(movies);
+  } catch (error) {
+    console.error('Error fetching movie data:', error);
+  }
   };
 
   const truncate = (str: string, n: number) => {
     return str?.length > n ? str.substring(0, n - 1) + "..." : str;
   };
   
-  
-
   if (!movie) {
     return null; 
   }
@@ -195,7 +194,7 @@ const Banners = () => {
   return (
     <BannerLayout
         style={{
-          backgroundImage: `url("https://image.tmdb.org/t/p/original/${movie.backdrop_path}")`,
+          backgroundImage: `url("${movie.backDrop}")` ,
           backgroundPosition: "top center",
           backgroundSize: "cover",
         }}
@@ -203,22 +202,17 @@ const Banners = () => {
         <BannerContent>
           <BannerTitle>
             <h1>
-            {movie.title || movie.name || movie.original_name}
+            {movie.movieNm}
             </h1>
           </BannerTitle>
-
-          <BannerButtonBox>
-            { movie.videos && movie.videos.results.length > 0 ? (
+          <BannerButtonBox> 
             <button onClick={() => setIsClicked(true)}>
               Play
             </button>
-          )  : null
-          }
           </BannerButtonBox>
-
           <BannerDescription>
             <h1>
-            {truncate(movie.overview, 100)}
+            {truncate(movie.plot, 100)}
             </h1>
           </BannerDescription>
         </BannerContent>
@@ -232,10 +226,11 @@ const Banners = () => {
           <Iframe
             width="640"
             height="360"
-            src={`https://www.youtube.com/embed/${movie.videos.results[0].key}?controls=0&autoplay=1&loop=1&mute=0&playlist=${movie.videos.results[0].key}`}
-            title="YouTube video player"
+            // src={movie.trailerUrl}
+            src={`https://www.youtube.com/embed/${movie.trailerUrl}?controls=0&autoplay=1&loop=1&mute=0&playlist=${movie.trailerUrl}`}
+            title="Movie Trailer"
             frameBorder="0"
-            allow="autoplay; fullscreen"
+            allow="autoplay; picture-in-picture; fullscreen"
             allowFullScreen
           ></Iframe>
         </HomeContainer>
@@ -243,4 +238,5 @@ const Banners = () => {
     );
   }
 }
-export default Banners;
+export default FoBanner;
+

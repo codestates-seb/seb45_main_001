@@ -111,8 +111,8 @@ const TopRow = ({isLargeRow, title, id}: TopRowProps) => {
     setMovies(top10Movies);
   }
 
-  const navigateTo = () => {
-    navigate('/submain');
+  const navigateTo = (movieId: number) => {
+    navigate(`/Submain/${movieId}`);
   };
 
   return (
@@ -151,13 +151,13 @@ const TopRow = ({isLargeRow, title, id}: TopRowProps) => {
           <RowPosterLarge
             src={movie.posterUrl}
             alt={movie.movieNm}
-            onClick={navigateTo}
+            onClick={() => navigateTo(movie.movieId)}
             />
         ) : (
           <RowPoster  
             src={movie.posterUrl}
             alt={movie.movieNm}
-            onClick={navigateTo}
+            onClick={() => navigateTo(movie.movieId)}
             />
         )}
         </React.Fragment>

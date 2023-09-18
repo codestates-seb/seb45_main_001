@@ -119,8 +119,8 @@ const ForeignGenreRow = ({isLargeRow, title, id, genre}: ForeignGenreRowProps) =
   }
   }
 
-  const navigateTo = () => {
-    navigate('/submain');
+  const navigateTo = (movieId: number) => {
+    navigate(`/Submain/${movieId}`);
   };
 
   return (
@@ -159,13 +159,13 @@ const ForeignGenreRow = ({isLargeRow, title, id, genre}: ForeignGenreRowProps) =
           <RowPosterLarge
             src={movie.posterUrl}
             alt={movie.movieNm}
-            onClick={navigateTo}
+            onClick={() => navigateTo(movie.movieId)}
             />
         ) : (
           <RowPoster  
             src={movie.posterUrl}
             alt={movie.movieNm}
-            onClick={navigateTo}
+            onClick={() => navigateTo(movie.movieId)}
             />
         )}
         </React.Fragment>

@@ -1,14 +1,14 @@
 import React from 'react';
 import Header from '../components/Header';
-import Banners from '../components/Banners';
 import ForeignTopRow from '../components/Row/ForeignTopRow';
 import ForeignGenreRow from '../components/Row/ForeignGenreRow';
+import FoBanner from '../components/Banner/FoBanner';
 
 const ForeignPage = () => {
   return (
     <>
       <Header />
-      <Banners />
+      <FoBanner />
       <ForeignTopRow title="Top 10 Movies" id="top10"isLargeRow={true} />
       <ForeignGenreRow title="애니메이션" id="animation" genre="애니메이션" isLargeRow={true}/>
       <ForeignGenreRow title="액션" id="action" genre="액션" isLargeRow={true}/>

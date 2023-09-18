@@ -155,7 +155,7 @@ interface Movie {
   }[];
 }
 
-const Banner = () => {
+const KrBanner = () => {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [isClicked, setIsClicked] = useState(false);
   const url = process.env.REACT_APP_API_URL;
@@ -226,7 +226,8 @@ const Banner = () => {
           <Iframe
             width="640"
             height="360"
-            src={movie.trailerUrl}
+            // src={movie.trailerUrl}
+            src={`https://www.youtube.com/embed/${movie.trailerUrl}?controls=0&autoplay=1&loop=1&mute=0&playlist=${movie.trailerUrl}`}
             title="Movie Trailer"
             frameBorder="0"
             allow="autoplay; picture-in-picture; fullscreen"
@@ -237,7 +238,7 @@ const Banner = () => {
     );
   }
 }
-export default Banner;
+export default KrBanner;
 
 
 

@@ -107,7 +107,7 @@ const KoreaGenreRow = ({isLargeRow, title, id, genre}: KoreaGenreRowProps) => {
 
   const fetchMovieData = async () => {
     try {
-    const response = await axios.get(`${url}/top10`);
+    const response = await axios.get(`${url}/top10Korean`);
     console.log("response", response);
     const filteredMovies = response.data.genreMovieList.filter((movie : KoreaGenreRow) =>
         genre && movie.genre?.includes(genre)
@@ -119,8 +119,8 @@ const KoreaGenreRow = ({isLargeRow, title, id, genre}: KoreaGenreRowProps) => {
   }
   }
 
-  const navigateTo = () => {
-    navigate('/submain');
+  const navigateTo = (movieId: number) => {
+    navigate(`/Submain/${movieId}`);
   };
 
   return (
@@ -159,13 +159,13 @@ const KoreaGenreRow = ({isLargeRow, title, id, genre}: KoreaGenreRowProps) => {
           <RowPosterLarge
             src={movie.posterUrl}
             alt={movie.movieNm}
-            onClick={navigateTo}
+            onClick={() => navigateTo(movie.movieId)}
             />
         ) : (
           <RowPoster  
             src={movie.posterUrl}
             alt={movie.movieNm}
-            onClick={navigateTo}
+            onClick={() => navigateTo(movie.movieId)}
             />
         )}
         </React.Fragment>
