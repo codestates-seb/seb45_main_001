@@ -157,7 +157,7 @@ function SignupPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPageP
                             onChange={handleInputChange}
                         ></LoginModalinput>
                         <LoginModalinput
-                            // type="password"
+                            type="password"
                             placeholder="비밀번호"
                             name="password"
                             value={password}

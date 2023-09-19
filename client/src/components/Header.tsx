@@ -155,11 +155,11 @@ const SearchbarStyle = styled.form<{ $isOpen: boolean }>`
     margin-right: 10px;
     display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
 
-    @media (max-width: 680px) {
+    @media (max-width: 460px) {
         position: absolute;
         width: 300px;
         top: 56px;
-        left: 150px;
+        left: auto;
         right: auto;
     }
 `;
@@ -617,8 +617,7 @@ function Header() {
                         {isLogin && (
                             <>
                                 <GeneralStyle>
-                                    Hello,
-                                    <Link to="/mypage">{globalName}!</Link>
+                                    <Link to="/mypage">{globalName}</Link>
                                 </GeneralStyle>
                                 <LoginbuttonStyle onClick={onClickLogout}>로그아웃</LoginbuttonStyle>
                             </>

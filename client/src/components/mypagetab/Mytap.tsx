@@ -300,7 +300,7 @@ function Mymytap() {
                         {isPasswordEditing ? (
                             <>
                                 <Patch
-                                    type="text"
+                                    type='password'
                                     name="tempPassword"
                                     value={tempPassword}
                                     onChange={handleInputChange}
