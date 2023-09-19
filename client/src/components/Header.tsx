@@ -121,11 +121,13 @@ const SearchinputStyle = styled.input`
     padding: 3px;
     padding-left: 6px;
     font-size: 0.875rem;
+    box-sizing: border-box;
 `;
 
 const SearchfilterStyle = styled.ul`
     position: absolute;
     width: 100%;
+    max-width: 600px;
     list-style: none;
     top: 29px;
     background-color: white;
@@ -133,6 +135,7 @@ const SearchfilterStyle = styled.ul`
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
     text-align: left;
+    box-sizing: border-box;
 `;
 
 const SearchfilterliStyle = styled.ul`
@@ -175,8 +178,8 @@ const LogSignStyle = styled.nav`
 
 const Relative = styled.div`
     ${FlexCentercss}
+    width: 100%;
     position: relative;
-    flex-grow: 1;
 `;
 
 const Templink = styled.div`
@@ -584,27 +587,27 @@ function Header() {
                     </MagnifierStyle>
                     <SearchbarStyle $isOpen={isMagnifierClicked}>
                         <Relative ref={searchContainerRef}>
-                            <SearchinputStyle
-                                aria-label=""
-                                placeholder="검색..."
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                            ></SearchinputStyle>
-                            <SearchfilterStyle>
-                                {filteredData.map((item: { movieNm: string; movieId: string }, index: number) => (
-                                    <SearchfilterliStyle key={index}>
-                                        <Link
-                                            to={`/submain/${item.movieId}`}
-                                            onClick={() => {
-                                                setisMagnifierClicked(false);
-                                                setQuery('');
-                                            }}
-                                        >
-                                            {item.movieNm}
-                                        </Link>
-                                    </SearchfilterliStyle>
-                                ))}
-                            </SearchfilterStyle>
+                                <SearchinputStyle
+                                    aria-label=""
+                                    placeholder="검색..."
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                ></SearchinputStyle>
+                                <SearchfilterStyle>
+                                    {filteredData.map((item: { movieNm: string; movieId: string }, index: number) => (
+                                        <SearchfilterliStyle key={index}>
+                                            <Link
+                                                to={`/submain/${item.movieId}`}
+                                                onClick={() => {
+                                                    setisMagnifierClicked(false);
+                                                    setQuery('');
+                                                }}
+                                            >
+                                                {item.movieNm}
+                                            </Link>
+                                        </SearchfilterliStyle>
+                                    ))}
+                                </SearchfilterStyle>
                         </Relative>
                     </SearchbarStyle>
                     <LogSignStyle>
