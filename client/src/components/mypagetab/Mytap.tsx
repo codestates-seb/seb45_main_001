@@ -148,6 +148,9 @@ function Mymytap() {
     const [passwordError, setPasswordError] = useState<string>('');
     const [nameError, setNameError] = useState<string>('');
 
+    const [isDeleteEditing, setIsDeleteEditing] = useState<boolean>(false);
+    const [tempDeleteInput, setTempDeleteInput] = useState<string>('');
+
     // function getUserpassword() {
     //     return sessionStorage.getItem('password');
     // }
@@ -160,6 +163,7 @@ function Mymytap() {
             method: 'PATCH',
             url: 'users/patch', // users/patch
             data: sendPassword,
+            headers: { Authorization: `${localStorage.getItem('jwt')}` },
         })
             .then(() => {
                 console.log('보냈나?', sendPassword);
@@ -185,6 +189,7 @@ function Mymytap() {
                 method: 'PATCH',
                 url: 'users/patch', // users/patch
                 data: sendName,
+                headers: { Authorization: `${localStorage.getItem('jwt')}` },
             })
                 .then(() => {
                     console.log('보냈나?', sendName);
@@ -198,23 +203,30 @@ function Mymytap() {
     };
 
     const handleDelete = () => {
-        apiCall({
-            method: 'DELETE',
-            url: 'users/delete', // users/patch
-        })
-            .then(() => {
-                console.log('했나?');
-                dispatch(updateLogin(false));
-                sessionStorage.removeItem('userName');
-                sessionStorage.removeItem('email');
-                sessionStorage.removeItem('memberId');
-                localStorage.removeItem('jwt');
-                localStorage.removeItem('jwtrefresh');
-                navigate('/');
+        if (tempDeleteInput === '영구 삭제') {
+            apiCall({
+                method: 'DELETE',
+                url: 'users/delete', // users/delete
+                headers: { Authorization: `${localStorage.getItem('jwt')}` },
             })
-            .catch((error) => {
-                console.error('err', error);
-            });
+                .then(() => {
+                    console.log('했나?');
+                    dispatch(updateLogin(false));
+                    sessionStorage.removeItem('userName');
+                    sessionStorage.removeItem('email');
+                    sessionStorage.removeItem('memberId');
+                    localStorage.removeItem('jwt');
+                    localStorage.removeItem('jwtrefresh');
+                    setIsDeleteEditing(false);
+                    setTempDeleteInput('');
+                    navigate('/');
+                })
+                .catch((error) => {
+                    console.error('err', error);
+                });
+        } else {
+            alert("입력한 내용이 '영구 삭제'와 일치하지 않습니다.");
+        }
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -288,7 +300,7 @@ function Mymytap() {
                         {isPasswordEditing ? (
                             <>
                                 <Patch
-                                    type="text"
+                                    type='password'
                                     name="tempPassword"
                                     value={tempPassword}
                                     onChange={handleInputChange}
@@ -306,13 +318,29 @@ function Mymytap() {
                     </My_lowertap_realwrap>
                     <My_lowertap_mailblank></My_lowertap_mailblank>
                 </My_lowertap_namewrap>
-                <My_lowertap_mailwrap>
+                <My_lowertap_namewrap>
                     <My_lowertap_mail>회원탈퇴</My_lowertap_mail>
                     <My_lowertap_realwrap>
-                        <Exit src="/exit.png" alt="" onClick={handleDelete} />
+                        {isDeleteEditing ? (
+                            <>
+                                <Patch
+                                    type="text"
+                                    name="tempDeleteInput"
+                                    value={tempDeleteInput}
+                                    placeholder="영구 삭제라고 입력하세요."
+                                    onChange={(e) => setTempDeleteInput(e.target.value)}
+                                />
+                                <Pencil src="/pencil.png" alt="" onClick={handleDelete} />
+                                <Xbutton src="/x.png" alt="" onClick={() => setIsDeleteEditing(false)} />
+                            </>
+                        ) : (
+                            <>
+                                <Exit src="/exit.png" alt="" onClick={() => setIsDeleteEditing(true)} />
+                            </>
+                        )}
                     </My_lowertap_realwrap>
                     <My_lowertap_mailblank></My_lowertap_mailblank>
-                </My_lowertap_mailwrap>
+                </My_lowertap_namewrap>
             </My_lowertap>
         </>
     );

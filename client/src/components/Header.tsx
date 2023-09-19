@@ -1,5 +1,5 @@
 import { styled, css } from 'styled-components';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import LoginPage from './auth/LoginPage';
 import SignupPage from './auth/Signup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -79,7 +79,7 @@ const LogoStyle = styled(FlexCenter)`
 const CountryStyle = styled(FlexCenter)`
     margin-left: 10px;
     margin-right: 20px;
-    min-width: 130px;
+    min-width: 65px;
     min-height: 24px;
     gap: 6px;
 
@@ -121,11 +121,13 @@ const SearchinputStyle = styled.input`
     padding: 3px;
     padding-left: 6px;
     font-size: 0.875rem;
+    box-sizing: border-box;
 `;
 
 const SearchfilterStyle = styled.ul`
     position: absolute;
     width: 100%;
+    max-width: 600px;
     list-style: none;
     top: 29px;
     background-color: white;
@@ -133,6 +135,7 @@ const SearchfilterStyle = styled.ul`
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
     text-align: left;
+    box-sizing: border-box;
 `;
 
 const SearchfilterliStyle = styled.ul`
@@ -144,7 +147,7 @@ const SearchfilterliStyle = styled.ul`
 const MagnifierStyle = styled.div`
     width: 21px;
     height: 21px;
-    border: 1px solid gray;
+    /* border: 1px solid gray; */
     cursor: pointer;
 `;
 
@@ -155,11 +158,11 @@ const SearchbarStyle = styled.form<{ $isOpen: boolean }>`
     margin-right: 10px;
     display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
 
-    @media (max-width: 680px) {
+    @media (max-width: 460px) {
         position: absolute;
         width: 300px;
         top: 56px;
-        left: 150px;
+        left: auto;
         right: auto;
     }
 `;
@@ -175,8 +178,8 @@ const LogSignStyle = styled.nav`
 
 const Relative = styled.div`
     ${FlexCentercss}
+    width: 100%;
     position: relative;
-    flex-grow: 1;
 `;
 
 const Templink = styled.div`
@@ -430,6 +433,7 @@ function Header() {
     function handleMagnifierClick() {
         setisMagnifierClicked(!isMagnifierClicked);
         if (!isMagnifierClicked) {
+            setQuery('');
             console.log('검색바 열림!');
         } else {
             console.log('검색바 닫힘!');
@@ -459,14 +463,14 @@ function Header() {
 
     const [query, setQuery] = useState<string>('');
     const [searchData, setSearchData] = useState<Array<{ movieNm: string; movieId: string }>>([
-        { movieNm : '1번영화', movieId : '1'},
-        { movieNm : '2번영화', movieId : '2'},
-        { movieNm : '3번영화', movieId : '3'},
-        { movieNm : '4번영화', movieId : '4'},
-        { movieNm : '5번영화', movieId : '5'},
-        { movieNm : '6번영화', movieId : '6'},
-        { movieNm : '7번영화', movieId : '7'},
-        { movieNm : '8번영화', movieId : '8'}
+        { movieNm: '1번영화', movieId: '1' },
+        { movieNm: '2번영화', movieId: '2' },
+        { movieNm: '3번영화', movieId: '3' },
+        { movieNm: '4번영화', movieId: '4' },
+        { movieNm: '5번영화', movieId: '5' },
+        { movieNm: '6번영화', movieId: '6' },
+        { movieNm: '7번영화', movieId: '7' },
+        { movieNm: '8번영화', movieId: '8' },
     ]);
 
     interface MovieItem {
@@ -476,43 +480,43 @@ function Header() {
     }
 
     // 검색기능
-    // useEffect(() => {
-    //     apiCall(
-    //         {
-    //             method: 'GET',
-    //             url: 'http://13.209.157.148:8080/top10',
-    //         },
-    //         false,
-    //     )
-    //         .then((response) => {
-    //             console.log('검색 리스폰스', response);
-    //             const boxofficeList =
-    //                 response.data.boxofficeList?.map((item: any) => ({
-    //                     movieNm: item.movieNm,
-    //                     movieId: item.movieId,
-    //                 })) || [];
+    useEffect(() => {
+        apiCall(
+            {
+                method: 'GET',
+                url: 'http://13.209.157.148:8080/top10',
+            },
+            false,
+        )
+            .then((response) => {
+                console.log('검색 리스폰스', response);
+                const boxofficeList =
+                    response.data.boxofficeList?.map((item: any) => ({
+                        movieNm: item.movieNm,
+                        movieId: item.movieId,
+                    })) || [];
 
-    //             const genreMovieList =
-    //                 response.data.genreMovieList?.map((item: any) => ({
-    //                     movieNm: item.movieNm,
-    //                     movieId: item.movieId,
-    //                 })) || [];
+                const genreMovieList =
+                    response.data.genreMovieList?.map((item: any) => ({
+                        movieNm: item.movieNm,
+                        movieId: item.movieId,
+                    })) || [];
 
-    //             const combinedList = [...boxofficeList, ...genreMovieList];
+                const combinedList = [...boxofficeList, ...genreMovieList];
 
-    //             const uniqueList = combinedList.reduce((acc: any[], cur: any) => {
-    //                 const isDuplicate = acc.some((item: any) => item.movieId === cur.movieId);
-    //                 if (!isDuplicate) {
-    //                     acc.push(cur);
-    //                 }
-    //                 return acc;
-    //             }, []);
-    //             setSearchData(uniqueList);
-    //         })
-    //         .catch((error) => {
-    //             console.error('응답실패', error);
-    //         });
-    // }, []);
+                const uniqueList = combinedList.reduce((acc: any[], cur: any) => {
+                    const isDuplicate = acc.some((item: any) => item.movieId === cur.movieId);
+                    if (!isDuplicate) {
+                        acc.push(cur);
+                    }
+                    return acc;
+                }, []);
+                setSearchData(uniqueList);
+            })
+            .catch((error) => {
+                console.error('응답실패', error);
+            });
+    }, []);
 
     const filteredData = searchData.filter((item) => {
         if (query.trim() === '') {
@@ -539,6 +543,21 @@ function Header() {
         };
     }, []);
 
+    const searchContainerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+                setisMagnifierClicked(false);
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     return (
         <>
             <HeaderStyle $scrolled={scrolled}>
@@ -549,34 +568,46 @@ function Header() {
                         </Link>
                     </LogoStyle>
                     <CountryStyle>
-                        <DomesticStyle>국내</DomesticStyle>
-                        <OverseasStyle>해외</OverseasStyle>
-                        <TempStyle>
+                        <DomesticStyle>
+                            <Link to="/korea">국내</Link>
+                        </DomesticStyle>
+                        <OverseasStyle>
+                            <Link to="/foreign">해외</Link>
+                        </OverseasStyle>
+                        {/* <TempStyle>
                             임시링크
                             <Templink>
                                 <Link to="/submain">toSub</Link>
                                 <Link to="/mypage">toMypage</Link>
                             </Templink>
-                        </TempStyle>
+                        </TempStyle> */}
                     </CountryStyle>
                     <MagnifierStyle onClick={handleMagnifierClick}>
                         <img src="/Magnifier_white.png" alt="" style={{ width: '100%', height: '100%' }} />
                     </MagnifierStyle>
                     <SearchbarStyle $isOpen={isMagnifierClicked}>
-                        <Relative>
-                            <SearchinputStyle
-                                aria-label=""
-                                placeholder="검색..."
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                            ></SearchinputStyle>
-                            <SearchfilterStyle>
-                                {filteredData.map((item: { movieNm: string; movieId: string }, index: number) => (
-                                    <SearchfilterliStyle key={index}>
-                                        <Link to={`/submain/${item.movieId}`}>{item.movieNm}</Link>
-                                    </SearchfilterliStyle>
-                                ))}
-                            </SearchfilterStyle>
+                        <Relative ref={searchContainerRef}>
+                                <SearchinputStyle
+                                    aria-label=""
+                                    placeholder="검색..."
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                ></SearchinputStyle>
+                                <SearchfilterStyle>
+                                    {filteredData.map((item: { movieNm: string; movieId: string }, index: number) => (
+                                        <SearchfilterliStyle key={index}>
+                                            <Link
+                                                to={`/submain/${item.movieId}`}
+                                                onClick={() => {
+                                                    setisMagnifierClicked(false);
+                                                    setQuery('');
+                                                }}
+                                            >
+                                                {item.movieNm}
+                                            </Link>
+                                        </SearchfilterliStyle>
+                                    ))}
+                                </SearchfilterStyle>
                         </Relative>
                     </SearchbarStyle>
                     <LogSignStyle>
@@ -588,7 +619,9 @@ function Header() {
                         )}
                         {isLogin && (
                             <>
-                                <GeneralStyle>Hello,{globalName}!</GeneralStyle>
+                                <GeneralStyle>
+                                    <Link to="/mypage">{globalName}</Link>
+                                </GeneralStyle>
                                 <LoginbuttonStyle onClick={onClickLogout}>로그아웃</LoginbuttonStyle>
                             </>
                         )}
