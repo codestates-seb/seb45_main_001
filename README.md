@@ -68,7 +68,7 @@
 <br>
 <br>
 
-## **API를 이용하여 영화데이터를 사용해 영화 소개 페이지만들어보기~!**
+## **API를 이용하여 영화데이터를 사용해 영화 소개 페이지만들어보기~**
 
 - _사용자는 여러 영화의 대한 정보를 확인하고 관람할 수 있습니다._
 - _사용자는 다른 유저들과 댓글을 통한 영화 정보를 습득하고 소통할 수 있습니다._
@@ -78,7 +78,7 @@
 
 ###⚓ 배포 링크
 
-[일요시네마?](http://main-project-vite.s3-website.ap-northeast-2.amazonaws.com/Submain/6)
+[일요시네마](http://main-project-vite.s3-website.ap-northeast-2.amazonaws.com/)
 
 <br
   
