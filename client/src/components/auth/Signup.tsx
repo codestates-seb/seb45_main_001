@@ -1,6 +1,7 @@
 import { styled, css } from 'styled-components';
 import { useState } from 'react';
 import { apiCall } from '../../api/authapi';
+import OauthGoogle from './OauthGoogle';
 
 interface LoginPageProps {
     onClickToggleModal?: () => void;
@@ -123,7 +124,7 @@ function SignupPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPageP
         // }
         apiCall({
             method: 'POST',
-            url: 'users/signup',  // users/signup
+            url: 'users/signup', // users/signup
             data: myId,
         })
             .then((response) => {
@@ -156,7 +157,7 @@ function SignupPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPageP
                             onChange={handleInputChange}
                         ></LoginModalinput>
                         <LoginModalinput
-                            // type="password"
+                            type="password"
                             placeholder="비밀번호"
                             name="password"
                             value={password}
@@ -180,7 +181,7 @@ function SignupPage({ onClickToggleModal, onClickToggleSignupModal }: LoginPageP
                             <LoginModalline></LoginModalline>
                         </LoginModalorwrap>
                         <LoginModaloauthwrap>
-                            <LoginModaloauth>Oauth</LoginModaloauth>
+                            <OauthGoogle></OauthGoogle>
                         </LoginModaloauthwrap>
                     </LoginModalmain_low>
                 </LoginModalmain>
@@ -345,7 +346,7 @@ const LoginModalline = styled.div`
 `;
 
 const LoginModaloauthwrap = styled.div`
-    margin-top: 28px;
+    margin-top: 20px;
 `;
 
 const LoginModaloauth = styled.div``;
