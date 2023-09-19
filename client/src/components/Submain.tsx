@@ -242,9 +242,7 @@ const Submain: FC = () => {
       }
     };
 
-
       fetchMovieData();
-
   }, [movieId]);
 
   // Fetch average rating when movieInfo.id changes

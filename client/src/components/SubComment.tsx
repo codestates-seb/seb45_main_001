@@ -142,13 +142,8 @@ const SubComment: React.FC = () => {
         score: selectedRating,
         content: `${comment} - ${timestamp}`,
       };
-
-      // 댓글 목록 업데이트 등의 작업 수행
-      setCommentsList(prevComments => [...prevComments, newComment]);
-      setComment('');
-      setSelectedRating(null);
-
-      // memberId와 movieId를 사용하여 POST 요청을 보냅니다.
+  
+      // memberId가 사용 가능한지 확인합니다 (즉, 사용자가 로그인한 경우)
       if (memberId) {
         try {
           const jwtToken = localStorage.getItem('jwt');
@@ -165,9 +160,19 @@ const SubComment: React.FC = () => {
             }
           );
           console.log('POST 요청 응답:', response.data);
+          location.reload();
+          // 성공적인 댓글 제출 후 필요한 다른 작업을 수행합니다.
+  
+          // 댓글 입력과 선택된 별점을 지웁니다.
+          setComment('');
+          setSelectedRating(null);
         } catch (error) {
           console.error('POST 요청 오류:', error);
         }
+      } else {
+        // 사용자가 로그인하지 않았을 때 처리해야 할 경우
+        alert('댓글을 제출하려면 로그인이 필요합니다.');
+        // 사용자에게 로그인 페이지로 리디렉션하거나 다른 필요한 작업을 수행할 수 있습니다.
       }
     }
   };
