@@ -32,3 +32,70 @@
 | <div style="display: flex; align-items: flex-start;"><img src="https://techstack-generator.vercel.app/java-icon.svg" alt="icon" width="65" height="65" /></div> | <img alt="spring logo" src="https://www.vectorlogo.zone/logos/springio/springio-icon.svg" height="50" width="50" > | <img alt="spring-boot logo" src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" > |  <img alt="spring-security logo" width="60px" src="https://camo.githubusercontent.com/923e99a57f8a456fdade5f65b35ada254be277612ddc991afb702d8dfd880d4f/68747470733a2f2f63646e2e73696d706c6569636f6e732e6f72672f737072696e677365637572697479" width="85" height=auto > | <div style="display: flex; align-items: flex-start;"><img src="https://techstack-generator.vercel.app/mysql-icon.svg" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://techstack-generator.vercel.app/aws-icon.svg" alt="icon" width="65" height="65" /></div> |
 
 
+# 🗽 프로젝트 소개
+
+<img src="https://user-images.githubusercontent.com/23649097/142730553-3f5c79c5-4429-4fde-a0ae-a8c704032df6.gif" width=400 height=170 />
+
+> **_"처음 JavaScript 배우는데 너무 어려운데...?"_**
+>
+> ```jsx
+> const banana = 'ba' + 'str' / 2 + 'a';
+>
+> console.log(banana); //!?
+> ```
+>
+> **Canyoufixme에서 `JavaScript`를 익혀볼까?**
+
+**_개발을 하면서 버그를 잡느라 시간을 낭비한 경험이 있으신가요? 누구나 개발을 하면서 다양한 버그를 맞닥뜨리게 되는데요, 혼자 디버깅을 하면서 버그를 고치는 것도 좋지만 버그를 찾아내고 해결하는 과정을 서로 공유할 수 있다면, 혹은 다른 사람이 마주친 버그를 내가 해결해볼 수 있다면, 더욱 값진 경험이 되지 않을까요?_**
+
+## **코딩은 직접 부딪히고 경험해야 실력이 향상 된다고 합니다!**
+
+- _출제자는 **실제 개발 과정에서 마주칠 만한 버그가 포함된 코드**를 출제합니다._
+- _사용자는 디버깅하여 의도된 동작을 하도록 출제된 코드를 수정하고 제출합니다._
+- _해당 코드에 대한 `체크포인트✅`를 만족하는 지 확인하면서 디버깅에 관한 능력을 향상시킬 수 있습니다._
+
+<br>
+<br>
+
+
+# 🚀 페이지별 기능
+
+### 🚧 **메인 페이지**
+
+- 서비스에 대한 간단한 소개
+- 전체 문제수, 전체 제출 수, 많이 틀린 문제 등 전반적인 통계 자료 표시
+
+### ⚠️ **문제 리스트 페이지**
+
+- 출제된 문제를 리스트 형태로 확인
+- 무한 스크롤(Intersection Observer API) 기능 적용
+
+### 🔑 **풀이 페이지**
+
+- 작성한 코드 실행 가능
+- 코드 편집기 에디터에 코드작성 가능(prettier 적용)
+- 에디터 크기 조절
+- 제출을 통해 문제 채점
+
+### ⌨️ **출제 페이지**
+
+- 출제 전 코드 실행 가능
+- 마크다운, 코드 에디터를 통해 문제해설과 코드 작성 가능
+- 에디터 크기 조절(3등분)
+- 테스트 코드 작성(`?`를 눌러 가이드라인 확인 가능)
+
+### 🏅 **결과 페이지**
+
+- 제출 결과를 테스트케이스 별로 확인 가능
+
+<br>
+<br>
+
+
+
+###⚓ 배포 링크
+
+[Can you fix me?](https://canyoufix.me/)
+
+<br
+  
