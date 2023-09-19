@@ -72,11 +72,7 @@ const RowPosterLarge = styled.img`
     transform: scale(1.1);
     opacity: 1;
   }
-
-  @media screen and (min-width: 1200px) {
-    max-height: 304px;
-  }
-
+  
   @media screen and (max-width: 768px) {
     max-height: 280px;
   }
