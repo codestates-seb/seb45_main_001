@@ -63,6 +63,7 @@ const RowPoster = styled.img`
 `;
 
 const RowPosterLarge = styled.img`
+  max-width: 100%;  
   max-height: 320px;
   padding: 25px 0;
   box-sizing: content-box;
@@ -73,6 +74,9 @@ const RowPosterLarge = styled.img`
     opacity: 1;
   }
 
+  @media screen and (min-width: 1200px) {
+    max-height: 360px;
+  }
 
   @media screen and (max-width: 768px) {
     max-height: 280px;
