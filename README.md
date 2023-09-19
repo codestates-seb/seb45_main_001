@@ -66,6 +66,13 @@
 
 
 <br>
+
+| **메인 페이지** | **서브 페이지** |
+| :---: | :---: |
+| <img src="https://github.com/codestates-seb/seb45_main_001/assets/129961035/4bc7fb32-ac55-46ce-bbd9-742e66542130" alt="메인" width="100%"/> | <img src="https://github.com/codestates-seb/seb45_main_001/assets/129961035/933749f9-6b47-4d07-b9e7-a5c846d01740" alt="서브" width="100%"/> |
+| **로그인/회원가입** | **검색 및 댓글** |
+| <img src="https://github.com/codestates-seb/seb45_main_001/assets/129961035/12a2b51c-7716-40e8-826a-580e88667142" alt="로그회원" width="100%"/> | <img src="https://github.com/codestates-seb/seb45_main_001/assets/129961035/9332c02b-38ff-46e9-aaea-6c2fc07b2819" alt="검색댓글" width="100%"/> |
+
 <br>
 
 ## **API를 이용하여 영화데이터를 사용해 영화 소개 페이지만들어보기~**
