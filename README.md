@@ -8,7 +8,7 @@
 - `한줄 소개` : ' 추천영화(예고편) 별점/댓글 프로젝트 '
 - `배포 링크` : ' http://main-project-vite.s3-website.ap-northeast-2.amazonaws.com/ '
 - `사용자 요구사항 정의서` : ' [Sheet](https://docs.google.com/spreadsheets/d/1U7Vlj4t5spDbqPujWPVQcI-AfbUuPUzBybnNid8MrXM/edit#gid=847248528) '
-- `테이블 명세서` : '  '
+- `테이블 명세서` : ' [Table](https://file.notion.so/f/f/82d63a72-8254-4cde-bf1e-b2597b7c099c/b3f5e166-c20f-4977-8449-76de3dcabdb8/%EC%9D%BC%EC%9A%94%EC%8B%9C%EB%84%A4%EB%A7%88_%ED%85%8C%EC%9D%B4%EB%B8%94_%EB%AA%85%EC%84%B8%EC%84%9C.pdf?id=37b07140-f427-487c-a7cc-3765df25bf04&table=block&spaceId=82d63a72-8254-4cde-bf1e-b2597b7c099c&expirationTimestamp=1695340800000&signature=s-PgISXbcxFPjRpG16gQUr2-VU88u6O4AhvPUTWZ93w&downloadName=%EC%9D%BC%EC%9A%94%EC%8B%9C%EB%84%A4%EB%A7%88+%ED%85%8C%EC%9D%B4%EB%B8%94+%EB%AA%85%EC%84%B8%EC%84%9C.pdf) '
 - `API 명세서` : ' [Postman](https://documenter.getpostman.com/view/27567184/2s9YC1VZ8Y#972a978e-5a16-4c25-acac-dc10b5571c0f) '
 
 
