@@ -1,7 +1,6 @@
 import { styled } from 'styled-components';
 
 export const FooterStyle = styled.footer`
-
     display: block;
     /* position: fixed; */
     bottom: 0;
@@ -36,7 +35,6 @@ export const Footerol = styled.ol`
     position: relative;
     width: 240px;
     list-style-type: none;
-
 `;
 
 export const Footerli = styled.li`

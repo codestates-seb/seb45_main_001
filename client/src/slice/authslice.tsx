@@ -10,7 +10,10 @@ export interface DataState {
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     globalname: string;
     globalmail: string;
-    isLogin: boolean,
+    isLogin: boolean;
+    isMagnifierClicked: boolean;
+    searchData: { movieNm: string; movieId: string; genre: string; posterUrl: string }[];
+    query: string;
 }
 
 // interface FetchPayload {
@@ -77,6 +80,18 @@ const initialState: DataState = {
     globalname: '비로그인',
     globalmail: 'none@nope.com',
     isLogin: false,
+    isMagnifierClicked: false,
+    query: '',
+    searchData: [
+        { movieNm: '1번영화', movieId: '1', genre: '액션', posterUrl: '' },
+        { movieNm: '2번영화', movieId: '2', genre: '액션', posterUrl: '' },
+        { movieNm: '3번영화', movieId: '3', genre: '액션', posterUrl: '' },
+        { movieNm: '4번영화', movieId: '4', genre: '액션', posterUrl: '' },
+        { movieNm: '5번영화', movieId: '5', genre: '액션', posterUrl: '' },
+        { movieNm: '6번영화', movieId: '6', genre: '액션', posterUrl: '' },
+        { movieNm: '7번영화', movieId: '7', genre: '액션', posterUrl: '' },
+        { movieNm: '8번영화', movieId: '8', genre: '액션', posterUrl: '' },
+    ],
 };
 
 export const DataState = createSlice({
@@ -89,8 +104,17 @@ export const DataState = createSlice({
         updateMail: (state, action: PayloadAction<string>) => {
             state.globalmail = action.payload;
         },
+        updateQuery: (state, action: PayloadAction<string>) => {
+            state.query = action.payload;
+        },
         updateLogin: (state, action: PayloadAction<boolean>) => {
             state.isLogin = action.payload;
+        },
+        updateMagnifier: (state, action: PayloadAction<boolean>) => {
+            state.isMagnifierClicked = action.payload;
+        },
+        updateSearchData: (state, action: PayloadAction<{ movieNm: string; movieId: string; genre: string; posterUrl: string; }[]>) => {
+            state.searchData = action.payload;
         },
     },
     // extraReducers: (builder) => {
@@ -132,12 +156,10 @@ export const DataState = createSlice({
     // },
 });
 
-export const { updateName, updateMail, updateLogin } = DataState.actions;
-
+export const { updateName, updateMail, updateLogin, updateMagnifier, updateQuery, updateSearchData } =
+    DataState.actions;
 
 export default DataState.reducer;
-
-
 
 // import { useDispatch, useSelector } from 'react-redux';
 // import { updateName } from '../slice/authslice';
@@ -145,6 +167,6 @@ export default DataState.reducer;
 // const globalName = useSelector((state) => state.data.name); 업데이트네임 사용예
 
 // -----------------------------------------
-// const [isNameEditing, setIsNameEditing] = useState<boolean>(false);  
+// const [isNameEditing, setIsNameEditing] = useState<boolean>(false);
 // onChange={(e) => dispatch(updateName(e.target.value))} 업데이트 네임 수정하려면 dispatch 사용
-// onBlur={() => setIsNameEditing(false)} 
+// onBlur={() => setIsNameEditing(false)}

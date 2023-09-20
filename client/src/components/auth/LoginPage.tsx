@@ -249,7 +249,8 @@ const LoginModalerror = styled.div`
 `;
 
 const LoginModalbuttonin = styled.button<{ $isValid: boolean }>`
-    font-size: 14px;
+    position: relative;
+    /* font-size: 14px;  */
     font-weight: 500;
     color: ${({ $isValid }) => ($isValid ? '#000000' : '#ffffff')};
     margin-top: 36px;
@@ -260,6 +261,21 @@ const LoginModalbuttonin = styled.button<{ $isValid: boolean }>`
     ${LoginModalwidth}
     height: 42px;
     cursor: pointer;
+
+    font-size: 0;
+
+    &::before {
+        content: "로그인";
+        font-size: 14px; 
+    }
+
+    ${({ $isValid }) =>
+        !$isValid &&
+        css`
+            &:hover::before {
+                content: "비밀번호나 이메일을 확인해주세요.";
+            }
+        `}
 
     ${({ $isValid }) =>
         $isValid &&

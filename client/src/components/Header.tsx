@@ -1,11 +1,11 @@
-import { styled, css } from 'styled-components';
+import { styled, css, keyframes } from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
 import LoginPage from './auth/LoginPage';
 import SignupPage from './auth/Signup';
 import { useDispatch, useSelector } from 'react-redux';
-import { DataState, updateName, updateLogin, updateMail } from '../slice/authslice';
+import { DataState, updateName, updateLogin, updateMail, updateMagnifier, updateSearchData, updateQuery } from '../slice/authslice';
 import type { AppDispatch } from '../store/authstore';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { apiCall } from '../api/authapi';
 
 // const HeaderStyle = styled.header`
@@ -112,59 +112,11 @@ const SignupbuttonStyle = styled.div`
 
 // const SearchStyle = styled(FlexCenter)``;
 
-const SearchinputStyle = styled.input`
-    border: 1px solid gray;
-    background-color: white;
-    width: 100%;
-    max-width: 600px;
-    border-radius: 3px;
-    padding: 3px;
-    padding-left: 6px;
-    font-size: 0.875rem;
-    box-sizing: border-box;
-`;
-
-const SearchfilterStyle = styled.ul`
-    position: absolute;
-    width: 100%;
-    max-width: 600px;
-    list-style: none;
-    top: 29px;
-    background-color: white;
-    border-radius: 5px;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-    text-align: left;
-    box-sizing: border-box;
-`;
-
-const SearchfilterliStyle = styled.ul`
-    width: 100%;
-    padding-left: 6px;
-    margin-bottom: 3px;
-`;
-
 const MagnifierStyle = styled.div`
     width: 21px;
     height: 21px;
     /* border: 1px solid gray; */
     cursor: pointer;
-`;
-
-const SearchbarStyle = styled.form<{ $isOpen: boolean }>`
-    ${FlexCentercss}
-    flex-grow: 1;
-    margin-left: 10px;
-    margin-right: 10px;
-    display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
-
-    @media (max-width: 460px) {
-        position: absolute;
-        width: 300px;
-        top: 56px;
-        left: auto;
-        right: auto;
-    }
 `;
 
 const LogSignStyle = styled.nav`
@@ -174,12 +126,6 @@ const LogSignStyle = styled.nav`
     min-width: 110px;
     min-height: 24px;
     gap: 6px;
-`;
-
-const Relative = styled.div`
-    ${FlexCentercss}
-    width: 100%;
-    position: relative;
 `;
 
 const Templink = styled.div`
@@ -212,163 +158,88 @@ const TempStyle = styled.div`
     }
 `;
 
-// const [isLogin, setIsLogin] = useState<boolean>(false);
-//     const [sessionUser, setSessionUser] = useState<any>(null); //받아오는 데이타의 세션유저이름
+const SearchinputStyle = styled.input`
+    border: 1px solid gray;
+    background-color: white;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 3px;
+    padding: 3px;
+    padding-left: 6px;
+    font-size: 0.875rem;
+    box-sizing: border-box;
+`;
 
-//     useEffect(() => {
-//         axios
-//             .get(`${lastUrl}/check-session`)
-//             .then((response) => {
-//                 if (response.data.isLogin) {
-//                     setIsLogin(true);
-//                     setSessionUser(response.data.sessionUser);
-//                 }
-//             })
-//             .catch((error) => {
-//                 console.error('로그인 상태 확인 중 오류 발생:', error);
-//             });
-//     }, []);
+const SearchfilterStyle = styled.ul`
+    position: absolute;
+    width: 100%;
+    max-width: 600px;
+    list-style: none;
+    top: 29px;
+    background-color: white;
+    border-radius: 5px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    text-align: left;
+    box-sizing: border-box;
+`;
 
-//     const onClickLogout = () => {
-//         // 서버에 로그아웃 요청을 보냅니다.
-//         axios
-//             .post(`${lastUrl}/api/logout`)
-//             .then((response) => {
-//                 if (response.data.success) {
-//                     setIsLogin(false);
-//                     setSessionUser(null);
-//                     sessionStorage.removeItem('memberid');
-//                     sessionStorage.removeItem('jwt');
-//                     sessionStorage.removeItem('membername');
-//                     sessionStorage.removeItem('membermail');
-//                     navigate('/');
-//                     console.log('로그아웃 성공');
-//                 }
-//             })
-//             .catch((error) => {
-//                 console.error('로그아웃 실패', error);
-//             });
-//     };
+const SearchfilterliStyle = styled.ul`
+    width: 100%;
+    padding-left: 6px;
+    margin-bottom: 3px;
+`;
 
-// const isTokenExpired = (token: string): boolean => {
-//     try {
-//         const decodedToken: any = JSON.parse(atob(token.split('.')[1]));
-//         const currentTime = Date.now() / 1000;
-//         return decodedToken.exp && currentTime > decodedToken.exp;
-//     } catch (error) {
-//         return true;
-//     }
-// };
+const fadeIn = keyframes`
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+`;
 
-// const users = useSelector((state: RootState) => state.data.users);
-// const memberId = sessionStorage.getItem('memberid');
-// const user = memberId ? users?.[memberId] : undefined;
-// const token = sessionStorage.getItem('jwt');
+const fadeOut = keyframes`
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+`;
 
-// const [isLogin, setIsLogin] = useState<boolean>(() => {
-//     return token ? !isTokenExpired(token) : false;
-// });
+const SearchbarStyle = styled.form<{ $isOpen: boolean, $isFinished: boolean }>`
+    ${FlexCentercss}
+    flex-grow: 1;
+    margin-left: 10px;
+    margin-right: 10px;
+    
+    opacity: ${({ $isOpen }) => ($isOpen ? '1' : '0')};
+    display: ${({ $isOpen, $isFinished }) => ($isOpen || !$isFinished ? 'flex' : 'none')};
 
-// console.log('Member ID:', memberId);
-// console.log('User Data:', user);
+    ${({ $isOpen }) => $isOpen ? css`
+        animation: ${fadeIn} 0.5s forwards;
+    ` : css`
+        animation: ${fadeOut} 0.5s forwards;
+    `}
 
-// function onClickLogout() {
-//     setIsLogin(false);
-//     try {
-//         sessionStorage.removeItem('memberid');
-//         sessionStorage.removeItem('jwt');
-//         sessionStorage.removeItem('membername');
-//         sessionStorage.removeItem('membermail');
-//         navigate('/');
-//         console.log('로그아웃 성공');
-//     } catch (error) {
-//         console.log('로그아웃 실패', error);
-//     }
-// }
+    
+`;
 
-// const [sessionUser, setSessionUser] = useState<any>(null); //받아오는 데이타의 세션유저이름
-
-// useEffect(() => {
-//     apiCall({
-//         method: 'GET',
-//         url: 'host/check-session', // membership/signin - 우리 엔드포인트 // login - json 엔드포인트 host/signin 우리 새로운 엔드포인트
-//     })
-//         .then((response) => {
-//             if (response.data === true) {
-//                 dispatch(updateLogin(true));
-//             } else {
-//                 dispatch(updateLogin(false));
-//             }
-//         })
-//         .catch((error) => {
-//             console.error('로그인 상태 확인 중 오류 발생:', error);
-//         });
-// }, []);
-
-// function getCookie(name: string): string | null | undefined {
-//     const value = `; ${document.cookie}`;
-//     const parts = value.split(`; ${name}=`);
-//     if (parts.length === 2) return parts.pop()!.split(';').shift();
-//     return null;
-// }
-
-// useEffect(() => {
-//     const sessionId = getCookie('SESSION_COOKIE_NAME');
-//     if (sessionId) {
-//         console.log('세션아이디 쿠키존재여부', sessionId);
-//     }
-// }, []);
-
-// const onClickLogout = () => {
-//     // 서버에 로그아웃 요청을 보냅니다.
-//     axios
-//         .post(`${lastUrl}/api/logout`)
-//         .then((response) => {
-//             if (response.data.success) {
-//                 setIsLogin(false);
-//                 setSessionUser(null);
-//                 sessionStorage.removeItem('memberid');
-//                 sessionStorage.removeItem('jwt');
-//                 sessionStorage.removeItem('membername');
-//                 sessionStorage.removeItem('membermail');
-//                 navigate('/');
-//                 console.log('로그아웃 성공');
-//             }
-//         })
-//         .catch((error) => {
-//             console.error('로그아웃 실패', error);
-//         });
-// };
-
-// function onClickLogout() {
-//     try {
-//         const storedUsersJSON = sessionStorage.getItem('users');
-//         const storedUsers = storedUsersJSON ? JSON.parse(storedUsersJSON) : [];
-
-//         const existingUser = storedUsers.find((user: any) => user.email === globalmail);
-
-//         if (existingUser) {
-//             existingUser.islogin = false;
-//             sessionStorage.setItem('users', JSON.stringify(storedUsers));
-//         }
-//         dispatch(updateLogin(false));
-//         sessionStorage.removeItem('memberid');
-//         sessionStorage.removeItem('membername');
-//         sessionStorage.removeItem('memberemail');
-//         sessionStorage.removeItem('memberpassword');
-//         // navigate('/');
-//         console.log('로그아웃 성공');
-//     } catch (error) {
-//         console.log('로그아웃 실패', error);
-//     }
-// }
+const Relative = styled.div`
+    ${FlexCentercss}
+    width: 100%;
+    position: relative;
+`;
 
 function Header() {
     const dispatch: AppDispatch = useDispatch();
     const navigate = useNavigate();
     const isLogin = useSelector((state: { data: DataState }) => state.data.isLogin);
-    const [isMagnifierClicked, setisMagnifierClicked] = useState<boolean>(false);
     const globalName = useSelector((state: { data: DataState }) => state.data.globalname);
+    const searchData = useSelector((state: { data: DataState }) => state.data.searchData);
+    const query = useSelector((state: { data: DataState }) => state.data.query);
+    const location = useLocation();
 
     const token = localStorage.getItem('jwt');
 
@@ -430,16 +301,6 @@ function Header() {
         }
     }
 
-    function handleMagnifierClick() {
-        setisMagnifierClicked(!isMagnifierClicked);
-        if (!isMagnifierClicked) {
-            setQuery('');
-            console.log('검색바 열림!');
-        } else {
-            console.log('검색바 닫힘!');
-        }
-    }
-
     const [isLoginModal, setLoginModal] = useState<boolean>(false);
     const [isSignupModal, setSignupModal] = useState<boolean>(false);
 
@@ -461,25 +322,14 @@ function Header() {
         }
     }
 
-    const [query, setQuery] = useState<string>('');
-    const [searchData, setSearchData] = useState<Array<{ movieNm: string; movieId: string }>>([
-        { movieNm: '1번영화', movieId: '1' },
-        { movieNm: '2번영화', movieId: '2' },
-        { movieNm: '3번영화', movieId: '3' },
-        { movieNm: '4번영화', movieId: '4' },
-        { movieNm: '5번영화', movieId: '5' },
-        { movieNm: '6번영화', movieId: '6' },
-        { movieNm: '7번영화', movieId: '7' },
-        { movieNm: '8번영화', movieId: '8' },
-    ]);
-
-    interface MovieItem {
+    interface Movie {
         movieNm: string;
         movieId: string;
-        [key: string]: any;
+        genre: string;
+        posterUrl: string;
+        [key: string]: any;  // 만약 추가적인 프로퍼티들이 있을 수 있다면 이 부분을 유지하시고, 그렇지 않다면 제거하셔도 됩니다.
     }
 
-    // 검색기능
     useEffect(() => {
         apiCall(
             {
@@ -490,40 +340,29 @@ function Header() {
         )
             .then((response) => {
                 console.log('검색 리스폰스', response);
-                const boxofficeList =
-                    response.data.boxofficeList?.map((item: any) => ({
-                        movieNm: item.movieNm,
-                        movieId: item.movieId,
-                    })) || [];
 
                 const genreMovieList =
-                    response.data.genreMovieList?.map((item: any) => ({
+                    response.data.genreMovieList?.map((item: Movie) => ({
                         movieNm: item.movieNm,
                         movieId: item.movieId,
+                        genre: item.genre,
+                        posterUrl: item.posterUrl
                     })) || [];
 
-                const combinedList = [...boxofficeList, ...genreMovieList];
-
-                const uniqueList = combinedList.reduce((acc: any[], cur: any) => {
-                    const isDuplicate = acc.some((item: any) => item.movieId === cur.movieId);
+                const uniqueList = genreMovieList.reduce((acc: Movie, cur: Movie) => {
+                    const isDuplicate = acc.some((item: Movie) => item.movieId === cur.movieId);
                     if (!isDuplicate) {
                         acc.push(cur);
                     }
                     return acc;
                 }, []);
-                setSearchData(uniqueList);
+                const sortedList = uniqueList.sort((a: Movie, b: Movie) => a.movieNm.localeCompare(b.movieNm));
+                dispatch(updateSearchData(sortedList));
             })
             .catch((error) => {
                 console.error('응답실패', error);
             });
     }, []);
-
-    const filteredData = searchData.filter((item) => {
-        if (query.trim() === '') {
-            return false;
-        }
-        return item.movieNm.toLowerCase().includes(query.toLowerCase());
-    });
 
     const [scrolled, setScrolled] = useState(false);
 
@@ -542,21 +381,40 @@ function Header() {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+    const [isAnimationFinished, setIsAnimationFinished] = useState(false);
+    const isMagnifierClicked = useSelector((state: { data: DataState }) => state.data.isMagnifierClicked);
 
-    const searchContainerRef = useRef<HTMLDivElement | null>(null);
+    function handleMagnifierClick() {
+        dispatch(updateMagnifier(!isMagnifierClicked));
+        setIsAnimationFinished(false);
+        if (!isMagnifierClicked) {
+            console.log('검색바 열림!');
+        } else {
+            console.log('검색바 닫힘!');
+        }
+    }
+
+    const filteredData = searchData.filter((item) => {
+        if (query.trim() === '') {
+            return false;
+        }
+        return item.movieNm.toLowerCase().includes(query.toLowerCase());
+    });
 
     useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
-                setisMagnifierClicked(false);
-            }
+        if (location.pathname !== "/search" && isMagnifierClicked) {
+            dispatch(updateMagnifier(false));
+            console.log('검색바 닫힘!');
         }
+    }, [location, isMagnifierClicked, dispatch]);
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+    
+
+    const onAnimationEnd = () => {
+        if (!isMagnifierClicked) {
+            setIsAnimationFinished(true);
+        }
+    };
 
     return (
         <>
@@ -583,31 +441,18 @@ function Header() {
                         </TempStyle> */}
                     </CountryStyle>
                     <MagnifierStyle onClick={handleMagnifierClick}>
-                        <img src="/Magnifier_white.png" alt="" style={{ width: '100%', height: '100%' }} />
+                        <Link to="/search">
+                            <img src="/Magnifier_white.png" alt="" style={{ width: '100%', height: '100%' }} />
+                        </Link>
                     </MagnifierStyle>
-                    <SearchbarStyle $isOpen={isMagnifierClicked}>
-                        <Relative ref={searchContainerRef}>
-                                <SearchinputStyle
-                                    aria-label=""
-                                    placeholder="검색..."
-                                    value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                ></SearchinputStyle>
-                                <SearchfilterStyle>
-                                    {filteredData.map((item: { movieNm: string; movieId: string }, index: number) => (
-                                        <SearchfilterliStyle key={index}>
-                                            <Link
-                                                to={`/submain/${item.movieId}`}
-                                                onClick={() => {
-                                                    setisMagnifierClicked(false);
-                                                    setQuery('');
-                                                }}
-                                            >
-                                                {item.movieNm}
-                                            </Link>
-                                        </SearchfilterliStyle>
-                                    ))}
-                                </SearchfilterStyle>
+                    <SearchbarStyle $isOpen={isMagnifierClicked} $isFinished={isAnimationFinished} onAnimationEnd={onAnimationEnd}>
+                        <Relative>
+                            <SearchinputStyle
+                                aria-label=""
+                                placeholder="장르, 영화제목 검색... "
+                                value={query}
+                                onChange={(e) => dispatch(updateQuery(e.target.value))}
+                            ></SearchinputStyle>
                         </Relative>
                     </SearchbarStyle>
                     <LogSignStyle>

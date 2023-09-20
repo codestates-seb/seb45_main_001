@@ -1,4 +1,4 @@
-import Header from '../components/Header';
+// import Header from '../components/Header';
 import { useState } from 'react';
 import { styled, css } from 'styled-components';
 import Mymytap from '../components/mypagetab/Mytap';
@@ -124,7 +124,6 @@ function Mypage() {
 
     return (
         <>
-            <Header />
             <Bodymypage>
                 <Wrapmypage>
                     <Uppermypage>
@@ -132,9 +131,21 @@ function Mypage() {
                         <Upper_lower>
                             <Ul_text>{globalName} 님</Ul_text>
                             <Tap>
-                                <Mytap $isActive={activeTab === 'My'} onClick={() => handleTabClick('My')}>My</Mytap>
-                                <Commenttap $isActive={activeTab === 'Comment'} onClick={() => handleTabClick('Comment')}>작성 댓글</Commenttap>
-                                <Bookmarktap $isActive={activeTab === 'Bookmark'} onClick={() => handleTabClick('Bookmark')}>북마크</Bookmarktap>
+                                <Mytap $isActive={activeTab === 'My'} onClick={() => handleTabClick('My')}>
+                                    My
+                                </Mytap>
+                                <Commenttap
+                                    $isActive={activeTab === 'Comment'}
+                                    onClick={() => handleTabClick('Comment')}
+                                >
+                                    작성 댓글
+                                </Commenttap>
+                                <Bookmarktap
+                                    $isActive={activeTab === 'Bookmark'}
+                                    onClick={() => handleTabClick('Bookmark')}
+                                >
+                                    북마크
+                                </Bookmarktap>
                             </Tap>
                         </Upper_lower>
                     </Uppermypage>
