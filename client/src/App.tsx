@@ -1,4 +1,4 @@
-// import Header from './components/Header';
+import Header from './components/Header';
 import Footer from './components/Footer';
 import Submain from './components/Submain';
 import { Routes, Route } from 'react-router-dom';
@@ -8,16 +8,18 @@ import Authguard from './components/auth/Authguard';
 import './css/App.css';
 import KoreaPage from './pages/KoreaPage';
 import ForeignPage from './pages/ForeignPage';
+import Search from './pages/Search';
 
 function App() {
     return (
         <div className="app">
-            {/* <Header /> */}
+            <Header />
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/korea" element={<KoreaPage />} />
                 <Route path="/foreign" element={<ForeignPage />} />
                 <Route path="/Submain/:movieId" element={<Submain />} />
+                <Route path="/search" element={<Search />} />
                 <Route path="/mypage" element={<Authguard />}>
                     <Route index element={<Mypage />} />
                 </Route>
