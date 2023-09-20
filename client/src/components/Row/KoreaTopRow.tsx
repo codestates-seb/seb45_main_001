@@ -36,43 +36,50 @@ const RowPosters = styled.div`
 `;
 
 const RowPoster = styled.img`
-    object-fit: contain;
-    width: 100%;
-    max-height: 144px;
-    margin-right: 10px;
-    transition: transform 450ms;
-    border-radius: 4px;
-    padding: 25px 0;
-    box-sizing: content-box;
-    cursor: pointer;
 
-    :hover {
-        transform: scale(1.08);
-    }
+  object-fit: contain;
+  width: 100%;
+  max-height: 144px;
+  margin-right: 10px;
+  transition: transform 450ms;
+  border-radius: 4px;
+  padding: 25px 0;
+  box-sizing: content-box;
+  cursor: pointer;
+  
+  :hover {
+    transform: scale(1.08);
+  }
 
-    @media screen and (min-width: 1200px) {
-        max-height: 160px;
-    }
+  @media screen and (min-width: 1200px) {
+    max-height: 160px;
+  }
 
-    @media screen and (max-width: 768px) {
-        max-height: 100px;
-    }
+  @media screen and (max-width: 768px) {
+    max-height: 100px;
+  }
 `;
 
 const RowPosterLarge = styled.img`
-    max-height: 320px;
-    padding: 25px 0;
-    box-sizing: content-box;
-    cursor: pointer;
+  max-width: 100%;
+  max-height: 320px;
+  padding: 25px 0;
+  box-sizing: content-box;
+  cursor: pointer;
+  
+  :hover {
+    transform: scale(1.1);
+    opacity: 1;
+  }
 
-    :hover {
-        transform: scale(1.1);
-        opacity: 1;
-    }
+  @media screen and (min-width: 1200px) {
+    max-height: 360px;
+  }
 
-    @media screen and (max-width: 768px) {
-        max-height: 280px;
-    }
+  @media screen and (max-width: 768px) {
+    max-height: 280px;
+  }
+
 `;
 
 interface KoreaTopRow {
