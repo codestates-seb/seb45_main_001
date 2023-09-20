@@ -1,4 +1,4 @@
-import { styled, css } from 'styled-components';
+import { styled, css, keyframes } from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
 import LoginPage from './auth/LoginPage';
 import SignupPage from './auth/Signup';
@@ -190,20 +190,40 @@ const SearchfilterliStyle = styled.ul`
     margin-bottom: 3px;
 `;
 
-const SearchbarStyle = styled.form<{ $isOpen: boolean }>`
+const fadeIn = keyframes`
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+`;
+
+const fadeOut = keyframes`
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+`;
+
+const SearchbarStyle = styled.form<{ $isOpen: boolean, $isFinished: boolean }>`
     ${FlexCentercss}
     flex-grow: 1;
     margin-left: 10px;
     margin-right: 10px;
-    display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
+    
+    opacity: ${({ $isOpen }) => ($isOpen ? '1' : '0')};
+    display: ${({ $isOpen, $isFinished }) => ($isOpen || !$isFinished ? 'flex' : 'none')};
 
-    @media (max-width: 460px) {
-        position: absolute;
-        width: 300px;
-        top: 56px;
-        left: auto;
-        right: auto;
-    }
+    ${({ $isOpen }) => $isOpen ? css`
+        animation: ${fadeIn} 0.5s forwards;
+    ` : css`
+        animation: ${fadeOut} 0.5s forwards;
+    `}
+
+    
 `;
 
 const Relative = styled.div`
@@ -302,6 +322,14 @@ function Header() {
         }
     }
 
+    interface Movie {
+        movieNm: string;
+        movieId: string;
+        genre: string;
+        posterUrl: string;
+        [key: string]: any;  // 만약 추가적인 프로퍼티들이 있을 수 있다면 이 부분을 유지하시고, 그렇지 않다면 제거하셔도 됩니다.
+    }
+
     useEffect(() => {
         apiCall(
             {
@@ -314,19 +342,22 @@ function Header() {
                 console.log('검색 리스폰스', response);
 
                 const genreMovieList =
-                    response.data.genreMovieList?.map((item: any) => ({
+                    response.data.genreMovieList?.map((item: Movie) => ({
                         movieNm: item.movieNm,
                         movieId: item.movieId,
+                        genre: item.genre,
+                        posterUrl: item.posterUrl
                     })) || [];
 
-                const uniqueList = genreMovieList.reduce((acc: any[], cur: any) => {
-                    const isDuplicate = acc.some((item: any) => item.movieId === cur.movieId);
+                const uniqueList = genreMovieList.reduce((acc: Movie, cur: Movie) => {
+                    const isDuplicate = acc.some((item: Movie) => item.movieId === cur.movieId);
                     if (!isDuplicate) {
                         acc.push(cur);
                     }
                     return acc;
                 }, []);
-                dispatch(updateSearchData(uniqueList));
+                const sortedList = uniqueList.sort((a: Movie, b: Movie) => a.movieNm.localeCompare(b.movieNm));
+                dispatch(updateSearchData(sortedList));
             })
             .catch((error) => {
                 console.error('응답실패', error);
@@ -350,11 +381,12 @@ function Header() {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
-
+    const [isAnimationFinished, setIsAnimationFinished] = useState(false);
     const isMagnifierClicked = useSelector((state: { data: DataState }) => state.data.isMagnifierClicked);
 
     function handleMagnifierClick() {
         dispatch(updateMagnifier(!isMagnifierClicked));
+        setIsAnimationFinished(false);
         if (!isMagnifierClicked) {
             console.log('검색바 열림!');
         } else {
@@ -375,6 +407,14 @@ function Header() {
             console.log('검색바 닫힘!');
         }
     }, [location, isMagnifierClicked, dispatch]);
+
+    
+
+    const onAnimationEnd = () => {
+        if (!isMagnifierClicked) {
+            setIsAnimationFinished(true);
+        }
+    };
 
     return (
         <>
@@ -405,11 +445,11 @@ function Header() {
                             <img src="/Magnifier_white.png" alt="" style={{ width: '100%', height: '100%' }} />
                         </Link>
                     </MagnifierStyle>
-                    <SearchbarStyle $isOpen={isMagnifierClicked}>
+                    <SearchbarStyle $isOpen={isMagnifierClicked} $isFinished={isAnimationFinished} onAnimationEnd={onAnimationEnd}>
                         <Relative>
                             <SearchinputStyle
                                 aria-label=""
-                                placeholder="검색..."
+                                placeholder="장르, 영화제목 검색... "
                                 value={query}
                                 onChange={(e) => dispatch(updateQuery(e.target.value))}
                             ></SearchinputStyle>

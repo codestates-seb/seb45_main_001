@@ -12,7 +12,7 @@ export interface DataState {
     globalmail: string;
     isLogin: boolean;
     isMagnifierClicked: boolean;
-    searchData: { movieNm: string; movieId: string }[];
+    searchData: { movieNm: string; movieId: string; genre: string; posterUrl: string }[];
     query: string;
 }
 
@@ -83,14 +83,14 @@ const initialState: DataState = {
     isMagnifierClicked: false,
     query: '',
     searchData: [
-        { movieNm: '1번영화', movieId: '1' },
-        { movieNm: '2번영화', movieId: '2' },
-        { movieNm: '3번영화', movieId: '3' },
-        { movieNm: '4번영화', movieId: '4' },
-        { movieNm: '5번영화', movieId: '5' },
-        { movieNm: '6번영화', movieId: '6' },
-        { movieNm: '7번영화', movieId: '7' },
-        { movieNm: '8번영화', movieId: '8' },
+        { movieNm: '1번영화', movieId: '1', genre: '액션', posterUrl: '' },
+        { movieNm: '2번영화', movieId: '2', genre: '액션', posterUrl: '' },
+        { movieNm: '3번영화', movieId: '3', genre: '액션', posterUrl: '' },
+        { movieNm: '4번영화', movieId: '4', genre: '액션', posterUrl: '' },
+        { movieNm: '5번영화', movieId: '5', genre: '액션', posterUrl: '' },
+        { movieNm: '6번영화', movieId: '6', genre: '액션', posterUrl: '' },
+        { movieNm: '7번영화', movieId: '7', genre: '액션', posterUrl: '' },
+        { movieNm: '8번영화', movieId: '8', genre: '액션', posterUrl: '' },
     ],
 };
 
@@ -113,7 +113,7 @@ export const DataState = createSlice({
         updateMagnifier: (state, action: PayloadAction<boolean>) => {
             state.isMagnifierClicked = action.payload;
         },
-        updateSearchData: (state, action: PayloadAction<{ movieNm: string; movieId: string }[]>) => {
+        updateSearchData: (state, action: PayloadAction<{ movieNm: string; movieId: string; genre: string; posterUrl: string; }[]>) => {
             state.searchData = action.payload;
         },
     },
@@ -156,7 +156,8 @@ export const DataState = createSlice({
     // },
 });
 
-export const { updateName, updateMail, updateLogin, updateMagnifier, updateQuery, updateSearchData } = DataState.actions;
+export const { updateName, updateMail, updateLogin, updateMagnifier, updateQuery, updateSearchData } =
+    DataState.actions;
 
 export default DataState.reducer;
 
